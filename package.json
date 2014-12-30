@@ -1,5 +1,8 @@
 {
   "name": "next-build-tools",
+  "bin": {
+    "next-build-tools": "./bin/cli.js"
+  },
   "version": "0.0.1",
   "dependencies": {
     "commander": "^2.6.0",
