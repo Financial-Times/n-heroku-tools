@@ -3,7 +3,7 @@
   "bin": {
     "next-build-tools": "./bin/cli.js"
   },
-  "version": "0.0.1",
+  "version": "1.0.0",
   "dependencies": {
     "commander": "^2.6.0",
     "denodeify": "^1.2.0",
