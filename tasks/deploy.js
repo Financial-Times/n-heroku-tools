@@ -20,8 +20,10 @@ module.exports = function() {
 			return build(process.cwd());
 		})
 		.then(function() {
+			var name = 'ft-next-' + normalizeName(packageJson.name);
+			console.log('Next Build Tools going to deploy to ' + name);
 			return deploy({
-				app: normalizeName(packageJson.name),
+				app: name,
 				token: token,
 				project: process.cwd()
 			});
