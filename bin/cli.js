@@ -2,7 +2,6 @@
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
-require('haikro/lib/logger').setLevel('debug');
 
 var program = require('commander');
 var deploy = require('../tasks/deploy');
