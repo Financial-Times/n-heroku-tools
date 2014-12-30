@@ -14,7 +14,8 @@ function normalizeName(name) {
 
 module.exports = function() {
 	var token;
-	return (process.env.HEROKU_AUTH_TOKEN ? Promise.resolve(process.env.HEROKU_AUTH_TOKEN) : exec('heroku auth:token'))
+	return exec('npm prune --production')
+		.then(process.env.HEROKU_AUTH_TOKEN ? Promise.resolve(process.env.HEROKU_AUTH_TOKEN) : exec('heroku auth:token'))
 		.then(function(result) {
 			token = result;
 			return build(process.cwd());
