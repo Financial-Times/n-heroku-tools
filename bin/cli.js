@@ -6,6 +6,7 @@ require('haikro/lib/logger').setLevel('debug');
 
 var program = require('commander');
 var deploy = require('../tasks/deploy');
+var clean = require('../tasks/clean');
 
 function exit(err) {
 	console.log(err);
@@ -13,13 +14,19 @@ function exit(err) {
 }
 
 
+program.version(require('../package.json').version);
+
 program
-	.version(require('../package.json').version)
+	.command('clean')
+	.action(function() {
+		clean().catch(exit);
+	});
+
+program
 	.command('deploy')
 	.action(function() {
 		deploy().catch(exit);
 	});
-
 
 
 program.parse(process.argv);
