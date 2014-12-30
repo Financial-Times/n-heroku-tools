@@ -17,7 +17,7 @@ module.exports = function() {
 	return (process.env.HEROKU_AUTH_TOKEN ? Promise.resolve(process.env.HEROKU_AUTH_TOKEN) : exec('heroku auth:token'))
 		.then(function(result) {
 			token = result;
-			return build(project);
+			return build(process.cwd());
 		})
 		.then(function() {
 			return deploy({

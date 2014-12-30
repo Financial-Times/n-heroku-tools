@@ -15,7 +15,7 @@ program
 	.version(require('../package.json').version)
 	.command('deploy')
 	.action(function() {
-		deploy.catch(exit);
+		deploy().catch(exit);
 	});
 
 
