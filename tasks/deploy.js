@@ -16,10 +16,12 @@ function normalizeName(name) {
 module.exports = function() {
 	logger.setLevel('debug');
 	var token;
-	return exec('npm prune --production')
-		.then(process.env.HEROKU_AUTH_TOKEN ? Promise.resolve(process.env.HEROKU_AUTH_TOKEN) : exec('heroku auth:token'))
-		.then(function(result) {
-			token = result;
+	return Promise.all([
+		process.env.HEROKU_AUTH_TOKEN ? Promise.resolve(process.env.HEROKU_AUTH_TOKEN) : exec('heroku auth:token'),
+		exec('npm prune --production')
+	])
+		.then(function(results) {
+			token = results[0];
 			return build(process.cwd());
 		})
 		.then(function() {
