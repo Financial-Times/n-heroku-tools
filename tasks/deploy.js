@@ -16,12 +16,15 @@ function normalizeName(name) {
 module.exports = function() {
 	logger.setLevel('debug');
 	var token;
+	var commit;
 	return Promise.all([
 		process.env.HEROKU_AUTH_TOKEN ? Promise.resolve(process.env.HEROKU_AUTH_TOKEN) : exec('heroku auth:token'),
+		exec('git rev-parse HEAD'),
 		exec('npm prune --production')
 	])
 		.then(function(results) {
 			token = results[0];
+			commit = results[1];
 			return build(process.cwd());
 		})
 		.then(function() {
@@ -30,7 +33,8 @@ module.exports = function() {
 			return deploy({
 				app: name,
 				token: token,
-				project: process.cwd()
+				project: process.cwd(),
+				commit: commit
 			});
 		});
 };
