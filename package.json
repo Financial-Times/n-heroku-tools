@@ -8,7 +8,7 @@
     "commander": "^2.6.0",
     "denodeify": "^1.2.0",
     "es6-promise": "^2.0.1",
-    "haikro": "^1.8.1",
+    "haikro": "1.8.1",
     "isomorphic-fetch": "^1.1.0"
   }
 }
