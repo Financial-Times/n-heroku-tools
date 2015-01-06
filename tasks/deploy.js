@@ -25,7 +25,7 @@ module.exports = function() {
 		.then(function(results) {
 			token = results[0];
 			commit = results[1];
-			return build(process.cwd());
+			return build({ project: process.cwd(), strict: true });
 		})
 		.then(function() {
 			var name = 'ft-next-' + normalizeName(packageJson.name);
