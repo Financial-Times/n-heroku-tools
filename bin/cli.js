@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -6,6 +7,7 @@ require('isomorphic-fetch');
 var program = require('commander');
 var deploy = require('../tasks/deploy');
 var clean = require('../tasks/clean');
+var configure = require('../tasks/configure');
 
 function exit(err) {
 	console.log(err);
@@ -24,7 +26,17 @@ program
 program
 	.command('deploy')
 	.action(function() {
-		deploy().catch(exit);
+		Promise.all([
+			configure(),
+			deploy()
+		])
+			.catch(exit);
+	});
+
+program
+	.command('configure')
+	.action(function() {
+		configure().catch(exit);
 	});
 
 
