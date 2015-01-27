@@ -16,7 +16,7 @@ module.exports = function(app) {
 		})
 		.then(function() {
 			name = 'ft-next-' + normalizeName(app);
-			return fetch('https://api.heroku.com/apps/ft-next-config-vars/config-vars', { headers: authorizedPostHeaders });
+			return fetch('https://api.heroku.com/apps/' + name + '/config-vars', { headers: authorizedPostHeaders });
 		})
 		.then(fetchres.json)
 		.then(function(data) {
