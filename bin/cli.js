@@ -29,8 +29,7 @@ program
 		Promise.all([
 			configure(),
 			deploy()
-		])
-			.catch(exit);
+		]).catch(exit);
 	});
 
 program
