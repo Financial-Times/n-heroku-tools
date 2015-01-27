@@ -1,7 +1,6 @@
 'use strict';
 
-var denodeify = require('denodeify');
-var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) { return [err, stdout]; });
+var herokuAuthToken = require('../lib/heroku-auth-token');
 var normalizeName = require('../lib/normalize-name');
 var fetchres = require('fetchres');
 
@@ -11,7 +10,7 @@ module.exports = function(app) {
 		'Accept': 'application/vnd.heroku+json; version=3',
 		'Content-Type': 'application/json'
 	};
-	return process.env.HEROKU_AUTH_TOKEN ? Promise.resolve(process.env.HEROKU_AUTH_TOKEN) : exec('heroku auth:token')
+	return herokuAuthToken()
 		.then(function(token) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + token;
 		})
@@ -21,6 +20,7 @@ module.exports = function(app) {
 		})
 		.then(fetchres.json)
 		.then(function(data) {
+			delete data.___WARNING___;
 			process.stdout.write(JSON.stringify(data, null, 2) + "\n");
 		});
 };
