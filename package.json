@@ -1,5 +1,6 @@
 {
   "name": "next-build-tools",
+  "version": "0.0.0",
   "bin": {
     "next-build-tools": "./bin/cli.js"
   },

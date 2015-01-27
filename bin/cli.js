@@ -8,6 +8,7 @@ var program = require('commander');
 var deploy = require('../tasks/deploy');
 var clean = require('../tasks/clean');
 var configure = require('../tasks/configure');
+var downloadConfiguration = require('../tasks/download-configuration');
 
 function exit(err) {
 	console.log(err);
@@ -36,6 +37,16 @@ program
 	.command('configure')
 	.action(function() {
 		configure().catch(exit);
+	});
+
+program
+	.command('download-configuration <app>')
+	.action(function(app) {
+		if (app) {
+			downloadConfiguration(app).catch(exit);
+		} else {
+			exit("Please provide an app name");
+		}
 	});
 
 
