@@ -39,7 +39,7 @@ module.exports = function() {
 		.then(function(data) {
 			var desired = data[0];
 			var current = data[1];
-			var patch = {};
+			var patch = {"___WARNING___": "Don't edit config vars manually. Make PR to git.svc.ft.com/projects/NEXTPRIVATE/repos/config-vars/browse"};
 
 			Object.keys(current).forEach(function(key) {
 				patch[key] = null;
