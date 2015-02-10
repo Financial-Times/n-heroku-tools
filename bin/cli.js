@@ -6,6 +6,7 @@ require('isomorphic-fetch');
 var program = require('commander');
 var deploy = require('../tasks/deploy');
 var clean = require('../tasks/clean');
+var provision = require('../tasks/provision');
 
 function exit(err) {
 	console.log(err);
@@ -27,5 +28,10 @@ program
 		deploy().catch(exit);
 	});
 
+program
+	.command('provision')
+	.action(function() {
+		provision();
+	});
 
 program.parse(process.argv);
