@@ -34,10 +34,10 @@ program
 		});
 
 	program
-		.command('configure')
+		.command('configure [source] [target]')
 		.description('downloads environment variables from next-config-vars and uploads them to the current app')
-		.action(function() {
-			configure().catch(exit);
+		.action(function(source, target) {
+			configure({ source: source, target: target }).catch(exit);
 		});
 
 	program
