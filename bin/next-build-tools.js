@@ -16,7 +16,6 @@ function exit(err) {
 	process.exit(1);
 }
 
-
 program.version(require('../package.json').version);
 
 program
@@ -27,10 +26,10 @@ program
 	});
 
 	program
-		.command('deploy')
+		.command('deploy [app]')
 		.description('runs haikro deployment scripts with sensible defaults for Next projects')
-		.action(function() {
-			deploy().catch(exit);
+		.action(function(app) {
+			deploy(app).catch(exit);
 		});
 
 	program
