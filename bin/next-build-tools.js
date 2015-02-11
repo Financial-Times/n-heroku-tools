@@ -8,6 +8,7 @@ var program = require('commander');
 var deploy = require('../tasks/deploy');
 var clean = require('../tasks/clean');
 var configure = require('../tasks/configure');
+var provision = require('../tasks/provision');
 var downloadConfiguration = require('../tasks/download-configuration');
 
 function exit(err) {
@@ -50,5 +51,11 @@ program
 			}
 		});
 
+	program
+		.command('provision')
+		.description('provisions a new instance of an application server')
+		.action(function() {
+			provision().catch(exit);
+		});
 
 program.parse(process.argv);
