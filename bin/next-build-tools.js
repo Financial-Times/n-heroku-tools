@@ -11,6 +11,10 @@ var configure = require('../tasks/configure');
 var provision = require('../tasks/provision');
 var downloadConfiguration = require('../tasks/download-configuration');
 
+function list(val) {
+  return val.split(',');
+}
+
 function exit(err) {
 	console.log(err);
 	process.exit(1);
@@ -35,8 +39,9 @@ program
 	program
 		.command('configure [source] [target]')
 		.description('downloads environment variables from next-config-vars and uploads them to the current app')
-		.action(function(source, target) {
-			configure({ source: source, target: target }).catch(exit);
+		.option('-o, --overrides <abc>', 'override these values', list)
+		.action(function(source, target, options) {
+			configure({ source: source, target: target, overrides: options.overrides }).catch(exit);
 		});
 
 	program

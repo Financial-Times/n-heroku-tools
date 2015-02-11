@@ -9,11 +9,20 @@ module.exports = function(opts) {
 	
 	var source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
 	var target = opts.target || source;
+	var overrides = {};
+
+	if (opts.overrides) { 
+		opts.overrides.map(function (o) {
+			var t = o.split('=');
+			overrides[t[0]] = t[1]
+		});
+	}
 
 	var authorizedPostHeaders = {
 		'Accept': 'application/vnd.heroku+json; version=3',
 		'Content-Type': 'application/json'
 	};
+
 	return herokuAuthToken()
 		.then(function(token) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + token;
@@ -45,8 +54,13 @@ module.exports = function(opts) {
 			Object.keys(current).forEach(function(key) {
 				patch[key] = null;
 			});
+
 			Object.keys(desired).forEach(function(key) {
 				patch[key] = desired[key];
+			});
+			
+			Object.keys(overrides).forEach(function(key) {
+				patch[key] = overrides[key];
 			});
 
 			Object.keys(patch).forEach(function(key) {
@@ -56,7 +70,9 @@ module.exports = function(opts) {
 					console.log("Setting config var: " + key);
 				}
 			});
-
+			
+			console.log("Setting environment to", patch)
+			
 			return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
 				headers: authorizedPostHeaders,
 				method: 'patch',
