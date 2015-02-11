@@ -21,7 +21,7 @@ module.exports = function () {
     var build = process.env.CI_BUILD_NUMBER;
     var heroku_auth = process.env.HEROKU_AUTH_TOKEN;
 
-    if (!branch || !build || !heroku_auth) {
+    if (!build || !heroku_auth) {
         throw "You need to set HEROKU_AUTH_TOKEN and CI_BUILD_NUMBER environment variables";
     }
 
