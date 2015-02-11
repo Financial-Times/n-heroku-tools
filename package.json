@@ -2,7 +2,7 @@
   "name": "next-build-tools",
   "version": "1.3.2",
   "bin": {
-    "next-build-tools": "./bin/cli.js"
+    "next-build-tools": "./bin/next-build-tools.js"
   },
   "scripts": {
     "test": "jshint `find . -name '*.js' ! -path './node_modules/*'`"
