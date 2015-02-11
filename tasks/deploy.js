@@ -9,10 +9,12 @@ var deploy = require('haikro/lib/deploy');
 var logger = require('haikro/lib/logger');
 var normalizeName = require('../lib/normalize-name');
 
-module.exports = function() {
+module.exports = function(app) {
 	logger.setLevel('debug');
 	var token;
 	var commit;
+	var name = (app) ? app : 'ft-next-' + normalizeName(packageJson.name);
+
 	return Promise.all([
 		herokuAuthToken(),
 		exec('git rev-parse HEAD'),
@@ -24,7 +26,6 @@ module.exports = function() {
 			return build({ project: process.cwd() });
 		})
 		.then(function() {
-			var name = 'ft-next-' + normalizeName(packageJson.name);
 			console.log('Next Build Tools going to deploy to ' + name);
 			return deploy({
 				app: name,
