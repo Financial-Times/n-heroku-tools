@@ -39,7 +39,7 @@ module.exports = function () {
                 region: 'eu',
 				token: token,
                 organization: 'financial-times'
-            }
+            };
             return create(server);
 		});
 };
