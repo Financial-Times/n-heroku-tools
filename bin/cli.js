@@ -31,7 +31,7 @@ program
 program
 	.command('provision')
 	.action(function() {
-		provision();
+		provision().then(function () { console.log(arguments) }).catch(exit);
 	});
 
 program.parse(process.argv);
