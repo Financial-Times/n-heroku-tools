@@ -5,8 +5,11 @@ var herokuAuthToken = require('../lib/heroku-auth-token');
 var normalizeName = require('../lib/normalize-name');
 var fetchres = require('fetchres');
 
-module.exports = function() {
-	var name;
+module.exports = function(opts) {
+	
+	var source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
+	var target = opts.target || source;
+
 	var authorizedPostHeaders = {
 		'Accept': 'application/vnd.heroku+json; version=3',
 		'Content-Type': 'application/json'
@@ -16,21 +19,20 @@ module.exports = function() {
 			authorizedPostHeaders.Authorization = 'Bearer ' + token;
 		})
 		.then(function() {
-			name = 'ft-next-' + normalizeName(packageJson.name);
-			console.log('Next Build Tools going to set config vars of ' + name);
+			console.log('Next Build Tools going to apply ' + source + ' config to ' + target);
 			return fetch('https://api.heroku.com/apps/ft-next-config-vars/config-vars', { headers: authorizedPostHeaders });
 		})
 		.then(fetchres.json)
 		.then(function(data) {
 			return Promise.all([
-				fetch('https://ft-next-config-vars.herokuapp.com/app/' + name, { headers: { Authorization: data.APIKEY } }),
-				fetch('https://api.heroku.com/apps/' + name + '/config-vars', { headers: authorizedPostHeaders })
+				fetch('https://ft-next-config-vars.herokuapp.com/app/' + source, { headers: { Authorization: data.APIKEY } }),
+				fetch('https://api.heroku.com/apps/' + source + '/config-vars', { headers: authorizedPostHeaders })
 			]);
 		})
 		.then(fetchres.json)
 		.catch(function(err) {
 			if (err instanceof fetchres.BadServerResponseError) {
-				throw new Error("Could not download config vars for " + name + ", check it's set up in ft-next-config-vars and that you have already joined it on Heroku");
+				throw new Error("Could not download config vars for " + source + ", check it's set up in ft-next-config-vars and that you have already joined it on Heroku");
 			} else {
 				throw err;
 			}
@@ -55,13 +57,13 @@ module.exports = function() {
 				}
 			});
 
-			return fetch('https://api.heroku.com/apps/' + name + '/config-vars', {
+			return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
 				headers: authorizedPostHeaders,
 				method: 'patch',
 				body: JSON.stringify(patch)
 			});
 		})
 		.then(function() {
-			console.log(name + " config vars are set");
+			console.log(target + " config vars are set");
 		});
 };
