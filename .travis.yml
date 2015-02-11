@@ -8,7 +8,7 @@ deploy:
   provider: npm
   email: matt@mattandre.ws
   api_key:
-    secure: TKJ3JJ4EgtlY3GUHPLQ2MEju5xmPtiJXLzA1TuZ5+9pNm7bZrEXWaWj/Mdke8VAG8V89S/LXoDUHXN/jbr3m9T++J41ogw4vKbwnYUd1NzJv7LGSZR44HGXY6/XJJxA6yNnsjUdep7wMedPgCzVI2nnAdj0LZ0mjC/ArxBLtBNI=
+    secure: TCZYi8D2Z+nFtYmhxP7g3QvDVjFZFBdiSmnCnPafc6DmLkE3os3SZ+SfR0BB7JqL2mJYAjtw9ax1TTfnVOO5rehNX8K+5P4m7Tr00vzymqHpxgiLnHa8e0JVCdBBx/tgxDIPOVsYrSGSYm/X7xiItErfXeuskXXgWxczefpyDfY=
   on:
     all_branches: true
     tags: true
