@@ -20,31 +20,35 @@ program.version(require('../package.json').version);
 
 program
 	.command('clean')
+	.description('runs git clean -fxd')
 	.action(function() {
 		clean().catch(exit);
 	});
 
-program
-	.command('deploy')
-	.action(function() {
-		deploy().catch(exit);
-	});
+	program
+		.command('deploy')
+		.description('runs haikro deployment scripts with sensible defaults for Next projects')
+		.action(function() {
+			deploy().catch(exit);
+		});
 
-program
-	.command('configure')
-	.action(function() {
-		configure().catch(exit);
-	});
+	program
+		.command('configure')
+		.description('downloads environment variables from next-config-vars and uploads them to the current app')
+		.action(function() {
+			configure().catch(exit);
+		});
 
-program
-	.command('download-configuration <app>')
-	.action(function(app) {
-		if (app) {
-			downloadConfiguration(app).catch(exit);
-		} else {
-			exit("Please provide an app name");
-		}
-	});
+	program
+		.command('download-configuration <app>')
+		.description('downloads environment variables from app from Heroku to make adding them to the next-config-vars service easier')
+		.action(function(app) {
+			if (app) {
+				downloadConfiguration(app).catch(exit);
+			} else {
+				exit("Please provide an app name");
+			}
+		});
 
 
 program.parse(process.argv);
