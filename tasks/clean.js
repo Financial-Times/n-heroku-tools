@@ -1,3 +1,5 @@
+'use strict';
+
 var denodeify = require('denodeify');
 var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) { return [err, stdout]; });
 
