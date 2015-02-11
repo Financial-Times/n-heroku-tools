@@ -29,7 +29,11 @@ program
 		.command('deploy [app]')
 		.description('runs haikro deployment scripts with sensible defaults for Next projects')
 		.action(function(app) {
-			deploy(app).catch(exit);
+			configure({ source: app })
+				.then(function() {
+					return deploy(app);
+				})
+				.catch(exit);
 		});
 
 	program
