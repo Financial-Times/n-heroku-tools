@@ -16,6 +16,7 @@
     "isomorphic-fetch": "^1.1.0"
   },
   "devDependencies": {
-    "jshint": "^2.6.0"
+    "jshint": "^2.6.0",
+    "npm-prepublish": "^1.2.0"
   }
 }
