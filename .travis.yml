@@ -1,0 +1,15 @@
+language: node_js
+script: npm test
+node_js:
+- '0.10'
+before_deploy:
+- npm-prepublish --verbose
+deploy:
+  provider: npm
+  email: matt@mattandre.ws
+  api_key:
+    secure: TCZYi8D2Z+nFtYmhxP7g3QvDVjFZFBdiSmnCnPafc6DmLkE3os3SZ+SfR0BB7JqL2mJYAjtw9ax1TTfnVOO5rehNX8K+5P4m7Tr00vzymqHpxgiLnHa8e0JVCdBBx/tgxDIPOVsYrSGSYm/X7xiItErfXeuskXXgWxczefpyDfY=
+  on:
+    all_branches: true
+    tags: true
+    repo: Financial-Times/next-build-tools

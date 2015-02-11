@@ -13,7 +13,6 @@ function exit(err) {
 	process.exit(1);
 }
 
-
 program.version(require('../package.json').version);
 
 program
@@ -31,7 +30,7 @@ program
 program
 	.command('provision')
 	.action(function() {
-		provision().then(function () { console.log(arguments) }).catch(exit);
+		provision().catch(exit);
 	});
 
 program.parse(process.argv);

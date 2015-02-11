@@ -1,24 +1,20 @@
+"use strict";
+
 var packageJson = require(process.cwd() + '/package.json');
 var denodeify = require('denodeify');
+var herokuAuthToken = require('../lib/heroku-auth-token');
 var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) { return [err, stdout]; });
 var build = require('haikro/lib/build');
 var deploy = require('haikro/lib/deploy');
 var logger = require('haikro/lib/logger');
-
-function normalizeName(name) {
-	var matches = name.match(/^(?:ft-)?(?:next-)?(.*)/);
-	if (matches) {
-		return matches[1];
-	}
-	return name;
-}
+var normalizeName = require('../lib/normalize-name');
 
 module.exports = function() {
 	logger.setLevel('debug');
 	var token;
 	var commit;
 	return Promise.all([
-		process.env.HEROKU_AUTH_TOKEN ? Promise.resolve(process.env.HEROKU_AUTH_TOKEN) : exec('heroku auth:token'),
+		herokuAuthToken(),
 		exec('git rev-parse HEAD'),
 		exec('npm prune --production')
 	])
