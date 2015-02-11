@@ -27,10 +27,7 @@ program
 program
 	.command('deploy')
 	.action(function() {
-		Promise.all([
-			configure(),
-			deploy()
-		]).catch(exit);
+		deploy().catch(exit);
 	});
 
 program
