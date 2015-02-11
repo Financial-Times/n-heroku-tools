@@ -14,7 +14,7 @@ module.exports = function(opts) {
 	if (opts.overrides) { 
 		opts.overrides.map(function (o) {
 			var t = o.split('=');
-			overrides[t[0]] = t[1]
+			overrides[t[0]] = t[1];
 		});
 	}
 
@@ -71,7 +71,7 @@ module.exports = function(opts) {
 				}
 			});
 			
-			console.log("Setting environment to", patch)
+			console.log("Setting environment to", patch);
 			
 			return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
 				headers: authorizedPostHeaders,
