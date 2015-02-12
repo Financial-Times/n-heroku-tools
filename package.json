@@ -12,7 +12,7 @@
     "debug": "^2.1.1",
     "denodeify": "^1.2.0",
     "es6-promise": "^2.0.1",
-    "haikro": "^1.9.0",
+    "haikro": "^1.13.0",
     "heroku-client": "^1.9.1",
     "fetchres": "^1.0.4",
     "isomorphic-fetch": "^1.1.0"
