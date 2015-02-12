@@ -56,10 +56,14 @@ program
 		});
 
 	program
-		.command('provision')
+		.command('provision <app>')
 		.description('provisions a new instance of an application server')
-		.action(function() {
-			provision().catch(exit);
+		.action(function(app) {
+			if (app) {
+				provision(app).catch(exit);
+			} else {
+				exit("Please provide an app name");
+			}
 		});
 
 program.parse(process.argv);
