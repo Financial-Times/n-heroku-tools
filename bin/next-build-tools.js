@@ -66,4 +66,15 @@ program
 			}
 		});
 
+	program
+		.command('*')
+		.description('')
+		.action(function(app) {
+			exit("The command ‘" + app + "’ is not known");
+		});
+
 program.parse(process.argv);
+
+if (!process.argv.slice(2).length) {
+	program.outputHelp();
+}
