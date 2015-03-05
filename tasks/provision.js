@@ -1,34 +1,32 @@
+/*jshint node:true*/
+'use strict';
 
-var debug  = require('debug')('next-build-tools');
-var packageJson = require(process.cwd() + '/package.json');
 var denodeify = require('denodeify');
 var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) { return [err, stdout]; });
 var create = require('haikro/lib/create');
 var logger = require('haikro/lib/logger');
-var normalizeName = require('../lib/normalize-name');
 
 // create a Heroku application server
 module.exports = function (name) {
+	var heroku_auth = process.env.HEROKU_AUTH_TOKEN;
 
-    var heroku_auth = process.env.HEROKU_AUTH_TOKEN;
-
-    if (!heroku_auth) {
-        throw "You need to set a HEROKU_AUTH_TOKEN environment variables";
-    }
+	if (!heroku_auth) {
+		throw "You need to set a HEROKU_AUTH_TOKEN environment variables";
+	}
 
 	var token;
 	return Promise.all([
 		process.env.HEROKU_AUTH_TOKEN ? Promise.resolve(process.env.HEROKU_AUTH_TOKEN) : exec('heroku auth:token'),
 	])
 		.then(function(results) {
-	        logger.setLevel('debug');
+			logger.setLevel('debug');
 			token = results[0].trim();
-            var server = {
-                app: name, 
-                region: 'eu',
+			var server = {
+				app: name,
+				region: 'eu',
 				token: token,
-                organization: 'financial-times'
-            };
-            return create(server);
+				organization: 'financial-times'
+			};
+			return create(server);
 		});
 };

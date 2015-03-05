@@ -1,3 +1,5 @@
+/*jshint node:true*/
+/*global fetch*/
 'use strict';
 
 var herokuAuthToken = require('../lib/heroku-auth-token');
