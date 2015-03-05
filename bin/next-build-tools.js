@@ -12,7 +12,7 @@ var provision = require('../tasks/provision');
 var downloadConfiguration = require('../tasks/download-configuration');
 
 function list(val) {
-  return val.split(',');
+	return val.split(',');
 }
 
 function exit(err) {
@@ -66,4 +66,15 @@ program
 			}
 		});
 
+	program
+		.command('*')
+		.description('')
+		.action(function(app) {
+			exit("The command ‘" + app + "’ is not known");
+		});
+
 program.parse(process.argv);
+
+if (!process.argv.slice(2).length) {
+	program.outputHelp();
+}
