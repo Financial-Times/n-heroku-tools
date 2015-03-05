@@ -12,7 +12,7 @@ var provision = require('../tasks/provision');
 var downloadConfiguration = require('../tasks/download-configuration');
 
 function list(val) {
-  return val.split(',');
+	return val.split(',');
 }
 
 function exit(err) {
