@@ -9,6 +9,7 @@ var deploy = require('../tasks/deploy');
 var clean = require('../tasks/clean');
 var configure = require('../tasks/configure');
 var provision = require('../tasks/provision');
+var verify = require('../tasks/verify');
 var downloadConfiguration = require('../tasks/download-configuration');
 
 function list(val) {
@@ -64,6 +65,13 @@ program
 			} else {
 				exit("Please provide an app name");
 			}
+		});
+
+	program
+		.command('verify')
+		.description('internally calls origami-build-tools verify with some Next specific configuration')
+		.action(function() {
+			verify().catch(exit);
 		});
 
 	program
