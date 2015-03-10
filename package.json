@@ -2,7 +2,8 @@
   "name": "next-build-tools",
   "version": "0.0.0",
   "bin": {
-    "next-build-tools": "./bin/next-build-tools.js"
+    "next-build-tools": "./bin/next-build-tools.js",
+    "nbt": "./bin/next-build-tools.js"
   },
   "scripts": {
     "test": "./bin/next-build-tools.js verify"
