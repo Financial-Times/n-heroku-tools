@@ -5,7 +5,7 @@
     "next-build-tools": "./bin/next-build-tools.js"
   },
   "scripts": {
-    "test": "origami-build-tools verify"
+    "test": "./bin/next-build-tools.js verify"
   },
   "dependencies": {
     "commander": "^2.6.0",
