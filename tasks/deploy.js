@@ -17,8 +17,7 @@ module.exports = function(app) {
 
 	return Promise.all([
 		herokuAuthToken(),
-		exec('git rev-parse HEAD'),
-		exec('npm prune --production')
+		exec('git rev-parse HEAD')
 	])
 		.then(function(results) {
 			token = results[0];
