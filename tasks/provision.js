@@ -1,7 +1,5 @@
 'use strict';
 
-var denodeify = require('denodeify');
-var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) { return [err, stdout]; });
 var create = require('haikro/lib/create');
 var destroy = require('haikro/lib/destroy');
 var logger = require('haikro/lib/logger');
