@@ -33,6 +33,15 @@ module.exports = function(app) {
 				commit: commit
 			});
 		})
+
+		// 5 seconds grace
+		.then(function() {
+			return new Promise(function(resolve) {
+				setTimeout(resolve, 5000);
+			});
+		})
+
+		// Start polling
 		.then(function() {
 			return new Promise(function(resolve, reject) {
 				var timeout;
