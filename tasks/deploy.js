@@ -53,6 +53,5 @@ module.exports = function(app) {
 					clearInterval(checker);
 				}, 2*60*1000);
 			});
-
 		});
 };
