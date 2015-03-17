@@ -26,7 +26,14 @@ module.exports = function(name) {
 		.then(function() {
 			var server = {
 				app: name,
-				region: 'eu',
+
+				// The ‘app not found’ error page is hosted in the US stack
+				// and it seems there is a bit of latency between Heroku's
+				// US and EU stacks which means if you hit the app's URL
+				// before the US is aware of it, the DNS will point to the US
+				// and take a *few minutes* to expire and point to the EU.
+				// For simplicity, just spin these boxes up in the US.
+				region: 'us',
 				token: token,
 				organization: 'financial-times'
 			};
