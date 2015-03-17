@@ -39,7 +39,9 @@ module.exports = function(app) {
 				var checker;
 				function checkGtg() {
 					console.log('starting polling: http://' + name + '.herokuapp.com/__gtg');
-					fetch('http://' + name + '.herokuapp.com/__gtg')
+					fetch('http://' + name + '.herokuapp.com/__gtg', {
+							timeout: 2000
+						})
 						.then(function(response) {
 							if (response.ok) {
 								console.log("poll ok");
