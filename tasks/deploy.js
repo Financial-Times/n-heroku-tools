@@ -32,5 +32,27 @@ module.exports = function(app) {
 				project: process.cwd(),
 				commit: commit
 			});
+		})
+		.then(function() {
+			return new Promise(function(resolve, reject) {
+				var timeout;
+				var checker;
+				function checkGtg() {
+					return fetch('http://' + name + '.herokuapp.com/__gtg')
+						.then(function(response) {
+							if (response.ok) {
+								clearTimeout(timeout);
+								clearInterval(checker);
+								resolve();
+							}
+						});
+				}
+				checker = setInterval(checkGtg, 3000);
+				timeout = setTimeout(function() {
+					reject();
+					clearInterval(checker);
+				}, 2*60*1000);
+			});
+
 		});
 };
