@@ -38,7 +38,7 @@ module.exports = function(app) {
 				var timeout;
 				var checker;
 				function checkGtg() {
-					return fetch('http://' + name + '.herokuapp.com/__gtg')
+					fetch('http://' + name + '.herokuapp.com/__gtg')
 						.then(function(response) {
 							if (response.ok) {
 								clearTimeout(timeout);
