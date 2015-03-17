@@ -69,7 +69,7 @@ program
 
 	program
 		.command('verify')
-		.description('internally calls origami-build-tools verify with some Next specific configuration')
+		.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify.')
 		.action(function() {
 			verify().catch(exit);
 		});
