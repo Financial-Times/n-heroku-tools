@@ -34,13 +34,6 @@ module.exports = function(app) {
 			});
 		})
 
-		// 5 seconds grace
-		.then(function() {
-			return new Promise(function(resolve) {
-				setTimeout(resolve, 5000);
-			});
-		})
-
 		// Start polling
 		.then(function() {
 			return new Promise(function(resolve, reject) {
