@@ -84,8 +84,8 @@ program
 		.action(function(test, options) {
 			nightwatch({
 				test: test,
-				env: opts.env,
-				config: opts.config
+				env: options.env,
+				config: options.config
 
 			})
 				.catch(exit);
