@@ -10,6 +10,7 @@ var clean = require('../tasks/clean');
 var configure = require('../tasks/configure');
 var provision = require('../tasks/provision');
 var verify = require('../tasks/verify');
+var destroy = require('../tasks/destroy');
 var downloadConfiguration = require('../tasks/download-configuration');
 
 function list(val) {
@@ -72,6 +73,17 @@ program
 		.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)')
 		.action(function() {
 			verify().catch(exit);
+		});
+
+	program
+		.command('destroy <app>')
+		.description('deletes the app from heroku')
+		.action(function(app) {
+			if (app) {
+				provision(app).catch(exit);
+			} else {
+				exit("Please provide an app name");
+			}
 		});
 
 	program
