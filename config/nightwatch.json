@@ -1,0 +1,61 @@
+{
+  "src_folders" : ["tests"],
+  "output_folder" : "./tests/browser/reports",
+  
+  "selenium" : {
+    "start_process" : false,
+    "server_path" : "",
+    "log_path" : ""
+  },
+  
+  "test_settings" : {
+    "default" : {
+      "launch_url" : "${TEST_URL}",
+      "selenium_port"  : 80,
+      "selenium_host"  : "ondemand.saucelabs.com",
+      "silent": true,
+      "screenshots" : {
+        "enabled" : true,
+        "path" : "./screenshots"
+      },
+      "username": "${SAUCE_USER}",
+      "access_key": "${SAUCE_KEY}",
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "version": "37",
+        "platform": "WINDOWS"
+      }
+    },
+
+    "chrome" : {
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "version": "37",
+        "platform": "Windows 7"
+      }
+    },
+    
+    "firefox" : {
+      "desiredCapabilities": {
+        "browserName": "firefox",
+        "version": "32",
+        "platform": "Windows 7"
+      }
+    },
+
+    "ie10" : {
+      "desiredCapabilities": {
+        "browserName": "internet explorer",
+        "version": "10.0",
+        "platform": "Windows 7"
+      }
+    },
+    "safari7" : {
+      "desiredCapabilities": {
+        "browserName": "safari",
+        "version": "7.0",
+        "platform": "OS X 10.9"
+      }
+    }
+  }
+}
