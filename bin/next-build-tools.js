@@ -76,6 +76,18 @@ program
 		});
 
 	program
+		.command('nightwatch')
+		.option('-c, --config', 'The location of the nightwatch.json, defaults to Next Build Tools nightwatch.json')
+		.option('-e, --env', 'The location of the nightwatch.json, defaults to Next Build Tools defined environments')
+		.option('-t, --test', 'Location of tests to run, defaults to Next Build Tools defined location')
+		.description('runs nightwatch with some sensible defaults')
+		.action(function() {
+			nightwatch({
+
+			});
+		});
+
+	program
 		.command('destroy [app]')
 		.description('deletes the app from heroku')
 		.action(function(app) {
