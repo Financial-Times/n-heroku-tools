@@ -11,7 +11,7 @@ var exec = denodeify(require('child_process').exec, function(err, stdout, stderr
 var path = require('path');
 
 module.exports = function(opts) {
-	var test = opts.test;
+	var test = opts.test || 'tests/browser/tests/jssuccesstest.js';
 	var environment = opts.environment || 'ie10,firefox36,chrome41';
 	var config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
 	return exec('nightwatch'
