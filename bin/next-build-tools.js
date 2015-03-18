@@ -58,7 +58,7 @@ program
 		});
 
 	program
-		.command('provision <app>')
+		.command('provision [app]')
 		.description('provisions a new instance of an application server')
 		.action(function(app) {
 			if (app) {
@@ -76,11 +76,11 @@ program
 		});
 
 	program
-		.command('destroy <app>')
+		.command('destroy [app]')
 		.description('deletes the app from heroku')
 		.action(function(app) {
 			if (app) {
-				provision(app).catch(exit);
+				destroy(app).catch(exit);
 			} else {
 				exit("Please provide an app name");
 			}

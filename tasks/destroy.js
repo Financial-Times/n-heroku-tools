@@ -9,7 +9,7 @@ module.exports = function(app) {
 	return herokuAuthToken()
 		.then(function(token) {
 			return destroy({
-				project: process.cwd(),
+				app: app,
 				token: token
 			});
 		});
