@@ -77,15 +77,18 @@ program
 		});
 
 	program
-		.command('nightwatch')
-		.option('-c, --config', 'The location of the nightwatch.json, defaults to Next Build Tools nightwatch.json')
-		.option('-e, --env', 'The location of the nightwatch.json, defaults to Next Build Tools defined environments')
-		.option('-t, --test', 'Location of tests to run, defaults to Next Build Tools defined location')
+		.command('nightwatch [test]')
+		.option('-c, --config <config>', 'The location of the nightwatch.json, defaults to Next Build Tools nightwatch.json')
+		.option('-e, --env <env>', 'The location of the nightwatch.json, defaults to Next Build Tools defined environments')
 		.description('runs nightwatch with some sensible defaults')
-		.action(function() {
+		.action(function(test, options) {
 			nightwatch({
+				test: test,
+				env: opts.env,
+				config: opts.config
 
-			});
+			})
+				.catch(exit);
 		});
 
 	program

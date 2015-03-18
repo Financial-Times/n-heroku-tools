@@ -12,10 +12,10 @@ var path = require('path');
 
 module.exports = function(opts) {
 	var test = opts.test || path.join('tests', 'browser', 'tests', '*');
-	var environment = opts.environment || 'ie10,firefox36,chrome41';
+	var env = opts.env || 'ie10,firefox36,chrome41';
 	var config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
 	return exec('nightwatch'
-		+ ' --env ' + environment
+		+ ' --env ' + env
 		+ ' --test ' + test
 		+ ' --config ' + config);
 };
