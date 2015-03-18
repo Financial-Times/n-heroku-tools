@@ -11,6 +11,7 @@ var configure = require('../tasks/configure');
 var provision = require('../tasks/provision');
 var verify = require('../tasks/verify');
 var destroy = require('../tasks/destroy');
+var nightwatch = require('../tasks/nightwatch');
 var downloadConfiguration = require('../tasks/download-configuration');
 
 function list(val) {
