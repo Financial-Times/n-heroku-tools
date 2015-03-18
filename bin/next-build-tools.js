@@ -11,6 +11,7 @@ var configure = require('../tasks/configure');
 var provision = require('../tasks/provision');
 var verify = require('../tasks/verify');
 var destroy = require('../tasks/destroy');
+var nightwatch = require('../tasks/nightwatch');
 var downloadConfiguration = require('../tasks/download-configuration');
 
 function list(val) {
@@ -73,6 +74,21 @@ program
 		.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)')
 		.action(function() {
 			verify().catch(exit);
+		});
+
+	program
+		.command('nightwatch [test]')
+		.option('-c, --config <config>', 'The location of the nightwatch.json, defaults to Next Build Tools nightwatch.json')
+		.option('-e, --env <env>', 'The location of the nightwatch.json, defaults to Next Build Tools defined environments')
+		.description('runs nightwatch with some sensible defaults')
+		.action(function(test, options) {
+			nightwatch({
+				test: test,
+				env: options.env,
+				config: options.config
+
+			})
+				.catch(exit);
 		});
 
 	program

@@ -1,0 +1,107 @@
+{
+  "src_folders": ["tests"],
+  "output_folder": "./tests/browser/reports",
+  "selenium": {
+    "start_process": false,
+    "server_path": "",
+    "log_path": ""
+  },
+  "test_settings": {
+    "default": {
+      "launch_url": "${TEST_URL}",
+      "selenium_port": 80,
+      "selenium_host": "ondemand.saucelabs.com",
+      "silent": true,
+      "screenshots": {
+        "enabled": true,
+        "path": "./screenshots"
+      },
+      "username": "${SAUCE_USER}",
+      "access_key": "${SAUCE_KEY}",
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "version": "37",
+        "platform": "WINDOWS"
+      }
+    },
+    "chrome41": {
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "version": "41.0",
+        "platform": "Windows 7"
+      }
+    },
+    "chrome40": {
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "version": "40.0",
+        "platform": "Windows 7"
+      }
+    },
+    "firefox36": {
+      "desiredCapabilities": {
+        "browserName": "firefox",
+        "version": "36.0",
+        "platform": "Windows 7"
+      }
+    },
+    "firefox35": {
+      "desiredCapabilities": {
+        "browserName": "firefox",
+        "version": "35.0",
+        "platform": "Windows 7"
+      }
+    },
+    "ie11": {
+      "desiredCapabilities": {
+        "browserName": "internet explorer",
+        "version": "11.0",
+        "platform": "Windows 7"
+      }
+    },
+    "ie10": {
+      "desiredCapabilities": {
+        "browserName": "internet explorer",
+        "version": "10.0",
+        "platform": "Windows 7"
+      }
+    },
+    "ie9": {
+      "desiredCapabilities": {
+        "browserName": "internet explorer",
+        "version": "9.0",
+        "platform": "Windows 7"
+      }
+    },
+    "safari8": {
+      "desiredCapabilities": {
+        "browserName": "safari",
+        "version": "8.0",
+        "platform": "OS X 10.10"
+      }
+    },
+    "safari7": {
+      "desiredCapabilities": {
+        "browserName": "safari",
+        "version": "7.0",
+        "platform": "OS X 10.9"
+      }
+    },
+    "iphone8_1": {
+      "desiredCapabilities": {
+        "platform": "OS X 10.10",
+        "version": "8.1",
+        "deviceName": "iPhone Simulator",
+        "device-orientation": "portrait"
+      }
+    },
+    "ipad8_0": {
+      "desiredCapabilities": {
+        "platform": "OS X 10.10",
+        "version": "8.0",
+        "deviceName": "iPad Simulator",
+        "device-orientation": "portrait"
+      }
+    }
+  }
+}
