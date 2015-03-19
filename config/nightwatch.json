@@ -102,6 +102,15 @@
         "deviceName": "iPad Simulator",
         "device-orientation": "portrait"
       }
+    },
+    "Android_Nexus7HD": {
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "platform": "Linux",
+        "version": "4.4",
+        "deviceName": "Google Nexus 7 HD Emulator",
+        "device-orientation": "portrait"
+      }
     }
   }
 }
