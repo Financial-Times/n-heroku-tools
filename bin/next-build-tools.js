@@ -13,6 +13,7 @@ var verify = require('../tasks/verify');
 var destroy = require('../tasks/destroy');
 var nightwatch = require('../tasks/nightwatch');
 var downloadConfiguration = require('../tasks/download-configuration');
+var deployHashedAssets = require('../tasks/deploy-hashed-assets');
 
 function list(val) {
 	return val.split(',');
@@ -89,6 +90,13 @@ program
 
 			})
 				.catch(exit);
+		});
+
+	program
+		.command('deploy-hashed-assets')
+		.description('deploys ./hashed-assets/ to <app-name> on GitHub')
+		.action(function() {
+			deployHashedAssets().catch(exit);
 		});
 
 	program
