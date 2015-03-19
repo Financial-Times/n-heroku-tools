@@ -98,7 +98,7 @@
     "iphone7": {
       "desiredCapabilities": {
         "platform": "OS X 10.10",
-        "version": "7",
+        "version": "7.0",
         "deviceName": "iPhone Simulator",
         "device-orientation": "portrait"
       }
