@@ -95,6 +95,14 @@
         "device-orientation": "portrait"
       }
     },
+    "iphone7": {
+      "desiredCapabilities": {
+        "platform": "OS X 10.10",
+        "version": "7",
+        "deviceName": "iPhone Simulator",
+        "device-orientation": "portrait"
+      }
+    },
     "ipad8_0": {
       "desiredCapabilities": {
         "platform": "OS X 10.10",
