@@ -71,7 +71,7 @@ module.exports = function(opts) {
 				}
 			});
 
-			console.log("Setting environment to", patch);
+			console.log("Setting environment keys", Object.keys(patch));
 
 			return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
 				headers: authorizedPostHeaders,
