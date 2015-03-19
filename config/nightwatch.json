@@ -113,7 +113,7 @@
     },
     "Android_Nexus7HD": {
       "desiredCapabilities": {
-        "browserName": "chrome",
+        "browserName": "android",
         "platform": "Linux",
         "version": "4.4",
         "deviceName": "Google Nexus 7 HD Emulator",
