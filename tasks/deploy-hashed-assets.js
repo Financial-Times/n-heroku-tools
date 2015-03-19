@@ -2,16 +2,14 @@
 
 var packageJson = require(process.cwd() + '/package.json');
 var denodeify = require('denodeify');
-var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) { return [err, stdout]; });
 var normalizeName = require('../lib/normalize-name');
 var fs = require('fs');
 var readdir = denodeify(fs.readdir);
 var readFile = denodeify(fs.readFile);
-var fetchres = require('fetchres');
 
 module.exports = function(app) {
 	var token = process.env.GITHUB_AUTH_TOKEN;
-	var name = (app) ? app : normalizeName(packageJson.name);
+	app = app || normalizeName(packageJson.name);
 	var authorizedHeaders = {
 		'Content-Type': 'application/json',
 		'Accept': 'application/vnd.github.v3+json',
@@ -55,7 +53,7 @@ module.exports = function(app) {
 						} else {
 							return response.json()
 								.then(function(err) {
-									if (err.message = 'Invalid request.\n\n"sha" wasn\'t supplied.') {
+									if (err.message === 'Invalid request.\n\n"sha" wasn\'t supplied.') {
 										console.log('Hashed file ' + file.name + ' already exists');
 									} else {
 										throw new Error(err.message);
