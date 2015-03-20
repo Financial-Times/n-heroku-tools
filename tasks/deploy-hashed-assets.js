@@ -34,7 +34,7 @@ function hashAndUpload(opts) {
 	})
 		.then(function(response) {
 			if (response.status === 201) {
-				console.log('Successfully pushed ' + file.name + ' to GitHub for app ' + app);
+				console.log('Successfully pushed ' + file.hashedName + ' to GitHub for app ' + app);
 			} else {
 				return response.json()
 					.then(function(err) {
@@ -75,16 +75,16 @@ module.exports = function(app) {
 		})
 		.then(function(files) {
 			var mapHashName = '';
-			files = files.map(function(file) {
+			return files
+				.map(function(file) {
 					var hash = crypto.createHash('sha1').update(file.content.toString('utf8')).digest('hex');
 					file.hashedName = file.name.replace(/(.*)(\.[a-z0-9])/i, '$1-' + hash.substring(0, 8) + '$2');
 					if (file.name === 'main.js.map') {
 						mapHashName = file.hashedName;
 					}
 					return file;
-				});
-
-			files = files.map(function(file) {
+				})
+				.map(function(file) {
 					var content;
 					if (file.name === 'main.js') {
 						content = file.content.toString('utf8');
@@ -93,8 +93,6 @@ module.exports = function(app) {
 					}
 					return file;
 				});
-
-			return files;
 		})
 		.then(function(files) {
 			var promise = files.reduce(function(promise, file) {
