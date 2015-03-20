@@ -6,6 +6,9 @@ var normalizeName = require('../lib/normalize-name');
 var fs = require('fs');
 var readdir = denodeify(fs.readdir);
 var readFile = denodeify(fs.readFile);
+var https = require('https');
+// HACK — try to stop more than one request hit GitHub at a time
+https.agent.maxSockets = 1;
 
 module.exports = function(app) {
 	var token = process.env.GITHUB_AUTH_TOKEN;
@@ -60,7 +63,6 @@ module.exports = function(app) {
 									}
 								});
 						}
-
 					});
 			}));
 		});
