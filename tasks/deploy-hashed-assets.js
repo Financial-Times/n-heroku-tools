@@ -3,9 +3,10 @@
 var packageJson = require(process.cwd() + '/package.json');
 var denodeify = require('denodeify');
 var normalizeName = require('../lib/normalize-name');
-var fs = require('fs');
-var readdir = denodeify(fs.readdir);
-var readFile = denodeify(fs.readFile);
+var readFile = denodeify(require('fs').readFile);
+var glob = denodeify(require('glob'));
+var crypto = require('crypto');
+var basename = require('path').basename;
 
 module.exports = function(app) {
 	var token = process.env.GITHUB_AUTH_TOKEN;
@@ -16,15 +17,14 @@ module.exports = function(app) {
 		'Authorization': 'token ' + token
 	};
 	var api = 'https://api.github.com/repos/Financial-Times/next-hashed-assets/contents/';
-	var dir = process.cwd() + '/hashed-assets';
 
-	return readdir(dir)
+	return glob(process.cwd() + '/public/*.@(css|js|map)')
 		.then(function(files) {
 			return Promise.all(files.map(function(file) {
-				return readFile(dir + '/' + file, { encoding: 'base64' })
+				return readFile(file)
 					.then(function(content) {
 						return {
-							name: file,
+							name: basename(file),
 							content: content
 						};
 					});
@@ -33,13 +33,15 @@ module.exports = function(app) {
 		.then(function(files) {
 			return Promise.all(files.map(function(file) {
 				// PUT /repos/:owner/:repo/contents/:path
+				var hash = crypto.createHash('sha1').update(file.content.toString('utf8')).digest('hex');
+				file.name = file.name.replace(/(.*)(\.[a-z0-9])/i, '$1-' + hash.substring(0, 8) + '$2');
+				console.log(file.name);
 				return fetch(api + encodeURIComponent(app + '/' + file.name), {
 					method: 'PUT',
 					headers: authorizedHeaders,
 					body: JSON.stringify({
-						path: 'test.txt',
 						message: 'Create ' + file.name + ' for ' + app,
-						content: file.content,
+						content: file.content.toString('base64'),
 						branch: 'gh-pages',
 						committer: {
 							name: 'Next Team',
@@ -49,7 +51,7 @@ module.exports = function(app) {
 				})
 					.then(function(response) {
 						if (response.status === 201) {
-							console.log('Successfully pushed ' + file.name + ' to GitHub');
+							console.log('Successfully pushed ' + file.name + ' to GitHub for app' + app);
 						} else {
 							return response.json()
 								.then(function(err) {
