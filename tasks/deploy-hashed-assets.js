@@ -4,6 +4,7 @@ var packageJson = require(process.cwd() + '/package.json');
 var denodeify = require('denodeify');
 var normalizeName = require('../lib/normalize-name');
 var readFile = denodeify(require('fs').readFile);
+var writeFile = denodeify(require('fs').writeFile);
 var glob = denodeify(require('glob'));
 var crypto = require('crypto');
 var basename = require('path').basename;
@@ -34,9 +35,8 @@ module.exports = function(app) {
 			return Promise.all(files.map(function(file) {
 				// PUT /repos/:owner/:repo/contents/:path
 				var hash = crypto.createHash('sha1').update(file.content.toString('utf8')).digest('hex');
-				file.name = file.name.replace(/(.*)(\.[a-z0-9])/i, '$1-' + hash.substring(0, 8) + '$2');
-				console.log(file.name);
-				return fetch(api + encodeURIComponent(app + '/' + file.name), {
+				var hashedName = file.name.replace(/(.*)(\.[a-z0-9])/i, '$1-' + hash.substring(0, 8) + '$2');
+				return fetch(api + encodeURIComponent(app + '/' + hashedName), {
 					method: 'PUT',
 					headers: authorizedHeaders,
 					body: JSON.stringify({
@@ -56,14 +56,27 @@ module.exports = function(app) {
 							return response.json()
 								.then(function(err) {
 									if (err.message === 'Invalid request.\n\n"sha" wasn\'t supplied.') {
-										console.log('Hashed file ' + file.name + ' already exists');
+										console.log('Hashed file ' + app + '/' + hashedName + ' already exists');
 									} else {
 										throw new Error(err.message);
 									}
 								});
 						}
-
+					})
+					.then(function() {
+						return {
+							name: file.name,
+							hashedName: hashedName
+						};
 					});
 			}));
+		})
+		.then(function(hashes) {
+			var hashMap = hashes.reduce(function(obj, file) {
+				obj[file.name] = file.hashedName;
+				return obj;
+			}, {});
+			console.log("Writing public/asset-hashes.json");
+			return writeFile(process.cwd() + '/public/asset-hashes.json', JSON.stringify(hashMap, undefined, 2));
 		});
 };
