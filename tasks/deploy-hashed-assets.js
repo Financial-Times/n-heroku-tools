@@ -15,7 +15,7 @@ module.exports = function(app) {
 		return Promise.reject("GITHUB_AUTH_TOKEN must be set");
 	}
 
-	app = app || normalizeName(packageJson.name);
+	app = app || normalizeName(packageJson.name, { version: false });
 	var authorizedHeaders = {
 		'Content-Type': 'application/json',
 		'Accept': 'application/vnd.github.v3+json',
@@ -55,7 +55,7 @@ module.exports = function(app) {
 				})
 					.then(function(response) {
 						if (response.status === 201) {
-							console.log('Successfully pushed ' + file.name + ' to GitHub for app' + app);
+							console.log('Successfully pushed ' + file.name + ' to GitHub for app ' + app);
 						} else {
 							return response.json()
 								.then(function(err) {
