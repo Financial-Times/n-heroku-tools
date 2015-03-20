@@ -11,6 +11,10 @@ var basename = require('path').basename;
 
 module.exports = function(app) {
 	var token = process.env.GITHUB_AUTH_TOKEN;
+	if (!token) {
+		return Promise.reject("GITHUB_AUTH_TOKEN must be set");
+	}
+
 	app = app || normalizeName(packageJson.name);
 	var authorizedHeaders = {
 		'Content-Type': 'application/json',
