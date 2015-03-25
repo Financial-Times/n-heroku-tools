@@ -1,0 +1,26 @@
+'use strict';
+
+var denodeify = require('denodeify');
+var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) {
+	console.log(stdout);
+	console.log(stderr);
+	return [err];
+});
+
+var FASTLY_KEY = process.env.FASTLY_KEY;
+
+module.exports = function(url){
+	if(!FASTLY_KEY){
+		throw new Error('No Fastly Key Found!');
+	}
+	var command = 'curl ' +
+		'-x 10.113.219.30:8080 ' +
+		'-s 1 ' +
+		'-i ' +
+		'--request PURGE ' +
+		'--header "Fastly-Key: ' + FASTLY_KEY + '" ' +
+		'--header "Content-Accept: application/json" ' +
+		url;
+	console.log(command);
+	return exec(command);
+};

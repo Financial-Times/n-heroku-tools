@@ -11,6 +11,7 @@ var configure = require('../tasks/configure');
 var provision = require('../tasks/provision');
 var verify = require('../tasks/verify');
 var destroy = require('../tasks/destroy');
+var purge = require('../tasks/purge');
 var nightwatch = require('../tasks/nightwatch');
 var downloadConfiguration = require('../tasks/download-configuration');
 var deployHashedAssets = require('../tasks/deploy-hashed-assets');
@@ -111,11 +112,24 @@ program
 		});
 
 	program
+		.command('purge [url')
+		.description('Purges the given url. Requires a FASTLY_KEY environment variable')
+		.action(function(url){
+			if(url){
+				purge(url).catch(exit);
+			}else{
+				exit('Please provide a url');
+			}
+		});
+
+	program
 		.command('*')
 		.description('')
 		.action(function(app) {
 			exit("The command ‘" + app + "’ is not known");
 		});
+
+
 
 program.parse(process.argv);
 
