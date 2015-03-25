@@ -9,6 +9,7 @@
     "test": "./bin/next-build-tools.js verify"
   },
   "dependencies": {
+    "aws-sdk": "^2.1.19",
     "commander": "^2.6.0",
     "debug": "^2.1.1",
     "denodeify": "^1.2.0",

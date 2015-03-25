@@ -13,7 +13,7 @@ var verify = require('../tasks/verify');
 var destroy = require('../tasks/destroy');
 var nightwatch = require('../tasks/nightwatch');
 var downloadConfiguration = require('../tasks/download-configuration');
-var deployHashedAssets = require('../tasks/deploy-hashed-assets');
+var deployHashedAssets = require('../tasks/deploy-hashed-assets-s3');
 
 function list(val) {
 	return val.split(',');
