@@ -10,6 +10,7 @@ var clean = require('../tasks/clean');
 var configure = require('../tasks/configure');
 var provision = require('../tasks/provision');
 var verify = require('../tasks/verify');
+var verifyLayoutDeps = require('../tasks/verify-layout-deps');
 var destroy = require('../tasks/destroy');
 var nightwatch = require('../tasks/nightwatch');
 var downloadConfiguration = require('../tasks/download-configuration');
@@ -75,6 +76,13 @@ program
 		.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)')
 		.action(function() {
 			verify().catch(exit);
+		});
+
+	program
+		.command('verify-layout-deps')
+		.description('Verifies that the application has installed compatible versions of bower components which provide templates used by page layouts contained in ft-next-express')
+		.action(function() {
+			verifyLayoutDeps().catch(exit);
 		});
 
 	program
