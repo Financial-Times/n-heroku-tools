@@ -113,10 +113,11 @@ program
 
 	program
 		.command('purge [url')
+		.option('-s, --soft <soft>', 'Perform a "Soft Purge (will invalidate the content rather than remove it"')
 		.description('Purges the given url. Requires a FASTLY_KEY environment variable')
-		.action(function(url){
+		.action(function(url, options){
 			if(url){
-				purge(url).catch(exit);
+				purge(url, options).catch(exit);
 			}else{
 				exit('Please provide a url');
 			}
