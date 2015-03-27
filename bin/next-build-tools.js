@@ -80,9 +80,12 @@ program
 
 	program
 		.command('verify-layout-deps')
+		.option('-l, --layout [type]', 'Only check dependencies whose templates are needed in this layout')
 		.description('Verifies that the application has installed compatible versions of bower components which provide templates used by page layouts contained in ft-next-express')
-		.action(function() {
-			verifyLayoutDeps().catch(exit);
+		.action(function(options) {
+			verifyLayoutDeps({
+				layout: options.layout || 'wrapper'
+			}).catch(exit);
 		});
 
 	program
