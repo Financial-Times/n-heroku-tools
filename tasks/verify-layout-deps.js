@@ -15,8 +15,8 @@ module.exports = function() {
 		}
 
 		Object.keys(layoutBowerDeps).forEach(function (dep) {
-			if (!fs.exists(path.join(process.cwd(), 'bower_components', dep, '.bower.json'))) {
-				reject('This app needs to bower install ' + dep + '#' + layoutBowerDeps[dep] + ' in order to render layouts');
+			if (!fs.existsSync(path.join(process.cwd(), 'bower_components', dep, '.bower.json'))) {
+				reject('This app needs to bower install ' + dep + (layoutBowerDeps[dep] !== '*' ? ('#' + layoutBowerDeps[dep]) : '') + ' in order to render layouts');
 			}
 			var appSemver = require(path.join(process.cwd(), 'bower_components', dep, '.bower.json')).version;
 
@@ -25,8 +25,9 @@ module.exports = function() {
 			}
 		});
 
-		console.log('Layout bower template dependencies OK');
 		resolve();
+	}).then(function () {
+		console.log('Layout bower template dependencies OK');
 	});
 
 };
