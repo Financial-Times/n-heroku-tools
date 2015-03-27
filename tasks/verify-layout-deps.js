@@ -25,8 +25,9 @@ module.exports = function() {
 			}
 		});
 
-		console.log('Layout bower template dependencies OK');
 		resolve();
+	}).then(function () {
+		console.log('Layout bower template dependencies OK');
 	});
 
 };
