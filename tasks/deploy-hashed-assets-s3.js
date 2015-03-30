@@ -10,7 +10,7 @@ var crypto = require('crypto');
 var basename = require('path').basename;
 var aws = require('aws-sdk');
 
-AWS.config.update({
+aws.config.update({
 	accessKeyId: process.env.aws_access,
 	secretAccessKey: process.env.aws_secret,
 	region: 'eu-west-1'
@@ -19,34 +19,34 @@ AWS.config.update({
 function hashAndUpload(opts) {
 	var file = opts.file;
 	var app = opts.app;
+	var bucket = 'ft-next-hashed-assets';
+	var key = app + '/' + file.hashedName;
 
-	console.log(file, app);
-
-	return new Promise(resolve, reject) {
-		resolve();
-	}
-
-	// var s3bucket = new AWS.S3({params: {Bucket: 'ft-next-hashed-assets', Key: ''}});
-	// var fileStream = fs.createReadStream(file);
-	// var params = {Key: 'myKey', Body: 'Hello!'};
-	// s3bucket.upload(params, function(err, data) {
-	// 	if (err) {
-	// 		console.log("Error uploading data: ", err);
-	// 	} else {
-	// 		console.log("Successfully uploaded data to myBucket/myKey");
-	// 	}
-	// });
-	
-	// var api = 'https://api.github.com/repos/Financial-Times/next-hashed-assets/contents/';
-	
-	// aws
-
+	return new Promise(function(resolve, reject) {
+		var s3bucket = new aws.S3({params: {Bucket: bucket}});
+		var params = {
+			Key: key, 
+			Body: file.content,
+			ACL: 'public-read',
+			CacheControl: 'public, max-age=604800000'
+		};
+		s3bucket.upload(params, function(err, data) {
+			if (err) {
+				console.log("Error uploading data: ", err);
+				reject(err);
+			} else {
+				resolve({
+					name: file.name,
+					hashedName: file.hashedName
+				});
+			}
+		});
+	});
 }
 
 module.exports = function(app) {
-
 	app = app || normalizeName(packageJson.name, { version: false });
-
+	console.log('Deploying hashed assets to S3...')
 	return glob(process.cwd() + '/public/*.@(css|js|map)')
 		.then(function(files) {
 			return Promise.all(files.map(function(file) {
