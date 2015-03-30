@@ -17,6 +17,7 @@ aws.config.update({
 });
 
 function hashAndUpload(opts) {
+
 	var file = opts.file;
 	var app = opts.app;
 	var bucket = 'ft-next-hashed-assets';
@@ -25,7 +26,7 @@ function hashAndUpload(opts) {
 	return new Promise(function(resolve, reject) {
 		var s3bucket = new aws.S3({params: {Bucket: bucket}});
 		var params = {
-			Key: key, 
+			Key: key,
 			Body: file.content,
 			ACL: 'public-read',
 			CacheControl: 'public, max-age=604800000'
@@ -45,8 +46,14 @@ function hashAndUpload(opts) {
 }
 
 module.exports = function(app) {
+	if(!(process.env.aws_access && process.env.aws_secret)) {
+		console.warn("Missing AWS keys. Hashed assets will not deploy to S3");
+		return Promise.resolve();
+	}
+
 	app = app || normalizeName(packageJson.name, { version: false });
-	console.log('Deploying hashed assets to S3...')
+
+	console.log('Deploying hashed assets to S3...');
 	return glob(process.cwd() + '/public/*.@(css|js|map)')
 		.then(function(files) {
 			return Promise.all(files.map(function(file) {
