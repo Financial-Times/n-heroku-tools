@@ -97,8 +97,10 @@ program
 		.command('deploy-hashed-assets')
 		.description('deploys ./hashed-assets/ to <app-name> on GitHub')
 		.action(function() {
-			deployHashedAssets().catch(exit);
-			deployHashedAssetsToS3().catch(exit);
+			Promise.all([
+			  deployHashedAssets(),
+			  deployHashedAssetsToS3()
+			]).catch(exit);
 		});
 
 	program
