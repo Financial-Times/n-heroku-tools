@@ -98,8 +98,8 @@ program
 		.description('deploys ./hashed-assets/ to <app-name> on GitHub')
 		.action(function() {
 			Promise.all([
-			  deployHashedAssets(),
-			  deployHashedAssetsToS3()
+				deployHashedAssets(),
+				deployHashedAssetsToS3()
 			]).catch(exit);
 		});
 
