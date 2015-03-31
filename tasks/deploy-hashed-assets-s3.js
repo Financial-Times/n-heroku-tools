@@ -11,8 +11,8 @@ var basename = require('path').basename;
 var aws = require('aws-sdk');
 
 aws.config.update({
-	accessKeyId: process.env.aws_access,
-	secretAccessKey: process.env.aws_secret,
+	accessKeyId: process.env.aws_access_hashed_assets,
+	secretAccessKey: process.env.aws_secret_hashed_assets,
 	region: 'eu-west-1'
 });
 
@@ -20,7 +20,7 @@ function hashAndUpload(opts) {
 
 	var file = opts.file;
 	var app = opts.app;
-	var bucket = 'ft-next-hashed-assets';
+	var bucket = 'ft-next-hashed-assets-prod';
 	var key = app + '/' + file.hashedName;
 
 	return new Promise(function(resolve, reject) {
