@@ -47,8 +47,7 @@ function hashAndUpload(opts) {
 
 module.exports = function(app) {
 	if(!(process.env.aws_access_hashed_assets && process.env.aws_secret_hashed_assets)) {
-		console.warn("Missing AWS keys. Hashed assets will not deploy to S3");
-		return Promise.resolve();
+		return Promise.reject("Must set aws_access_hashed_assets and aws_secret_hashed_assets");
 	}
 
 	app = app || normalizeName(packageJson.name, { version: false });
