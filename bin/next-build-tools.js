@@ -10,6 +10,7 @@ var clean = require('../tasks/clean');
 var configure = require('../tasks/configure');
 var provision = require('../tasks/provision');
 var verify = require('../tasks/verify');
+var build = require('../tasks/build');
 var verifyLayoutDeps = require('../tasks/verify-layout-deps');
 var destroy = require('../tasks/destroy');
 var nightwatch = require('../tasks/nightwatch');
@@ -112,6 +113,13 @@ program
 				deployHashedAssets(),
 				deployHashedAssetsToS3()
 			]).catch(exit);
+		});
+
+	program
+		.command('build')
+		.description('build javascript and css')
+		.action(function() {
+			build().catch(exit);
 		});
 
 	program
