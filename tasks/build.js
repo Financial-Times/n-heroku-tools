@@ -2,8 +2,8 @@
 
 var denodeify = require('denodeify');
 var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) {
+	console.log(stdout);
 	if (err) {
-		console.log(stdout);
 		console.log(stderr);
 	}
 	return [err];
