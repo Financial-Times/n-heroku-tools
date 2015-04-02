@@ -13,6 +13,7 @@
     verify                                 internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)
     nightwatch [options]                   runs nightwatch with some sensible defaults
     destroy [app]                          deletes the app from heroku
+    purge [options]                        purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
     *                                      
 
   Options:
