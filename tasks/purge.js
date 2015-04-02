@@ -25,6 +25,5 @@ module.exports = function(url, opts){
 		'--header "Content-Accept: application/json" ' +
 		(soft ? '--header "Fastly-Soft-Purge:1' : '') +
 		url;
-	console.log(command);
 	return exec(command);
 };
