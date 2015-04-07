@@ -21,7 +21,7 @@ function hashAndUpload(opts) {
 	var file = opts.file;
 	var app = opts.app;
 	var bucket = 'ft-next-hashed-assets-prod';
-	var key = 'next-hashed-assets/' + app + '/' + file.hashedName;
+	var key = 'hashed-assets/' + app + '/' + file.hashedName;
 
 	return new Promise(function(resolve, reject) {
 		var s3bucket = new aws.S3({ params: { Bucket: bucket } });
