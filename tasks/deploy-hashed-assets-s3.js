@@ -29,6 +29,8 @@ function hashAndUpload(opts) {
 			Key: key,
 			Body: file.content,
 			ACL: 'public-read',
+
+			// @arjun, did you think this was in milliseconds?  It's fine to set a cache header of 19.165 years but seems like an odd choice
 			CacheControl: 'public, max-age=604800000'
 		};
 		s3bucket.upload(params, function(err, data) {
