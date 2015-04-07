@@ -24,7 +24,7 @@ function hashAndUpload(opts) {
 	var key = 'next-hashed-assets/' + app + '/' + file.hashedName;
 
 	return new Promise(function(resolve, reject) {
-		var s3bucket = new aws.S3({params: {Bucket: bucket}});
+		var s3bucket = new aws.S3({ params: { Bucket: bucket } });
 		var params = {
 			Key: key,
 			Body: file.content,
