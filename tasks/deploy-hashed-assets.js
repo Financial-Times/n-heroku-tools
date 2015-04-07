@@ -8,59 +8,62 @@ var writeFile = denodeify(require('fs').writeFile);
 var glob = denodeify(require('glob'));
 var crypto = require('crypto');
 var basename = require('path').basename;
+var aws = require('aws-sdk');
+
+aws.config.update({
+	accessKeyId: process.env.aws_access_hashed_assets,
+	secretAccessKey: process.env.aws_secret_hashed_assets,
+	region: 'eu-west-1'
+});
 
 function hashAndUpload(opts) {
+
 	var file = opts.file;
 	var app = opts.app;
-	var token = process.env.GITHUB_AUTH_TOKEN;
-	var authorizedHeaders = {
-		'Content-Type': 'application/json',
-		'Accept': 'application/vnd.github.v3+json',
-		'Authorization': 'token ' + token
-	};
-	var api = 'https://api.github.com/repos/Financial-Times/next-hashed-assets/contents/';
-	return fetch(api + encodeURIComponent(app + '/' + file.hashedName), {
-		method: 'PUT',
-		headers: authorizedHeaders,
-		body: JSON.stringify({
-			message: 'Create ' + file.name + ' for ' + app,
-			content: file.content.toString('base64'),
-			branch: 'gh-pages',
-			committer: {
-				name: 'Next Team',
-				email: 'next.team@ft.com'
-			}
-		})
-	})
-		.then(function(response) {
-			if (response.status === 201) {
-				console.log('Successfully pushed ' + file.hashedName + ' to GitHub for app ' + app);
-			} else {
-				return response.json()
-					.then(function(err) {
-						if (err.message === 'Invalid request.\n\n"sha" wasn\'t supplied.') {
-							console.log('Hashed file ' + app + '/' + file.hashedName + ' already exists');
-						} else {
-							throw new Error(err.message);
-						}
-					});
-			}
-		})
-		.then(function() {
-			return {
-				name: file.name,
-				hashedName: file.hashedName
-			};
-		});
+	var bucket = 'ft-next-hashed-assets-prod';
+	var key = 'hashed-assets/' + app + '/' + file.hashedName;
+	var extension = (/\.([^.]+)$/.exec(file.name) || [undefined, undefined])[1];
 
+	return new Promise(function(resolve, reject) {
+		var s3bucket = new aws.S3({ params: { Bucket: bucket } });
+		var params = {
+			Key: key,
+			Body: file.content,
+			ACL: 'public-read',
+
+			// @arjun, did you think this was in milliseconds?  It's fine to set a cache header of 19.165 years but seems like an odd choice
+			CacheControl: 'public, max-age=604800000'
+		};
+		switch(extension) {
+			case 'js':
+				params.ContentType = 'text/javascript';
+				break;
+			case 'css':
+				params.ContentType = 'text/css';
+				break;
+		}
+		s3bucket.upload(params, function(err, data) {
+			if (err) {
+				console.log("Error uploading data: ", err);
+				reject(err);
+			} else {
+				resolve({
+					name: file.name,
+					hashedName: file.hashedName
+				});
+			}
+		});
+	});
 }
 
 module.exports = function(app) {
-	if (!process.env.GITHUB_AUTH_TOKEN) {
-		return Promise.reject("GITHUB_AUTH_TOKEN must be set");
+	if(!(process.env.aws_access_hashed_assets && process.env.aws_secret_hashed_assets)) {
+		return Promise.reject("Must set aws_access_hashed_assets and aws_secret_hashed_assets");
 	}
+
 	app = app || normalizeName(packageJson.name, { version: false });
 
+	console.log('Deploying hashed assets to S3...');
 	return glob(process.cwd() + '/public/*.@(css|js|map)')
 		.then(function(files) {
 			return Promise.all(files.map(function(file) {
@@ -88,7 +91,7 @@ module.exports = function(app) {
 					var content;
 					if (file.name === 'main.js') {
 						content = file.content.toString('utf8');
-						content = content.replace('/# sourceMappingURL=/' + app + '/' + file.name + '.map', '/# sourceMappingURL=/next-hashed-assets/' + app + '/' + mapHashName);
+						content = content.replace('/# sourceMappingURL=/' + app + '/' + file.name + '.map', '/# sourceMappingURL=/hashed-assets/' + app + '/' + mapHashName);
 						file.content = new Buffer(content, 'utf8');
 					}
 					return file;
