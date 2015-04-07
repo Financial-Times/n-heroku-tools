@@ -80,7 +80,7 @@ module.exports = function(app) {
 					var content;
 					if (file.name === 'main.js') {
 						content = file.content.toString('utf8');
-						content = content.replace('/# sourceMappingURL=/' + app + '/' + file.name + '.map', '/# sourceMappingURL=/next-hashed-assets/' + app + '/' + mapHashName);
+						content = content.replace('/# sourceMappingURL=/' + app + '/' + file.name + '.map', '/# sourceMappingURL=/hashed-assets/' + app + '/' + mapHashName);
 						file.content = new Buffer(content, 'utf8');
 					}
 					return file;
