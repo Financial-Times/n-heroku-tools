@@ -32,7 +32,7 @@ function hashAndUpload(opts) {
 			ACL: 'public-read',
 
 			// @arjun, did you think this was in milliseconds?  It's fine to set a cache header of 19.165 years but seems like an odd choice
-			CacheControl: 'public, max-age=604800000',
+			CacheControl: 'public, max-age=604800000'
 		};
 		switch(extension) {
 			case 'js':
