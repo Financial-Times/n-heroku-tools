@@ -22,6 +22,7 @@ function hashAndUpload(opts) {
 	var app = opts.app;
 	var bucket = 'ft-next-hashed-assets-prod';
 	var key = 'hashed-assets/' + app + '/' + file.hashedName;
+	var extension = (/\.([^.]+)$/.exec(file) || [undefined, undefined])[1];
 
 	return new Promise(function(resolve, reject) {
 		var s3bucket = new aws.S3({ params: { Bucket: bucket } });
@@ -31,8 +32,16 @@ function hashAndUpload(opts) {
 			ACL: 'public-read',
 
 			// @arjun, did you think this was in milliseconds?  It's fine to set a cache header of 19.165 years but seems like an odd choice
-			CacheControl: 'public, max-age=604800000'
+			CacheControl: 'public, max-age=604800000',
 		};
+		switch(extension) {
+			case 'js':
+				params.ContentType = 'text/javascript';
+				break;
+			case 'css':
+				params.ContentType = 'text/css';
+				break;
+		}
 		s3bucket.upload(params, function(err, data) {
 			if (err) {
 				console.log("Error uploading data: ", err);
