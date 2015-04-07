@@ -22,7 +22,7 @@ function hashAndUpload(opts) {
 	var app = opts.app;
 	var bucket = 'ft-next-hashed-assets-prod';
 	var key = 'hashed-assets/' + app + '/' + file.hashedName;
-	var extension = (/\.([^.]+)$/.exec(file) || [undefined, undefined])[1];
+	var extension = (/\.([^.]+)$/.exec(file.name) || [undefined, undefined])[1];
 
 	return new Promise(function(resolve, reject) {
 		var s3bucket = new aws.S3({ params: { Bucket: bucket } });
