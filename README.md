@@ -16,6 +16,7 @@
     deploy-hashed-assets                   deploys hashed asset files to S3 (if AWS keys set correctly)
     build                                  build javascript and css
     destroy [app]                          deletes the app from heroku
+    purge [options]                        purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
     *                                      
 
   Options:

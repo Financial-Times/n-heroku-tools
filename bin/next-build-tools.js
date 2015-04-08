@@ -13,6 +13,7 @@ var verify = require('../tasks/verify');
 var build = require('../tasks/build');
 var verifyLayoutDeps = require('../tasks/verify-layout-deps');
 var destroy = require('../tasks/destroy');
+var purge = require('../tasks/purge');
 var nightwatch = require('../tasks/nightwatch');
 var downloadConfiguration = require('../tasks/download-configuration');
 var deployHashedAssets = require('../tasks/deploy-hashed-assets');
@@ -130,11 +131,25 @@ program
 		});
 
 	program
+		.command('purge [url')
+		.option('-s, --soft <soft>', 'Perform a "Soft Purge (will invalidate the content rather than remove it"')
+		.description('Purges the given url. Requires a FASTLY_KEY environment variable')
+		.action(function(url, options){
+			if(url){
+				purge(url, options).catch(exit);
+			}else{
+				exit('Please provide a url');
+			}
+		});
+
+	program
 		.command('*')
 		.description('')
 		.action(function(app) {
 			exit("The command ‘" + app + "’ is not known");
 		});
+
+
 
 program.parse(process.argv);
 
