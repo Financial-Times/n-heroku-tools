@@ -1,14 +1,18 @@
 'use strict';
 
-var denodeify = require('denodeify');
-var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) {
-	console.log(stdout);
-	if (err) {
-		console.log(stderr);
-	}
-	return [err];
-});
+var gulp = require('gulp');
+var origamiBuildTools = require('origami-build-tools');
 
 module.exports = function() {
-	return exec('origami-build-tools build --js=./client/main.js --sass=./client/main.scss --buildCss=main.css --buildJs=main.js --buildFolder=./public/');
+	return new Promise(function(resolve, reject) {
+		origamiBuildTools.build(gulp, {
+			js: './client/main.js',
+			sass: './client/main.scss',
+			buildCss: 'main.css',
+			buildJs: 'main.js',
+			buildFolder: './public/'
+		})
+			.on('end', resolve)
+			.on('error', reject);
+	});
 };
