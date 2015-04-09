@@ -8,7 +8,6 @@
     clean                                  runs git clean -fxd
     deploy [app]                           runs haikro deployment scripts with sensible defaults for Next projects
     configure [options] [source] [target]  downloads environment variables from next-config-vars and uploads them to the current app
-    download-configuration <app>           downloads environment variables from app from Heroku to make adding them to the next-config-vars service easier
     provision [app]                        provisions a new instance of an application server
     verify                                 internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)
     verify-layout-deps [options]           Verifies that the application has installed compatible versions of bower components which provide templates used by page layouts contained in ft-next-express
@@ -16,10 +15,12 @@
     deploy-hashed-assets                   deploys hashed asset files to S3 (if AWS keys set correctly)
     build                                  build javascript and css
     destroy [app]                          deletes the app from heroku
-    purge [options]                        purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
+    purge [options] [ur]                   purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
     *                                      
 
   Options:
 
     -h, --help     output usage information
     -V, --version  output the version number
+## Development
+Warning the README.md is automatically generated.  Run `make update-docs` to update.

@@ -15,7 +15,6 @@ var verifyLayoutDeps = require('../tasks/verify-layout-deps');
 var destroy = require('../tasks/destroy');
 var purge = require('../tasks/purge');
 var nightwatch = require('../tasks/nightwatch');
-var downloadConfiguration = require('../tasks/download-configuration');
 var deployHashedAssets = require('../tasks/deploy-hashed-assets');
 
 function list(val) {
@@ -49,17 +48,6 @@ program
 		.option('-o, --overrides <abc>', 'override these values', list)
 		.action(function(source, target, options) {
 			configure({ source: source, target: target, overrides: options.overrides }).catch(exit);
-		});
-
-	program
-		.command('download-configuration <app>')
-		.description('downloads environment variables from app from Heroku to make adding them to the next-config-vars service easier')
-		.action(function(app) {
-			if (app) {
-				downloadConfiguration(app).catch(exit);
-			} else {
-				exit("Please provide an app name");
-			}
 		});
 
 	program
@@ -133,7 +121,7 @@ program
 	program
 		.command('purge [url')
 		.option('-s, --soft <soft>', 'Perform a "Soft Purge (will invalidate the content rather than remove it"')
-		.description('Purges the given url. Requires a FASTLY_KEY environment variable')
+		.description('purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key')
 		.action(function(url, options){
 			if(url){
 				purge(url, options).catch(exit);
