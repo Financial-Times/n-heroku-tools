@@ -61,7 +61,7 @@ function hashAndUpload(opts) {
 
 module.exports = function(app) {
 	if(!(AWS_ACCESS_HASHED_ASSETS && AWS_SECRET_HASHED_ASSETS)) {
-		return Promise.reject("Must set aws_access_hashed_assets and aws_secret_hashed_assets");
+		return Promise.reject("Must set AWS_ACCESS_HASHED_ASSETS and AWS_SECRET_HASHED_ASSETS");
 	}
 
 	app = app || normalizeName(packageJson.name, { version: false });
