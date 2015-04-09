@@ -10,9 +10,12 @@ var crypto = require('crypto');
 var basename = require('path').basename;
 var aws = require('aws-sdk');
 
+var AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process.env.aws_access_hashed_assets;
+var AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.env.aws_secret_hashed_assets;
+
 aws.config.update({
-	accessKeyId: process.env.aws_access_hashed_assets,
-	secretAccessKey: process.env.aws_secret_hashed_assets,
+	accessKeyId: AWS_ACCESS_HASHED_ASSETS
+	secretAccessKey: AWS_SECRET_HASHED_ASSETS
 	region: 'eu-west-1'
 });
 
@@ -57,7 +60,7 @@ function hashAndUpload(opts) {
 }
 
 module.exports = function(app) {
-	if(!(process.env.aws_access_hashed_assets && process.env.aws_secret_hashed_assets)) {
+	if(!(AWS_ACCESS_HASHED_ASSETS && AWS_SECRET_HASHED_ASSETS)) {
 		return Promise.reject("Must set aws_access_hashed_assets and aws_secret_hashed_assets");
 	}
 
