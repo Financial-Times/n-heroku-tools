@@ -5,9 +5,6 @@
     "next-build-tools": "./bin/next-build-tools.js",
     "nbt": "./bin/next-build-tools.js"
   },
-  "scripts": {
-    "test": "./bin/next-build-tools.js verify"
-  },
   "dependencies": {
     "aws-sdk": "^2.1.19",
     "commander": "^2.6.0",

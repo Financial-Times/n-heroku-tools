@@ -1,6 +1,6 @@
 sudo: false
 language: node_js
-script: npm test
+script: make test
 node_js:
 - '0.12'
 before_deploy:
