@@ -15,7 +15,7 @@ var AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.e
 
 aws.config.update({
 	accessKeyId: AWS_ACCESS_HASHED_ASSETS,
-	secretAccessKey: AWS_SECRET_HASHED_ASSETS
+	secretAccessKey: AWS_SECRET_HASHED_ASSETS,
 	region: 'eu-west-1'
 });
 
