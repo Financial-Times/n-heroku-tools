@@ -22,5 +22,6 @@
 
     -h, --help     output usage information
     -V, --version  output the version number
+
 ## Development
-Warning the README.md is automatically generated.  Run `make update-docs` to update.
+Warning the README.md is automatically generated.  Run `make docs` to update.
