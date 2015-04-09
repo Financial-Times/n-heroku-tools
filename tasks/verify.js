@@ -8,7 +8,7 @@ module.exports = function() {
 	return new Promise(function(resolve, reject) {
 		origamiBuildTools.verify(gulp, {
 			jsHintPath: path.join(__dirname, '..', 'config', 'jshint.json')
-	})
+		})
 			.on('end', resolve)
 			.on('error', reject);
 	});
