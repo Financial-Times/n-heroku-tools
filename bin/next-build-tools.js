@@ -14,6 +14,7 @@ var build = require('../tasks/build');
 var verifyLayoutDeps = require('../tasks/verify-layout-deps');
 var destroy = require('../tasks/destroy');
 var purge = require('../tasks/purge');
+var deployVcl = require('../tasks/deploy-vcl');
 var nightwatch = require('../tasks/nightwatch');
 var deployHashedAssets = require('../tasks/deploy-hashed-assets');
 
@@ -119,7 +120,7 @@ program
 		});
 
 	program
-		.command('purge [url')
+		.command('purge [url]')
 		.option('-s, --soft <soft>', 'Perform a "Soft Purge (will invalidate the content rather than remove it"')
 		.description('purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key')
 		.action(function(url, options){
@@ -127,6 +128,17 @@ program
 				purge(url, options).catch(exit);
 			}else{
 				exit('Please provide a url');
+			}
+		});
+
+	program
+		.command('deploy-vcl [folder]')
+		.description('Deploys VCL in [folder] to the fastly service given in the FASTLY_SERVICE_ID env var.  Also required FASTLY_KEY env var')
+		.action(function(folder){
+			if(folder){
+				deployVcl(folder);
+			}else{
+				exit('Please provide a folder where the .vcl is located')
 			}
 		});
 

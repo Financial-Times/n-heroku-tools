@@ -11,6 +11,7 @@
     "debug": "^2.1.1",
     "denodeify": "^1.2.0",
     "es6-promise": "^2.0.1",
+    "fastly": "^1.2.1",
     "fetchres": "^1.0.4",
     "glob": "^5.0.3",
     "gulp": "^3.8.11",
@@ -18,7 +19,8 @@
     "heroku-client": "^1.9.1",
     "isomorphic-fetch": "^2.0.0",
     "origami-build-tools": "^2.13.0",
-    "semver": "^4.3.1"
+    "semver": "^4.3.1",
+    "fastly": "git+https://github.com/Financial-Times/fastly.git#v2.5.0"
   },
   "devDependencies": {
     "npm-prepublish": "^1.2.0",
