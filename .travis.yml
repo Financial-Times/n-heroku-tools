@@ -1,6 +1,6 @@
 sudo: false
 language: node_js
-script: make test
+script: alias md5='md5sum' && make test
 node_js:
 - '0.12'
 before_deploy:
