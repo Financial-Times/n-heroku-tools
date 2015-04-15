@@ -134,9 +134,10 @@ program
 	program
 		.command('deploy-vcl [folder]')
 		.description('Deploys VCL in [folder] to the fastly service given in the FASTLY_SERVICE_ID env var.  Also requires FASTLY_KEY env var')
-		.action(function(folder){
+		.option('m, --main <main', 'Set the name of the main vcl file (the entry point).  Defaults to "main"')
+		.action(function(folder, options){
 			if(folder){
-				deployVcl(folder);
+				deployVcl(folder, options);
 			}else{
 				exit('Please provide a folder where the .vcl is located');
 			}

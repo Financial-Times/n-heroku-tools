@@ -8,7 +8,7 @@ var activeVersion, newVersion;
 var debug = console.log;
 require('es6-promise').polyfill();
 
-module.exports = function(folder){
+module.exports = function(folder, opts){
 	if(!serviceId){
 		throw new Error("Service ID required");
 	}
@@ -16,6 +16,9 @@ module.exports = function(folder){
 	if(!fastlyApiKey){
 		throw new Error("Fastly API Key Required");
 	}
+
+	var options = opts || {};
+	var mainVcl = options.main || 'main';
 
 
 	// The VCL we want to deploy
@@ -61,9 +64,9 @@ module.exports = function(folder){
 			);
 		})
 
-		.then(function (res) {                                      // 6. Set the 'next' VCL as the main one
-			debug('Set the "next.vcl" as the main entry point');
-			return fastly.setVclAsMain(newVersion, 'next');
+		.then(function (res) {                                      // 6. Set the 'main' VCL as the main one
+			debug('Set the "%s.vcl" as the main entry point', mainVcl);
+			return fastly.setVclAsMain(newVersion, mainVcl);
 		})
 		.then(function (res) {                                      // 7. Validate the new VCL
 			debug('Validate version %s', newVersion);
