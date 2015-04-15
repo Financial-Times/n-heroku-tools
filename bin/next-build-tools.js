@@ -133,12 +133,12 @@ program
 
 	program
 		.command('deploy-vcl [folder]')
-		.description('Deploys VCL in [folder] to the fastly service given in the FASTLY_SERVICE_ID env var.  Also required FASTLY_KEY env var')
+		.description('Deploys VCL in [folder] to the fastly service given in the FASTLY_SERVICE_ID env var.  Also requires FASTLY_KEY env var')
 		.action(function(folder){
 			if(folder){
 				deployVcl(folder);
 			}else{
-				exit('Please provide a folder where the .vcl is located')
+				exit('Please provide a folder where the .vcl is located');
 			}
 		});
 
