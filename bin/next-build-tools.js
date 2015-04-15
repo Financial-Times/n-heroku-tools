@@ -16,6 +16,7 @@ var destroy = require('../tasks/destroy');
 var purge = require('../tasks/purge');
 var nightwatch = require('../tasks/nightwatch');
 var deployHashedAssets = require('../tasks/deploy-hashed-assets');
+var enablePreboot = require('../tasks/enable-preboot');
 
 function list(val) {
 	return val.split(',');
@@ -39,7 +40,11 @@ program
 		.command('deploy [app]')
 		.description('runs haikro deployment scripts with sensible defaults for Next projects')
 		.action(function(app) {
-			deploy(app).catch(exit);
+			enablePreboot(app)
+				.then(function() {
+					return deploy(app);
+				})
+				.catch(exit);
 		});
 
 	program
@@ -119,7 +124,7 @@ program
 		});
 
 	program
-		.command('purge [url')
+		.command('purge [url]')
 		.option('-s, --soft <soft>', 'Perform a "Soft Purge (will invalidate the content rather than remove it"')
 		.description('purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key')
 		.action(function(url, options){
@@ -128,6 +133,13 @@ program
 			}else{
 				exit('Please provide a url');
 			}
+		});
+
+	program
+		.command('enable-preboot [app]')
+		.description('enables prebooting of an application to smooth over deploys')
+		.action(function(app) {
+			return enablePreboot({ app: app }).catch(exit);
 		});
 
 	program
