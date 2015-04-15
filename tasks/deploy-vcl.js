@@ -1,7 +1,8 @@
 'use strict';
 
 var serviceId = process.env.FASTLY_SERVICE_ID;
-var fastly = require('fastly')(process.env.fastly_apikey, encodeURIComponent(serviceId), { verbose: false });
+var fastlyApiKey = process.env.FASTLY_APIKEY;
+var fastly = require('fastly')(fastlyApiKey, encodeURIComponent(serviceId), { verbose: false });
 var fs = require('fs');
 var activeVersion, newVersion;
 var debug = console.log;
@@ -12,7 +13,7 @@ module.exports = function(folder){
 		throw new Error("Service ID required");
 	}
 
-	if(!process.env.fastly_apikey){
+	if(!fastlyApiKey){
 		throw new Error("Fastly API Key Required");
 	}
 
