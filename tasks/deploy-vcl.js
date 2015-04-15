@@ -15,7 +15,7 @@ function replaceVars(vcls, vars){
 		});
 
 		return vcl;
-	})
+	});
 }
 
 module.exports = function(folder, opts){
