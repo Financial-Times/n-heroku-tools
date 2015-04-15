@@ -18,7 +18,7 @@ module.exports = function(folder, opts){
 	}
 
 	var options = opts || {};
-	var mainVcl = options.main || 'main';
+	var mainVcl = options.main || 'main.vcl';
 
 
 	// The VCL we want to deploy
@@ -65,7 +65,7 @@ module.exports = function(folder, opts){
 		})
 
 		.then(function (res) {                                      // 6. Set the 'main' VCL as the main one
-			debug('Set the "%s.vcl" as the main entry point', mainVcl);
+			debug('Set "%s" as the main entry point', mainVcl);
 			return fastly.setVclAsMain(newVersion, mainVcl);
 		})
 		.then(function (res) {                                      // 7. Validate the new VCL
