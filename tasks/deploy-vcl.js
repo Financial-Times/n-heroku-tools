@@ -8,6 +8,16 @@ var activeVersion, newVersion;
 var debug = console.log;
 require('es6-promise').polyfill();
 
+function replaceVars(vcls, vars){
+	return vcls.map(function(vcl){
+		vars.forEach(function(v){
+			vcl.content = vcl.content.replace(new RegExp('\$\{' + v + '\}', 'gm'), process.env[v]);
+		});
+
+		return vcl;
+	})
+}
+
 module.exports = function(folder, opts){
 	if(!serviceId){
 		throw new Error("Service ID required");
@@ -19,6 +29,7 @@ module.exports = function(folder, opts){
 
 	var options = opts || {};
 	var mainVcl = options.main || 'main.vcl';
+	options.vars = options.vars ? options.vars.split(',') : [];
 
 
 	// The VCL we want to deploy
@@ -28,6 +39,11 @@ module.exports = function(folder, opts){
 			content: fs.readFileSync(folder + name, { encoding: 'utf-8' })
 		};
 	});
+
+	// if vars option exists, replace ${VAR} with process.env.VAR
+	if(options.vars.length){
+		vcls = replaceVars(vcls, options.vars);
+	}
 
 	fastly
 		.getServices()

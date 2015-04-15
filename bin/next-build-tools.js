@@ -134,7 +134,8 @@ program
 	program
 		.command('deploy-vcl [folder]')
 		.description('Deploys VCL in [folder] to the fastly service given in the FASTLY_SERVICE_ID env var.  Also requires FASTLY_KEY env var')
-		.option('m, --main <main', 'Set the name of the main vcl file (the entry point).  Defaults to "main.vcl"')
+		.option('-m, --main <main', 'Set the name of the main vcl file (the entry point).  Defaults to "main.vcl"')
+		.option('-v, --vars <vars>', 'A way of injecting environment vars into the VCL.  So if you pass --vars AUTH_KEY,SERVICE the values {$AUTH_KEY} and ${SERVICE} in the vcl will be replaced with the values of the environmemnt variable')
 		.action(function(folder, options){
 			if(folder){
 				deployVcl(folder, options);
