@@ -1,8 +1,6 @@
 'use strict';
 
-var serviceId = process.env.FASTLY_SERVICE_ID;
 var fastlyApiKey = process.env.FASTLY_APIKEY;
-var fastly = require('fastly')(fastlyApiKey, encodeURIComponent(serviceId), { verbose: false });
 var fs = require('fs');
 var activeVersion, newVersion;
 var debug = console.log;
@@ -19,7 +17,7 @@ function replaceVars(vcls, vars){
 }
 
 module.exports = function(folder, opts){
-	if(!serviceId){
+	if(!opts.service){
 		throw new Error("Service ID required");
 	}
 
@@ -27,8 +25,11 @@ module.exports = function(folder, opts){
 		throw new Error("Fastly API Key Required");
 	}
 
+
 	var options = opts || {};
 	var mainVcl = options.main || 'main.vcl';
+	var serviceId = options.service;
+	var fastly = require('fastly')(fastlyApiKey, encodeURIComponent(serviceId), { verbose: false });
 	options.vars = options.vars ? options.vars.split(',') : [];
 
 
