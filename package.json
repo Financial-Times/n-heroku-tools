@@ -8,7 +8,6 @@
   "dependencies": {
     "aws-sdk": "^2.1.19",
     "commander": "^2.6.0",
-    "debug": "^2.1.1",
     "denodeify": "^1.2.0",
     "es6-promise": "^2.0.1",
     "fetchres": "^1.0.4",
@@ -18,7 +17,8 @@
     "heroku-client": "^1.9.1",
     "isomorphic-fetch": "^2.0.0",
     "origami-build-tools": "^2.13.0",
-    "semver": "^4.3.1"
+    "semver": "^4.3.1",
+    "fastly": "Financial-Times/fastly#v2.5.0"
   },
   "devDependencies": {
     "npm-prepublish": "^1.2.0",
