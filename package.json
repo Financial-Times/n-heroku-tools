@@ -21,7 +21,6 @@
     "fastly": "Financial-Times/fastly#v2.5.0"
   },
   "devDependencies": {
-    "npm-prepublish": "^1.2.0",
-    "origami-build-tools": "^2.10.0"
+    "npm-prepublish": "^1.2.0"
   }
 }
