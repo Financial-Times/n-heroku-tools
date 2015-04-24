@@ -22,7 +22,7 @@ module.exports = function(app) {
 	])
 		.then(function(results) {
 			token = results[0];
-			commit = results[1];
+			commit = results[1].trim();
 
 			return about({ name: name, commit: commit })
 				.then(function() { return build({ project: process.cwd() }); });
