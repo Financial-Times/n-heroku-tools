@@ -70,7 +70,7 @@ program
 	program
 		.command('verify')
 		.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)')
-		.action(function(options) {
+		.action(function() {
 			verify().catch(exit);
 		});
 
@@ -110,7 +110,7 @@ program
 		.command('build')
 		.option('--dev', 'Skip minification')
 		.description('build javascript and css')
-		.action(function() {
+		.action(function(options) {
 			build({ minify: !options.dev }).catch(exit);
 		});
 
