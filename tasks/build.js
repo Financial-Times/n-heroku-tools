@@ -57,8 +57,7 @@ module.exports = function(opts) {
 		buildJs()
 			.then(function() {
 				if (opts.minify) {
-					console.log("will minify");
-					return minifyJs().then(function() { console.log(arguments); });
+					return minifyJs();
 				}
 			})
 	]);
