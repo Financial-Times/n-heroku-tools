@@ -28,11 +28,12 @@ function getGlob(task) {
 function run(task, opts) {
 	return new Promise(function(resolve, reject) {
 		if (opts.watch) {
-			gulp.watch.apply(gulp, [getGlob(task), task])
+			console.log("Watching " + getGlob(task) + " and will trigger " + task);
+			gulp.watch.call(gulp, getGlob(task), [task])
 				.on('end', resolve)
 				.on('error', reject);
 		} else {
-			gulp.start.apply(gulp, [task])
+			gulp.start.call(gulp, [task])
 				.on('end', resolve)
 				.on('error', reject);
 		}
