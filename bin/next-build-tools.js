@@ -108,9 +108,14 @@ program
 
 	program
 		.command('build')
+		.option('--dev', 'Skip minification')
+		.option('--watch', 'Watches files')
 		.description('build javascript and css')
-		.action(function() {
-			build().catch(exit);
+		.action(function(options) {
+			build({
+				minify: !options.dev,
+				watch: options.watch
+			}).catch(exit);
 		});
 
 	program
