@@ -42,7 +42,7 @@ function buildJs() {
 function minifyJs() {
 	var app = normalizeName(packageJson.name, { version: false });
 	return new Promise(function(resolve, reject) {
-		return gulp.src(buildFolder + mainJsSourceMapFile)
+		return gulp.src(buildFolder + mainJsFile)
 			.pipe(extractSourceMap({ saveTo: buildFolder + mainJsSourceMapFile }))
 			.pipe(minify({ sourceMapIn: buildFolder + mainJsSourceMapFile, sourceMapOut: '/' + app + '/' + mainJsSourceMapFile }))
 			.pipe(gulp.dest(buildFolder))
@@ -53,12 +53,12 @@ function minifyJs() {
 
 module.exports = function(opts) {
 	return Promise.all([
-//		buildSass(),
+		buildSass(),
 		buildJs()
 			.then(function() {
 				if (opts.minify) {
 					console.log("will minify");
-					return minifyJs();
+					return minifyJs().then(function() { console.log(arguments); });
 				}
 			})
 	]);
