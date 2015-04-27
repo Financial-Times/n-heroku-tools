@@ -12,6 +12,7 @@ var provision = require('../tasks/provision');
 var verify = require('../tasks/verify');
 var build = require('../tasks/build');
 var verifyLayoutDeps = require('../tasks/verify-layout-deps');
+var verifyDependencies = require('../tasks/verify-dependencies');
 var destroy = require('../tasks/destroy');
 var purge = require('../tasks/purge');
 var deployVcl = require('../tasks/deploy-vcl');
@@ -77,9 +78,20 @@ program
 	program
 		.command('verify-layout-deps')
 		.option('-l, --layout [type]', 'Only check dependencies whose templates are needed in this layout')
-		.description('Verifies that the application has installed compatible versions of bower components which provide templates used by page layouts contained in ft-next-express')
+		.description('Verifies that the application has installed bower components needed by ft-next-express\' templates')
 		.action(function(options) {
+			console.warn('`verify-layout-deps` is deprecated. Use `verify-dependencies` instead');
 			verifyLayoutDeps({
+				layout: options.layout || 'wrapper'
+			}).catch(exit);
+		});
+
+	program
+		.command('verify-dependencies')
+		.option('-l, --layout [type]', 'Only check bower dependencies whose templates are needed in this layout')
+		.description('Verifies that the application meets various restrictions on dependencies not enforcable using bower and npm alone')
+		.action(function(options) {
+			verifyDependencies({
 				layout: options.layout || 'wrapper'
 			}).catch(exit);
 		});
