@@ -16,7 +16,7 @@
     purge [options] [url]                  purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
     deploy-vcl [options] [folder]          Deploys VCL in [folder] to the specified fastly service.  Requires FASTLY_KEY env var
     enable-preboot [app]                   enables prebooting of an application to smooth over deploys
-    *                                      
+    *
 
   Options:
 
