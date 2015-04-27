@@ -11,7 +11,6 @@ var configure = require('../tasks/configure');
 var provision = require('../tasks/provision');
 var verify = require('../tasks/verify');
 var build = require('../tasks/build');
-var verifyLayoutDeps = require('../tasks/verify-layout-deps');
 var destroy = require('../tasks/destroy');
 var purge = require('../tasks/purge');
 var deployVcl = require('../tasks/deploy-vcl');
@@ -69,19 +68,11 @@ program
 
 	program
 		.command('verify')
-		.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)')
-		.action(function() {
-			verify().catch(exit);
-		});
-
-	program
-		.command('verify-layout-deps')
+		.option('--skip-layout-checks', 'run verify checks when the application doesn\'t have customer facing html pages')
 		.option('-l, --layout [type]', 'Only check dependencies whose templates are needed in this layout')
-		.description('Verifies that the application has installed compatible versions of bower components which provide templates used by page layouts contained in ft-next-express')
-		.action(function(options) {
-			verifyLayoutDeps({
-				layout: options.layout || 'wrapper'
-			}).catch(exit);
+		.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)')
+		.action(function(opts) {
+			verify({ skipLayoutChecks: opts.skipLayoutChecks, layout: opts.layou }).catch(exit);
 		});
 
 	program
