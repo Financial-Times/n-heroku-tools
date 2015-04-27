@@ -4,6 +4,7 @@ var gulp = require('gulp');
 var origamiBuildTools = require('origami-build-tools');
 var path = require('path');
 var verifyLayoutDeps = require('../lib/verify-layout-deps');
+var verifyNpmDeps = require('../lib/verify-npm-deps');
 
 function obtVerify() {
 	return new Promise(function(resolve, reject) {
@@ -16,11 +17,13 @@ function obtVerify() {
 }
 
 module.exports = function(opts) {
-	if (opts.skipLayoutChecks) {
-		return obtVerify();
+	var checks = [
+		obtVerify(),
+		verifyNpmDeps()
+	];
+
+	if (!opts.skipLayoutChecks) {
+		checks.push(verifyLayoutDeps({ layout: opts.layout }));
 	}
-	return Promise.all([
-			obtVerify(),
-			verifyLayoutDeps({ layout: opts.layout })
-		]);
+	return Promise.all(checks);
 };
