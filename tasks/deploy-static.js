@@ -17,12 +17,10 @@ module.exports = function(opts) {
 		Promise.reject("Must set AWS_ACCESS and AWS_SECRET");
 	}
 
-	console.log("before", files);
 	var files = opts.files
 		.filter(function(file) {
 			return !lstatSync(file).isDirectory();
 		});
-	console.log("after", files);
 
 	var destination = opts.destination || "";
 	var bucket = opts.bucket;
