@@ -137,7 +137,7 @@ program
 
 program
 	.command('deploy-static <source> [destination]')
-	.description('Deploys static [source] to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars')
+	.description('Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars')
 	.option('--strip <strip>', 'Optionally strip off the <strip> leading components off of the source file name')
 	.option('--region <region>', 'Optionally set the region (default to eu-west-1)')
 	.option('--bucket <bucket>', 'Optionally set the bucket (default to ft-next-qa)')
