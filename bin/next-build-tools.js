@@ -114,9 +114,9 @@ program
 	.option('-s, --soft <soft>', 'Perform a "Soft Purge (will invalidate the content rather than remove it"')
 	.description('purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key')
 	.action(function(url, options){
-		if(url){
+		if (url) {
 			purge(url, options).catch(exit);
-		}else{
+		} else {
 			exit('Please provide a url');
 		}
 	});
@@ -136,17 +136,20 @@ program
 	});
 
 program
-	.command('deploy-static <source> [destination]')
+	.command('deploy-static <source> [otherSources...]')
 	.description('Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars')
 	.option('--strip <strip>', 'Optionally strip off the <strip> leading components off of the source file name')
+	.option('--destination <destination>', 'Optionally add a prefix to the upload path')
 	.option('--region <region>', 'Optionally set the region (default to eu-west-1)')
 	.option('--bucket <bucket>', 'Optionally set the bucket (default to ft-next-qa)')
-	.action(function(source, destination, opts) {
+	.action(function(file, files, opts) {
+		files.unshift(file);
 		var region = opts.region || 'eu-west-1';
 		var bucket = opts.bucket || 'ft-next-qa';
-		destination = destination || "";
+		var destination = opts.destination || "";
+
 		return deployStatic({
-			source: source,
+			files: files,
 			destination: destination,
 			region: region,
 			bucket: bucket,

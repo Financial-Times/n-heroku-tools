@@ -15,7 +15,7 @@ module.exports = function(opts) {
 		Promise.reject("Must set AWS_ACCESS and AWS_SECRET");
 	}
 
-	var source = opts.source;
+	var files = opts.files;
 	var destination = opts.destination || "";
 	var bucket = opts.bucket;
 
@@ -27,43 +27,39 @@ module.exports = function(opts) {
 
 	var s3bucket = new aws.S3({ params: { Bucket: bucket } });
 
-	return glob(source, { nodir: true })
-		.then(function(files) {
-			return Promise.all(files.map(function(file) {
-				return readFile(file)
-					.then(function(content) {
-						file = path.relative(process.cwd(), file);
-						var key = file;
+	return Promise.all(files.map(function(file) {
+		return readFile(file)
+			.then(function(content) {
+				file = path.relative(process.cwd(), file);
+				var key = file;
 
-						if (opts.strip) {
-							key = file.split('/').splice(opts.strip).join('/');
-						}
+				if (opts.strip) {
+					key = file.split('/').splice(opts.strip).join('/');
+				}
 
-						key = path.join(destination, key);
+				key = path.join(destination, key);
 
-						console.log("About to upload " + file + " to " + key);
-						return new Promise(function(resolve, reject) {
-							s3bucket.upload({
-									Key: key,
-									ContentType: determineContentType(file),
-									ACL: 'public-read',
-									Body: content,
+				console.log("About to upload " + file + " to " + key);
+				return new Promise(function(resolve, reject) {
+					s3bucket.upload({
+							Key: key,
+							ContentType: determineContentType(file),
+							ACL: 'public-read',
+							Body: content,
 
-									// Copying next-build-tools for now
-									CacheControl: 'public, max-age=604800000'
-								}, function(err, data) {
-									if (err) {
-										reject(err);
-									} else {
-										resolve(data);
-									}
-								});
-						})
-							.then(function(result) {
-								console.log("Successfully uploaded: " + key);
-							});
+							// Copying next-build-tools for now
+							CacheControl: 'public, max-age=604800000'
+						}, function(err, data) {
+							if (err) {
+								reject(err);
+							} else {
+								resolve(data);
+							}
+						});
+				})
+					.then(function(result) {
+						console.log("Successfully uploaded: " + key);
 					});
-			}));
-		});
-
+			});
+	}));
 };
