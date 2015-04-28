@@ -1,7 +1,6 @@
 "use strict";
 
 var aws = require('aws-sdk');
-var url = require('url');
 var denodeify = require('denodeify');
 var readFile = denodeify(require('fs').readFile);
 var glob = denodeify(require('glob'));
