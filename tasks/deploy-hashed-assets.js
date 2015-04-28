@@ -7,7 +7,7 @@ var readFile = denodeify(require('fs').readFile);
 var writeFile = denodeify(require('fs').writeFile);
 var glob = denodeify(require('glob'));
 var crypto = require('crypto');
-var basename = require('path').basename;
+var path = require('path');
 var aws = require('aws-sdk');
 
 var AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process.env.aws_access_hashed_assets;
@@ -20,12 +20,11 @@ aws.config.update({
 });
 
 function hashAndUpload(opts) {
-
 	var file = opts.file;
 	var app = opts.app;
 	var bucket = 'ft-next-hashed-assets-prod';
 	var key = 'hashed-assets/' + app + '/' + file.hashedName;
-	var extension = (/\.([^.]+)$/.exec(file.name) || [undefined, undefined])[1];
+	var extension = path.extname(file.name).substring(1);
 
 	return new Promise(function(resolve, reject) {
 		var s3bucket = new aws.S3({ params: { Bucket: bucket } });
@@ -60,7 +59,7 @@ function hashAndUpload(opts) {
 }
 
 module.exports = function(app) {
-	if(!(AWS_ACCESS_HASHED_ASSETS && AWS_SECRET_HASHED_ASSETS)) {
+	if (!(AWS_ACCESS_HASHED_ASSETS && AWS_SECRET_HASHED_ASSETS)) {
 		return Promise.reject("Must set AWS_ACCESS_HASHED_ASSETS and AWS_SECRET_HASHED_ASSETS");
 	}
 
@@ -73,7 +72,7 @@ module.exports = function(app) {
 				return readFile(file)
 					.then(function(content) {
 						return {
-							name: basename(file),
+							name: path.basename(file),
 							content: content
 						};
 					});
