@@ -15,6 +15,7 @@ var purge = require('../tasks/purge');
 var deployVcl = require('../tasks/deploy-vcl');
 var nightwatch = require('../tasks/nightwatch');
 var deployHashedAssets = require('../tasks/deploy-hashed-assets');
+var deployStatic = require('../tasks/deploy-static');
 var enablePreboot = require('../tasks/enable-preboot');
 
 function list(val) {
@@ -133,10 +134,27 @@ program
 	.option('-s, --service <service>', 'REQUIRED.  The ID of the fastly service to deploy to.')
 	.action(function(folder, options) {
 		if (folder) {
-			deployVcl(folder, options);
+			deployVcl(folder, options).catch(exit);
 		} else {
 			exit('Please provide a folder where the .vcl is located');
 		}
+	});
+
+program
+	.command('deploy-static [file]')
+	.description('Deploys static [file] to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars')
+	.option('--destination <destination>', 'Optionally set the destination file name (defaults to the relative path)')
+	.option('--region <region>', 'Optionally set the region (default to eu-west-1)')
+	.option('--bucket <bucket>', 'Optionally set the bucket (default to ft-next-qa)')
+	.action(function(file, opts) {
+		var region = opts.region || 'eu-west-1';
+		var bucket = opts.bucket || 'ft-next-qa';
+		return deployStatic({
+			file: file,
+			destination: opts.destination,
+			region: region,
+			bucket: bucket
+		}).catch(exit);
 	});
 
 program

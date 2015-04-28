@@ -15,8 +15,9 @@
     destroy [app]                          deletes the app from heroku
     purge [options] [url]                  purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
     deploy-vcl [options] [folder]          Deploys VCL in [folder] to the specified fastly service.  Requires FASTLY_KEY env var
+    deploy-static [options] [file]         Deploys static [file] to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars
     enable-preboot [app]                   enables prebooting of an application to smooth over deploys
-    *
+    *                                      
 
   Options:
 
