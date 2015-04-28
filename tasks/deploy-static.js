@@ -5,7 +5,6 @@ var denodeify = require('denodeify');
 var fs = require('fs');
 var readFile = denodeify(fs.readFile);
 var lstatSync = fs.lstatSync;
-var glob = denodeify(require('glob'));
 var determineContentType = require('../lib/determine-content-type');
 var path = require('path');
 
