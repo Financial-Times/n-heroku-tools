@@ -15,6 +15,37 @@ var sourceFolder = './client/';
 var buildFolder = './public/';
 var mainJsSourceMapFile = 'main.js.map';
 
+var tasks = {
+	'build-sass': function() {
+		return obt.build.sass(gulp, {
+				sass: sourceFolder + mainScssFile,
+				buildFolder: buildFolder,
+				sourcemaps: true,
+				env: 'production'
+			})
+			.on('end', function () {
+				console.log('build-sass completed');
+			})
+			.on('error', function () {
+				console.warn('build-sass errored');
+			});
+	},
+	'build-js': function() {
+		return obt.build.js(gulp, {
+			js: sourceFolder + mainJsFile,
+				buildFolder: buildFolder,
+				sourcemaps: true,
+				env: 'development' // need to run as development as we do our own sourcemaps
+			})
+			.on('end', function () {
+				console.log('build-js completed');
+			})
+			.on('error', function () {
+				console.warn('build-js errored');
+			});
+	}
+};
+
 function getGlob(task) {
 	switch(task) {
 		case 'build-sass':
@@ -29,34 +60,18 @@ function run(task, opts) {
 	return new Promise(function(resolve, reject) {
 		if (opts.watch) {
 			console.log("Watching " + getGlob(task) + " and will trigger " + task);
-			gulp.watch.call(gulp, getGlob(task), [task])
-				.on('end', resolve)
-				.on('error', reject);
+			gulp.watch(getGlob(task), [task]);
 		} else {
-			gulp.start.call(gulp, [task])
+			tasks[task]()
 				.on('end', resolve)
 				.on('error', reject);
 		}
 	});
 }
 
-gulp.task('build-sass', function() {
-	return obt.build.sass(gulp, {
-		sass: sourceFolder + mainScssFile,
-		buildFolder: buildFolder,
-		sourcemaps: true,
-		env: 'production'
-	});
-});
+gulp.task('build-sass', tasks['build-sass']);
 
-gulp.task('build-js', function() {
-	return obt.build.js(gulp, {
-		js: sourceFolder + mainJsFile,
-		buildFolder: buildFolder,
-		sourcemaps: true,
-		env: 'development' // need to run as development as we do our own sourcemaps
-	});
-});
+gulp.task('build-js', tasks['build-js']);
 
 gulp.task('build-minify-js', ['build-js'], function() {
 	var app = normalizeName(packageJson.name, { version: false });
