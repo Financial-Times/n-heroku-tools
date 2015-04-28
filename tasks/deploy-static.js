@@ -17,7 +17,7 @@ module.exports = function(opts) {
 	}
 
 	var source = opts.source;
-	var destination = opts.destination;
+	var destination = opts.destination || "";
 	var bucket = opts.bucket;
 
 	aws.config.update({
@@ -41,7 +41,6 @@ module.exports = function(opts) {
 						}
 
 						key = path.join(destination, key);
-						console.log(destination, key);
 
 						console.log("About to upload " + file + " to " + key);
 						return new Promise(function(resolve, reject) {
