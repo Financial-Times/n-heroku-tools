@@ -4,6 +4,7 @@ var aws = require('aws-sdk');
 var url = require('url');
 var denodeify = require('denodeify');
 var readFile = denodeify(require('fs').readFile);
+var glob = denodeify(require('glob'));
 var determineContentType = require('../lib/determine-content-type');
 var path = require('path');
 
@@ -15,8 +16,8 @@ module.exports = function(opts) {
 		Promise.reject("Must set AWS_ACCESS and AWS_SECRET");
 	}
 
-	var file = path.relative(process.cwd(), opts.file);
-	var destination = opts.destination || file;
+	var source = opts.source;
+	var destination = opts.destination;
 	var bucket = opts.bucket;
 
 	aws.config.update({
@@ -27,28 +28,44 @@ module.exports = function(opts) {
 
 	var s3bucket = new aws.S3({ params: { Bucket: bucket } });
 
-	return readFile(file).then(function(content) {
-		console.log("About to upload " + file + " to " + destination);
-		return new Promise(function(resolve, reject) {
-			s3bucket.upload({
-					Key: destination,
-					ContentType: determineContentType(file),
-					ACL: 'public-read',
-					Body: content,
+	return glob(source)
+		.then(function(files) {
+			return Promise.all(files.map(function(file) {
+				return readFile(file)
+					.then(function(content) {
+						file = path.relative(process.cwd(), file);
+						var key = file;
 
-					// Copying next-build-tools for now
-					CacheControl: 'public, max-age=604800000'
-				}, function(err, data) {
-					if (err) {
-						reject(err);
-					} else {
-						resolve(data);
-					}
-				});
-		})
-			.then(function(result) {
-				console.log("Successfully uploaded: " + file);
-			});
+						if (opts.strip) {
+							key = file.split('/').splice(opts.strip).join('/');
+						}
 
-	});
+						key = path.join(destination, key);
+						console.log(destination, key);
+
+						console.log("About to upload " + file + " to " + key);
+						return new Promise(function(resolve, reject) {
+							s3bucket.upload({
+									Key: key,
+									ContentType: determineContentType(file),
+									ACL: 'public-read',
+									Body: content,
+
+									// Copying next-build-tools for now
+									CacheControl: 'public, max-age=604800000'
+								}, function(err, data) {
+									if (err) {
+										reject(err);
+									} else {
+										resolve(data);
+									}
+								});
+						})
+							.then(function(result) {
+								console.log("Successfully uploaded: " + key);
+							});
+					});
+			}));
+		});
+
 };

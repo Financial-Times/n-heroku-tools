@@ -136,19 +136,20 @@ program
 	});
 
 program
-	.command('deploy-static [file]')
-	.description('Deploys static [file] to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars')
-	.option('--destination <destination>', 'Optionally set the destination file name (defaults to the relative path)')
+	.command('deploy-static [source] [destination]')
+	.description('Deploys static [source] to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars')
+	.option('--strip <strip>', 'Optionally strip off the <strip> leading components off of the source file name')
 	.option('--region <region>', 'Optionally set the region (default to eu-west-1)')
 	.option('--bucket <bucket>', 'Optionally set the bucket (default to ft-next-qa)')
-	.action(function(file, opts) {
+	.action(function(source, destination, opts) {
 		var region = opts.region || 'eu-west-1';
 		var bucket = opts.bucket || 'ft-next-qa';
 		return deployStatic({
-			file: file,
-			destination: opts.destination,
+			source: source,
+			destination: destination,
 			region: region,
-			bucket: bucket
+			bucket: bucket,
+			strip: opts.strip
 		}).catch(exit);
 	});
 
