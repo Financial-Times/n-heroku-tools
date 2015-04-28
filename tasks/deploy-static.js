@@ -28,7 +28,7 @@ module.exports = function(opts) {
 
 	var s3bucket = new aws.S3({ params: { Bucket: bucket } });
 
-	return glob(source)
+	return glob(source, { nodir: true })
 		.then(function(files) {
 			return Promise.all(files.map(function(file) {
 				return readFile(file)
