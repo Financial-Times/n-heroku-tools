@@ -144,7 +144,7 @@ program
 	.action(function(source, destination, opts) {
 		var region = opts.region || 'eu-west-1';
 		var bucket = opts.bucket || 'ft-next-qa';
-		var destination = destination || "";
+		destination = destination || "";
 		return deployStatic({
 			source: source,
 			destination: destination,
