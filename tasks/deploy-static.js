@@ -2,7 +2,9 @@
 
 var aws = require('aws-sdk');
 var denodeify = require('denodeify');
-var readFile = denodeify(require('fs').readFile);
+var fs = require('fs');
+var readFile = denodeify(fs.readFile);
+var lstatSync = fs.lstatSync;
 var glob = denodeify(require('glob'));
 var determineContentType = require('../lib/determine-content-type');
 var path = require('path');
@@ -15,7 +17,13 @@ module.exports = function(opts) {
 		Promise.reject("Must set AWS_ACCESS and AWS_SECRET");
 	}
 
-	var files = opts.files;
+	console.log("before", files);
+	var files = opts.files
+		.filter(function(file) {
+			return !lstatSync(file).isDirectory();
+		});
+	console.log("after", files);
+
 	var destination = opts.destination || "";
 	var bucket = opts.bucket;
 
