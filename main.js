@@ -8,7 +8,6 @@ module.exports = {
 	deployVcl: require('./tasks/deploy-vcl'),
 	deploy: require('./tasks/deploy'),
 	destroy: require('./tasks/destroy'),
-	install: require('./tasks/install'),
 	nightwatch: require('./tasks/nightwatch'),
 	provision: require('./tasks/provision'),
 	purge: require('./tasks/purge'),
