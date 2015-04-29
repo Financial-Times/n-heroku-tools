@@ -5,6 +5,7 @@ require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 var program = require('commander');
+var install = require('../tasks/install');
 var deploy = require('../tasks/deploy');
 var configure = require('../tasks/configure');
 var provision = require('../tasks/provision');
@@ -27,6 +28,13 @@ function exit(err) {
 }
 
 program.version(require('../package.json').version);
+
+program
+	.command('install')
+	.description('installs dependencies')
+	.action(function(app) {
+		install(app).catch(exit);
+	});
 
 program
 	.command('deploy [app]')
