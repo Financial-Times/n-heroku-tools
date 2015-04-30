@@ -2,7 +2,6 @@
 
 var gulp = require('gulp');
 require('gulp-watch');
-var yargs = require('yargs');
 
 var obt = require('origami-build-tools');
 var normalizeName = require('../lib/normalize-name');
@@ -15,6 +14,7 @@ var mainScssFile = 'main.scss';
 var sourceFolder = './client/';
 var buildFolder = './public/';
 var mainJsSourceMapFile = 'main.js.map';
+var isDev = false;
 
 function getGlob(task) {
 	switch(task) {
@@ -41,7 +41,7 @@ gulp.task('build-sass', function() {
 	return obt.build.sass(gulp, {
 			sass: sourceFolder + mainScssFile,
 			buildFolder: buildFolder,
-			env: yargs.argv.dev ? 'development' : 'production'
+			env: isDev ? 'development' : 'production'
 		})
 		.on('end', function () {
 			console.log('build-sass completed');
@@ -80,6 +80,7 @@ gulp.task('build-minify-js', ['build-js'], function() {
 });
 
 module.exports = function(opts) {
+	isDev = opts.isDev;
 	return Promise.all([
 		run('build-sass', opts),
 		run(opts.isDev ? 'build-js' : 'build-minify-js', opts)
