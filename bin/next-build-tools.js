@@ -16,13 +16,14 @@ var deployVcl = require('../tasks/deploy-vcl');
 var nightwatch = require('../tasks/nightwatch');
 var deployHashedAssets = require('../tasks/deploy-hashed-assets');
 var deployStatic = require('../tasks/deploy-static');
+var run = require('../tasks/run');
 
 function list(val) {
 	return val.split(',');
 }
 
 function exit(err) {
-	console.log(err);
+	console.log(err.stack);
 	process.exit(1);
 }
 
@@ -133,6 +134,13 @@ program
 		} else {
 			exit('Please provide a folder where the .vcl is located');
 		}
+	});
+
+program
+	.command('run')
+	.description('Runs the local app through the router')
+	.action(function() {
+		run().catch(exit);
 	});
 
 program
