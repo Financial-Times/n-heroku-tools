@@ -23,7 +23,7 @@ function list(val) {
 }
 
 function exit(err) {
-	console.log(err.stack);
+	console.log(err);
 	process.exit(1);
 }
 
