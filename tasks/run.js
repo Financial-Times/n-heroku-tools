@@ -1,5 +1,6 @@
 'use strict';
 
+var exec = require('../lib/exec');
 var spawn = require('child_process').spawn;
 var packageJson = require(process.cwd() + '/package.json');
 var normalizeName = require('../lib/normalize-name');
@@ -35,6 +36,12 @@ function runRouter(resolve, reject) {
 	router.on('close', resolve);
 }
 
+function ensureRouterInstall() {
+	return exec('which next-router')
+		.catch(function(err) { throw new Error('You need to install the next router first!  See docs here: http://git.svc.ft.com/projects/NEXT/repos/router/browse'); });
+}
+
 module.exports = function(opts) {
-	return Promise.all([ new Promise(runLocal), new Promise(runRouter) ]);
+	return Promise.all([ ensureRouterInstall() ])
+		.then(function() { return Promise.all([ new Promise(runLocal), new Promise(runRouter) ]); });
 };
