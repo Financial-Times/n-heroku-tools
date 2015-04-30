@@ -2,6 +2,7 @@
 
 var gulp = require('gulp');
 require('gulp-watch');
+var yargs = require('yargs');
 
 var obt = require('origami-build-tools');
 var normalizeName = require('../lib/normalize-name');
@@ -29,33 +30,39 @@ function run(task, opts) {
 	return new Promise(function(resolve, reject) {
 		if (opts.watch) {
 			console.log("Watching " + getGlob(task) + " and will trigger " + task);
-			gulp.watch.call(gulp, getGlob(task), [task])
-				.on('end', resolve)
-				.on('error', reject);
+			gulp.watch(getGlob(task), [task]);
 		} else {
-			gulp.start.call(gulp, [task])
-				.on('end', resolve)
-				.on('error', reject);
+			gulp.start([task], resolve);
 		}
 	});
 }
 
 gulp.task('build-sass', function() {
 	return obt.build.sass(gulp, {
-		sass: sourceFolder + mainScssFile,
-		buildFolder: buildFolder,
-		sourcemaps: true,
-		env: 'production'
-	});
+			sass: sourceFolder + mainScssFile,
+			buildFolder: buildFolder,
+			env: yargs.argv.dev ? 'development' : 'production'
+		})
+		.on('end', function () {
+			console.log('build-sass completed');
+		})
+		.on('error', function () {
+			console.warn('build-sass errored');
+		});
 });
 
 gulp.task('build-js', function() {
 	return obt.build.js(gulp, {
-		js: sourceFolder + mainJsFile,
-		buildFolder: buildFolder,
-		sourcemaps: true,
-		env: 'development' // need to run as development as we do our own sourcemaps
-	});
+			js: sourceFolder + mainJsFile,
+			buildFolder: buildFolder,
+			env: 'development' // need to run as development as we do our own sourcemaps
+		})
+		.on('end', function () {
+			console.log('build-js completed');
+		})
+		.on('error', function () {
+			console.warn('build-js errored');
+		});
 });
 
 gulp.task('build-minify-js', ['build-js'], function() {
@@ -63,13 +70,18 @@ gulp.task('build-minify-js', ['build-js'], function() {
 	return gulp.src(buildFolder + mainJsFile)
 		.pipe(extractSourceMap({ saveTo: buildFolder + mainJsSourceMapFile }))
 		.pipe(minify({ sourceMapIn: buildFolder + mainJsSourceMapFile, sourceMapOut: '/' + app + '/' + mainJsSourceMapFile }))
-		.pipe(gulp.dest(buildFolder));
+		.pipe(gulp.dest(buildFolder))
+		.on('end', function () {
+			console.log('build-minify-js completed');
+		})
+		.on('error', function () {
+			console.log('build-minify-js errored');
+		});
 });
 
 module.exports = function(opts) {
-	var runOpts = { watch: opts.watch };
 	return Promise.all([
-		run('build-sass', runOpts),
-		run(opts.minify ? 'build-minify-js' : 'build-js', runOpts)
+		run('build-sass', opts),
+		run(opts.isDev ? 'build-js' : 'build-minify-js', opts)
 	]);
 };
