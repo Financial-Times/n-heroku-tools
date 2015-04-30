@@ -1,7 +1,6 @@
 "use strict";
 
 var packageJson = require(process.cwd() + '/package.json');
-var denodeify = require('denodeify');
 var herokuAuthToken = require('../lib/heroku-auth-token');
 var about = require('../lib/about');
 var exec = require('../lib/exec');
