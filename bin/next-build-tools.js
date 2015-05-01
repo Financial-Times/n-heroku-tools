@@ -93,7 +93,7 @@ program
 	.description('build javascript and css')
 	.action(function(options) {
 		build({
-			minify: !options.dev,
+			isDev: options.dev,
 			watch: options.watch
 		}).catch(exit);
 	});
