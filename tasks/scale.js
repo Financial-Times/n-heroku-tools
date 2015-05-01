@@ -9,7 +9,7 @@ var fetchres = require('fetchres');
 module.exports = function(opts) {
 
 	var source = opts.source || normalizeName(packageJson.name, { version: false });
-	var target = opts.target || source;
+	var target = opts.target || normalizeName(packageJson.name);
 	var overrides = {};
 	var token;
 
@@ -19,11 +19,6 @@ module.exports = function(opts) {
 			overrides[t[0]] = t[1];
 		});
 	}
-
-	var authorizedPostHeaders = {
-		'Accept': 'application/vnd.heroku+json; version=3',
-		'Content-Type': 'application/json'
-	};
 
 	function getProcessInfo(serviceData) {
 		return serviceData &&
@@ -62,50 +57,14 @@ module.exports = function(opts) {
 						size: processInfo[process].size,
 						quantity: processInfo[process].scale
 					});
-				};
+				}
 			}
 
 			// scale({
 			// 	token: token,
-			// 	app: normalizeName(packageJson.name),
-			// 	processProfiles: {
-			// 		updates: [
-
-			// 		]
-			// 	}
+			// 	app: target
+			// 	processProfiles: processProfiles
 			// })
-
-
-			// desired["___WARNING___"] = "Don't edit config vars manually. Make PR to git.svc.ft.com/projects/NEXTPRIVATE/repos/config-vars/browse";
-			// var patch = {};
-
-			// Object.keys(current).forEach(function(key) {
-			// 	patch[key] = null;
-			// });
-
-			// Object.keys(desired).forEach(function(key) {
-			// 	patch[key] = desired[key];
-			// });
-
-			// Object.keys(overrides).forEach(function(key) {
-			// 	patch[key] = overrides[key];
-			// });
-
-			// Object.keys(patch).forEach(function(key) {
-			// 	if (patch[key] === null) {
-			// 		console.log("Deleting config var: " + key);
-			// 	} else if (patch[key] !== current[key]) {
-			// 		console.log("Setting config var: " + key);
-			// 	}
-			// });
-
-			// console.log("Setting environment keys", Object.keys(patch));
-
-			// return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
-			// 	headers: authorizedPostHeaders,
-			// 	method: 'patch',
-			// 	body: JSON.stringify(patch)
-			// });
 		})
 		.then(function() {
 			console.log(target + " config vars are set");
