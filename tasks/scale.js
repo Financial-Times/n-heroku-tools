@@ -4,12 +4,12 @@ var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
 var normalizeName = require('../lib/normalize-name');
 var fetchres = require('fetchres');
-// var scale = require('haikro/lib/scale');
+var scale = require('haikro/lib/scale');
 
 module.exports = function(opts) {
 
 	var source = opts.source || normalizeName(packageJson.name, { version: false });
-	var target = opts.target || normalizeName(packageJson.name);
+	var target = opts.target || packageJson.name;
 	var overrides = {};
 	var token;
 
@@ -27,6 +27,7 @@ module.exports = function(opts) {
 			serviceData.versions[Object.keys(serviceData.versions).length.toString()].processes;
 	}
 
+	console.log('Scaling ' + target + ' using service registry information for ' + source);
 	return herokuAuthToken()
 		.then(function(authToken) {
 			token = authToken;
@@ -60,13 +61,18 @@ module.exports = function(opts) {
 				}
 			}
 
-			// scale({
-			// 	token: token,
-			// 	app: target
-			// 	processProfiles: processProfiles
-			// })
+			return scale({
+				token: token,
+				app: target,
+				processProfiles: processProfiles
+			});
+
+
 		})
-		.then(function() {
-			console.log(target + " config vars are set");
+		.then(function(processProfiles) {
+			console.log(target + " config vars are set to", processProfiles);
+		})
+		.catch(function(err) {
+			console.log ('Error scaling processes - ' + err);
 		});
 };
