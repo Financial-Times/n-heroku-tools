@@ -9,7 +9,8 @@ require('es6-promise').polyfill();
 function replaceVars(vcls, vars) {
 	return vcls.map(function(vcl) {
 		vars.forEach(function(v) {
-			vcl.content = vcl.content.replace(new RegExp('#{' + v + '}', 'gm'), process.env[v]);
+			var regex = new RegExp('\\\$\\\{'+ v.trim()+'\\\}', 'gm');
+			vcl.content = vcl.content.replace(regex, process.env[v]);
 		});
 
 		return vcl;
