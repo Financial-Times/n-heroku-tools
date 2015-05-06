@@ -103,5 +103,6 @@ module.exports = function(folder, opts) {
 		})
 		.then(function(res) {
 			debug('New version %s installed and activated', newVersion);        // 9. Complete
+			return true;
 		});
 };
