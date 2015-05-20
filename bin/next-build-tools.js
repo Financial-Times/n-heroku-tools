@@ -133,7 +133,7 @@ program
 program
 	.command('deploy-vcl [folder]')
 	.description('Deploys VCL in [folder] to the specified fastly service.  Requires FASTLY_KEY env var')
-	.option('-m, --main <main', 'Set the name of the main vcl file (the entry point).  Defaults to "main.vcl"')
+	.option('-m, --main <main>', 'Set the name of the main vcl file (the entry point).  Defaults to "main.vcl"')
 	.option('-v, --vars <vars>', 'A way of injecting environment vars into the VCL.  So if you pass --vars AUTH_KEY,SERVICE the values {$AUTH_KEY} and ${SERVICE} in the vcl will be replaced with the values of the environmemnt variable')
 	.option('-s, --service <service>', 'REQUIRED.  The ID of the fastly service to deploy to.')
 	.action(function(folder, options) {
@@ -147,8 +147,9 @@ program
 program
 	.command('run')
 	.description('Runs the local app through the router')
-	.action(function() {
-		run().catch(exit);
+	.option('-l, --local', 'Run the app but don\'t start the router ')
+	.action(function(opts){
+		run(opts).catch(exit);
 	});
 
 program

@@ -49,8 +49,11 @@ function ensureRouterInstall() {
 		.catch(function(err) { throw new Error('You need to install the next router first!  See docs here: http://git.svc.ft.com/projects/NEXT/repos/router/browse'); });
 }
 
-module.exports = function(opts) {
+module.exports = function (opts) {
 	var localPort = process.env.PORT || 3002;
+	if (opts.local) {
+		return runLocal({ port: localPort });
+	}
 	return Promise.all([ ensureRouterInstall() ])
 		.then(function() {
 			return Promise.all([
