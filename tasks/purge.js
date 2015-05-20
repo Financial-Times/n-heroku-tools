@@ -4,7 +4,7 @@ var denodeify = require('denodeify');
 var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) {
 	console.log(stdout);
 	console.log(stderr);
-	return [err];
+	return [err, stdout];
 });
 
 var FASTLY_KEY = process.env.FASTLY_KEY;
@@ -17,7 +17,6 @@ module.exports = function(url, opts){
 	var options = opts || {};
 	var soft = options.soft || false;
 	var command = 'curl ' +
-		'-x 10.113.219.30:8080 ' +
 		'-s 1 ' +
 		'-i ' +
 		'--request PURGE ' +

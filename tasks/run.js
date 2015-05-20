@@ -18,7 +18,7 @@ function runLocal(opts) {
 	return new Promise(function(resolve, reject) {
 		var env = Object.create(process.env);
 		env.PORT = port;
-		var local = spawn('nodemon', ['server/app', '--watch server'], { cwd: process.cwd(), env: env });
+		var local = spawn('nodemon', ['server/app.js', '--watch server'], { cwd: process.cwd(), env: env });
 
 		local.stdout.on('data', toStdOut);
 		local.stderr.on('data', toStdErr);

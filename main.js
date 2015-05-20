@@ -13,5 +13,6 @@ module.exports = {
 	nightwatch: require('./tasks/nightwatch'),
 	provision: require('./tasks/provision'),
 	purge: require('./tasks/purge'),
+	scale: require('./tasks/scale'),
 	verify: require('./tasks/verify')
 };

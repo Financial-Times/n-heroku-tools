@@ -1,7 +1,8 @@
+.PHONY: test
 SHOULD_BE = $(shell ./scripts/generate-docs.sh | md5 -q)
 IS = $(shell md5 -q README.md)
 
-test:
+verify:
 ifeq ($(SHOULD_BE),$(IS))
 	@echo "README.md up-to-date"
 else
@@ -10,5 +11,9 @@ else
 endif
 	./bin/next-build-tools.js verify --skip-layout-checks
 
+test:
+	mocha ./test/
+
 docs:
 	./scripts/generate-docs.sh > README.md
+

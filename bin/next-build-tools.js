@@ -7,6 +7,7 @@ require('isomorphic-fetch');
 var program = require('commander');
 var deploy = require('../tasks/deploy');
 var configure = require('../tasks/configure');
+var scale = require('../tasks/scale');
 var provision = require('../tasks/provision');
 var verify = require('../tasks/verify');
 var build = require('../tasks/build');
@@ -42,6 +43,13 @@ program
 	.option('-o, --overrides <abc>', 'override these values', list)
 	.action(function(source, target, options) {
 		configure({ source: source, target: target, overrides: options.overrides }).catch(exit);
+	});
+
+program
+	.command('scale [source] [target]')
+	.description('downloads process information from next-service-registry and scales/sizes the application servers')
+	.action(function(source, target) {
+		scale({ source: source, target: target }).catch(exit);
 	});
 
 program
