@@ -1,5 +1,6 @@
-# next-build-tools
+# next-build-tools [![Build Status](https://travis-ci.org/Financial-Times/next-build-tools.svg?branch=v2.4.2)](https://travis-ci.org/Financial-Times/next-build-tools)
 
+```
   Usage: next-build-tools [options] [command]
 
 
@@ -24,5 +25,8 @@
 
     -h, --help     output usage information
     -V, --version  output the version number
+  
+```
+
 ## Development
 Warning the README.md is automatically generated.  Run `make docs` to update.
