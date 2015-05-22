@@ -1,12 +1,11 @@
-# next-build-tools [![Build Status](https://travis-ci.org/Financial-Times/next-build-tools.svg?branch=v2.4.2)](https://travis-ci.org/Financial-Times/next-build-tools)
+# next-build-tools
 
-```
   Usage: next-build-tools [options] [command]
 
 
   Commands:
-    deploy [
-    app]                                        runs haikro deployment scripts with sensible defaults for Next projects
+
+    deploy [app]                                        runs haikro deployment scripts with sensible defaults for Next projects
     configure [options] [source] [target]               downloads environment variables from next-config-vars and uploads them to the current app
     scale [source] [target]                             downloads process information from next-service-registry and scales/sizes the application servers
     provision [app]                                     provisions a new instance of an application server
@@ -18,15 +17,14 @@
     purge [options] [url]                               purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
     deploy-vcl [options] [folder]                       Deploys VCL in [folder] to the specified fastly service.  Requires FASTLY_KEY env var
     run [options]                                       Runs the local app through the router
+    about                                               Creates an __about.json file for the app
     deploy-static [options] <source> [otherSources...]  Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars
-    *
+    *                                                   
 
   Options:
 
     -h, --help     output usage information
     -V, --version  output the version number
-  
-```
 
 ## Development
 Warning the README.md is automatically generated.  Run `make docs` to update.
