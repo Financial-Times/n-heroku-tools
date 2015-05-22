@@ -18,6 +18,7 @@ var nightwatch = require('../tasks/nightwatch');
 var deployHashedAssets = require('../tasks/deploy-hashed-assets');
 var deployStatic = require('../tasks/deploy-static');
 var run = require('../tasks/run');
+var about = require('../tasks/about');
 
 function list(val) {
 	return val.split(',');
@@ -150,6 +151,13 @@ program
 	.option('-l, --local', 'Run the app but don\'t start the router ')
 	.action(function(opts){
 		run(opts).catch(exit);
+	});
+
+program
+	.command('about')
+	.description('Creates an __about.json file for the app')
+	.action(function(){
+		about().catch(exit);
 	});
 
 program
