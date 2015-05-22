@@ -1,3 +1,4 @@
+/* global describe, it, before, after */
 'use strict';
 var sinon = require('sinon');
 var expect = require('chai').expect;
@@ -7,10 +8,6 @@ var fastlyMock = require('./mocks/fastly.mock');
 
 mockery.registerMock('fastly', fastlyMock);
 var path = require('path');
-
-
-
-
 
 describe.only('Deploy VCL', function(){
 
@@ -29,7 +26,7 @@ describe.only('Deploy VCL', function(){
 		deployVcl(path.resolve(__dirname, './fixtures/vcl')+'/', {service:fastlyMock.fakeServiceId}).then(function(){
 			sinon.assert.called(fastlyMock().updateVcl);
 			done();
-		})
+		});
 	});
 
 	it('Should replace placeholders with environment vars', function(done){
@@ -44,7 +41,7 @@ describe.only('Deploy VCL', function(){
 			expect(vcl).to.contain(value);
 				expect(vcl).not.to.contain('${AUTH_KEY}');
 			done();
-		})
-	})
+		});
+	});
 
 });

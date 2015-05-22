@@ -1,6 +1,5 @@
-# next-build-tools [![Build Status](https://travis-ci.org/Financial-Times/next-build-tools.svg?branch=v2.4.2)](https://travis-ci.org/Financial-Times/next-build-tools)
+# next-build-tools
 
-```
   Usage: next-build-tools [options] [command]
 
 
@@ -20,14 +19,12 @@
     run [options]                                       Runs the local app through the router
     about                                               Creates an __about.json file for the app
     deploy-static [options] <source> [otherSources...]  Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars
-    *
+    *                                                   
 
   Options:
 
     -h, --help     output usage information
     -V, --version  output the version number
-
-```
 
 ## Development
 Warning the README.md is automatically generated.  Run `make docs` to update.
