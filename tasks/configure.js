@@ -82,5 +82,23 @@ module.exports = function(opts) {
 		})
 		.then(function() {
 			console.log(target + " config vars are set");
+		}).then(function () {
+			if (opts.drainToSplunk) {
+				console.log("Setting up logging to splunk");
+				return fetch('https://api.heroku.com/apps/' + target + '/log-drains', {
+						headers: authorizedPostHeaders,
+						method: 'post',
+						body: JSON.stringify({
+							url: process.env.SPLUNK_URL + normalizeName(packageJson.name)
+						})
+					})
+					.then(function () {
+						console.log(target + " logging to splunk");
+					})
+					.catch(function () {
+						console.log(target + " failed to set up logging to splunk");
+					});
+			}
 		});
+
 };
