@@ -42,8 +42,14 @@ program
 	.command('configure [source] [target]')
 	.description('downloads environment variables from next-config-vars and uploads them to the current app')
 	.option('-o, --overrides <abc>', 'override these values', list)
+	.option('-n, --no-splunk', 'configure not to drain logs to splunk')
 	.action(function(source, target, options) {
-		configure({ source: source, target: target, overrides: options.overrides }).catch(exit);
+		configure({
+			source: source,
+			target: target,
+			overrides: options.overrides,
+			splunk: !options.noSplunk
+		}).catch(exit);
 	});
 
 program
