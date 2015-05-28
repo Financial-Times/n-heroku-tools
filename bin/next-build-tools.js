@@ -48,7 +48,7 @@ program
 			source: source,
 			target: target,
 			overrides: options.overrides,
-			splunk: !options.noSplunk
+			splunk: options.splunk
 		}).catch(exit);
 	});
 
