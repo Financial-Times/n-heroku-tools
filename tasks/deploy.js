@@ -10,11 +10,11 @@ var logger = require('haikro/lib/logger');
 var normalizeName = require('../lib/normalize-name');
 var enablePreboot = require('../lib/enable-preboot');
 
-module.exports = function(app) {
+module.exports = function(opts) {
 	logger.setLevel('debug');
 	var token;
 	var commit;
-	var name = (app) ? app : 'ft-next-' + normalizeName(packageJson.name);
+	var name = (opts.app) ? opts.app : 'ft-next-' + normalizeName(packageJson.name);
 
 	return Promise.all([
 		herokuAuthToken(),
@@ -43,32 +43,36 @@ module.exports = function(app) {
 
 		// Start polling
 		.then(function() {
-			return new Promise(function(resolve, reject) {
-				var timeout;
-				var checker;
-				function checkGtg() {
-					console.log('polling: http://' + name + '.herokuapp.com/__gtg');
-					fetch('http://' + name + '.herokuapp.com/__gtg', {
-							timeout: 2000,
-							follow: 0
-						})
-						.then(function(response) {
-							if (response.ok) {
-								console.log("poll ok");
-								clearTimeout(timeout);
-								clearInterval(checker);
-								resolve();
-							} else {
-								console.log("poll not ok");
-							}
-						});
-				}
-				checker = setInterval(checkGtg, 3000);
-				timeout = setTimeout(function() {
-					console.log("2 minutes passed, bailing");
-					reject(name + '.herokuapp.com/__gtg not responding with an ok response within 2 minutes');
-					clearInterval(checker);
-				}, 2*60*1000);
-			});
+			if(!opts.gtg) {
+				return new Promise(function(resolve, reject) {
+					var timeout;
+					var checker;
+					function checkGtg() {
+						console.log('polling: http://' + name + '.herokuapp.com/__gtg');
+						fetch('http://' + name + '.herokuapp.com/__gtg', {
+								timeout: 2000,
+								follow: 0
+							})
+							.then(function(response) {
+								if (response.ok) {
+									console.log("poll ok");
+									clearTimeout(timeout);
+									clearInterval(checker);
+									resolve();
+								} else {
+									console.log("poll not ok");
+								}
+							});
+					}
+					checker = setInterval(checkGtg, 3000);
+					timeout = setTimeout(function() {
+						console.log("2 minutes passed, bailing");
+						reject(name + '.herokuapp.com/__gtg not responding with an ok response within 2 minutes');
+						clearInterval(checker);
+					}, 2*60*1000);
+				});
+			} else {
+				console.log("Skipping gtg check");
+			}
 		});
 };
