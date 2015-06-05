@@ -43,7 +43,7 @@ module.exports = function(opts) {
 
 		// Start polling
 		.then(function() {
-			if(!opts.gtg) {
+			if(!opts.skipGtg) {
 				return new Promise(function(resolve, reject) {
 					var timeout;
 					var checker;

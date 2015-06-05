@@ -38,7 +38,7 @@ program
 	.action(function(app, options) {
 		deploy({
 			app: app,
-			gtg: options.skipGtg
+			skipGtg: options.skipGtg
 		}).catch(exit);
 	});
 
