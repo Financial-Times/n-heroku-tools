@@ -34,8 +34,12 @@ program.version(require('../package.json').version);
 program
 	.command('deploy [app]')
 	.description('runs haikro deployment scripts with sensible defaults for Next projects')
-	.action(function(app) {
-		deploy(app).catch(exit);
+	.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
+	.action(function(app, options) {
+		deploy({
+			app: app,
+			skipGtg: options.skipGtg
+		}).catch(exit);
 	});
 
 program
