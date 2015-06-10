@@ -19,6 +19,7 @@ var deployHashedAssets = require('../tasks/deploy-hashed-assets');
 var deployStatic = require('../tasks/deploy-static');
 var run = require('../tasks/run');
 var about = require('../tasks/about');
+var rebuild = require('../tasks/rebuild');
 
 function list(val) {
 	return val.split(',');
@@ -189,6 +190,15 @@ program
 			region: region,
 			bucket: bucket,
 			strip: opts.strip
+		}).catch(exit);
+	});
+
+program
+	.command('rebuild [apps...]')
+	.description('Trigger a rebuild of the latest master on Travis')
+	.action(function(apps) {
+		return rebuild({
+			apps: apps
 		}).catch(exit);
 	});
 
