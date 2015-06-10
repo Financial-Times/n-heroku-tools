@@ -19,6 +19,7 @@
     run [options]                                       Runs the local app through the router
     about                                               Creates an __about.json file for the app
     deploy-static [options] <source> [otherSources...]  Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars
+    rebuild [apps...]                                   Trigger a rebuild of the latest master on Travis
     *                                                   
 
   Options:
