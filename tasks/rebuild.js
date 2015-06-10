@@ -60,6 +60,7 @@ module.exports = function(options) {
 									version = app.versions[version];
 									if (/https?:\/\/github\.com\/Financial-Times\//.test(version.repo)) {
 										repo = version.repo.replace(/https?:\/\/github\.com\/Financial-Times\//, '');
+										repo = repo.replace(/\/$/, '');
 									}
 								});
 								return repo;
