@@ -195,7 +195,8 @@ program
 
 program
 	.command('rebuild [apps...]')
-	.description('Trigger a rebuild of the latest master on Travis') .action(function(apps) {
+	.description('Trigger a rebuild of the latest master on Travis')
+	.action(function(apps) {
 		return rebuild({
 			apps: apps
 		}).catch(exit);
