@@ -73,7 +73,6 @@ module.exports = function(opts) {
 				});
 			} else {
 				console.log("Skipping gtg check");
-				return Promise.resolve();
 			}
 		});
 };
