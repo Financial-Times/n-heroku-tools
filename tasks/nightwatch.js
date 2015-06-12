@@ -22,6 +22,12 @@ module.exports = function(opts) {
 		nightwatch.stdout.on('data', toStdOut);
 		nightwatch.stderr.on('data', toStdErr);
 		nightwatch.on('error', reject);
-		nightwatch.on('close', resolve);
+		nightwatch.on('close', function(code, signal) {
+			if (code === 0) {
+				resolve(0);
+			} else {
+				reject("nightwatch exited with " + code + ', signal ' + signal);
+			}
+		});
 	});
 };
