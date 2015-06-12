@@ -1,6 +1,5 @@
 'use strict';
 
-var denodeify = require('denodeify');
 var path = require('path');
 var spawn = require('child_process').spawn;
 
