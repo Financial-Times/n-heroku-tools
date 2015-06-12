@@ -21,7 +21,7 @@ module.exports = function(opts) {
 			'--env ' + env,
 			'--test ' + test,
 			'--config ' + config
-		], { cwd: process.cwd(), env: env });
+		], { cwd: process.cwd() });
 		nightwatch.stdout.on('data', toStdOut);
 		nightwatch.stderr.on('data', toStdErr);
 		nightwatch.on('error', reject);
