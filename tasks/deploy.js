@@ -26,8 +26,13 @@ module.exports = function(opts) {
 			return about({ name: name, commit: commit });
 		})
 		.then(function() {
+			var buildPromise = build({ project: process.cwd() });
+			if (opts.skipEnablePreboot) {
+				console.log("Skipping enable preboot step");
+				return buildPromise;
+			}
 			return Promise.all([
-				build({ project: process.cwd() }),
+				buildPromise,
 				enablePreboot({ app: name, token: token })
 			]);
 		})
