@@ -18,7 +18,7 @@ function runLocal(opts) {
 	return new Promise(function(resolve, reject) {
 		var env = Object.create(process.env);
 		env.PORT = port;
-		var args = ['server/app.js', '--watch server']
+		var args = ['server/app.js', '--watch server'];
 		if (opts.harmony) {
 			args.push('--harmony');
 		}
