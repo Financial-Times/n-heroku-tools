@@ -36,10 +36,12 @@ program
 	.command('deploy [app]')
 	.description('runs haikro deployment scripts with sensible defaults for Next projects')
 	.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
+	.option('-s, --skip-enable-preboot', 'skip the preboot')
 	.action(function(app, options) {
 		deploy({
 			app: app,
-			skipGtg: options.skipGtg
+			skipGtg: options.skipGtg,
+			skipEnablePreboot: options.skipEnablePreboot
 		}).catch(exit);
 	});
 
