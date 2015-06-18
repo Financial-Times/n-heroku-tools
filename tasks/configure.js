@@ -2,6 +2,7 @@
 
 var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
+var configVarsKey = require('../lib/config-vars-key');
 var normalizeName = require('../lib/normalize-name');
 var fetchres = require('fetchres');
 
@@ -23,18 +24,14 @@ module.exports = function(opts) {
 		'Content-Type': 'application/json'
 	};
 
-	return herokuAuthToken()
-		.then(function(token) {
-			authorizedPostHeaders.Authorization = 'Bearer ' + token;
-		})
-		.then(function() {
-			console.log('Next Build Tools going to apply ' + source + ' config to ' + target);
-			return fetch('https://api.heroku.com/apps/ft-next-config-vars/config-vars', { headers: authorizedPostHeaders });
-		})
-		.then(fetchres.json)
-		.then(function(data) {
+	return Promise.all([
+			herokuAuthToken(),
+			configVarsKey()
+		])
+		.then(function(keys) {
+			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
 			return Promise.all([
-				fetch('https://ft-next-config-vars.herokuapp.com/app/' + source, { headers: { Authorization: data.APIKEY } }),
+				fetch('https://ft-next-config-vars.herokuapp.com/app/' + source, { headers: { Authorization: keys[1] } }),
 				fetch('https://api.heroku.com/apps/' + source + '/config-vars', { headers: authorizedPostHeaders })
 			]);
 		})
