@@ -62,7 +62,7 @@ gulp.task('build-js', function() {
 		.on('end', function() {
 			console.log('build-js completed');
 		})
-		.on('error', function() {
+		.on('error', function(err) {
 			console.warn('build-js errored');
 			throw err;
 		});
@@ -77,7 +77,7 @@ gulp.task('build-minify-js', ['build-js'], function() {
 		.on('end', function() {
 			console.log('build-minify-js completed');
 		})
-		.on('error', function() {
+		.on('error', function(err) {
 			console.log('build-minify-js errored');
 			throw err;
 		});
