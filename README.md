@@ -7,6 +7,7 @@
 
     deploy [options] [app]                              runs haikro deployment scripts with sensible defaults for Next projects
     configure [options] [source] [target]               downloads environment variables from next-config-vars and uploads them to the current app
+    download-development-keys [options]                 downloads development environment variables from next-config-vars and stores them in your home directory if a file doesn't already exist
     scale [source] [target]                             downloads process information from next-service-registry and scales/sizes the application servers
     provision [app]                                     provisions a new instance of an application server
     verify [options]                                    internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)
