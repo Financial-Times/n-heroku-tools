@@ -17,6 +17,7 @@ var deployVcl = require('../tasks/deploy-vcl');
 var nightwatch = require('../tasks/nightwatch');
 var deployHashedAssets = require('../tasks/deploy-hashed-assets');
 var deployStatic = require('../tasks/deploy-static');
+var downloadDevelopmentKeys = require('../tasks/download-development-keys');
 var run = require('../tasks/run');
 var about = require('../tasks/about');
 var rebuild = require('../tasks/rebuild');
@@ -57,6 +58,15 @@ program
 			overrides: options.overrides,
 			splunk: options.splunk
 		}).catch(exit);
+	});
+
+program
+	.command('download-development-keys')
+	.description('downloads development environment variables from next-config-vars and stores them in your home directory if a file doesn\'t already exist')
+	.option('--update', 'overwrites the keys files in your home directory')
+	.action(function(opts) {
+		downloadDevelopmentKeys({ update: opts.update })
+			.catch(exit);
 	});
 
 program

@@ -4,6 +4,9 @@ var exec = require('../lib/exec');
 var spawn = require('child_process').spawn;
 var packageJson = require(process.cwd() + '/package.json');
 var normalizeName = require('../lib/normalize-name');
+var downloadDevelopmentKeys = require('./download-development-keys');
+var denodeify = require('denodeify');
+var readFile = denodeify(require('fs').readFile);
 
 function toStdOut(data) {
 	process.stdout.write(data.toString());
@@ -14,21 +17,29 @@ function toStdErr(data) {
 }
 
 function runLocal(opts) {
-	var port = opts.port;
-	return new Promise(function(resolve, reject) {
-		var env = Object.create(process.env);
-		env.PORT = port;
-		var args = ['server/app.js', '--watch server'];
-		if (opts.harmony) {
-			args.push('--harmony');
-		}
-		var local = spawn('nodemon', args, { cwd: process.cwd(), env: env });
+	return readFile(process.env.HOME + '/.next-development-keys.json', { encoding: 'utf8' })
+		.then(function(env) {
+			env = JSON.parse(env);
+			var port = opts.port;
+			return new Promise(function(resolve, reject) {
 
-		local.stdout.on('data', toStdOut);
-		local.stderr.on('data', toStdErr);
-		local.on('error', reject);
-		local.on('close', resolve);
-	});
+				// Overwrite any key specified locally
+				Object.keys(process.env).forEach(function(key) {
+					env[key] = process.env[key];
+				});
+				env.PORT = port;
+				var args = ['server/app.js', '--watch server'];
+				if (opts.harmony) {
+					args.push('--harmony');
+				}
+				var local = spawn('nodemon', args, { cwd: process.cwd(), env: env });
+
+				local.stdout.on('data', toStdOut);
+				local.stderr.on('data', toStdErr);
+				local.on('error', reject);
+				local.on('close', resolve);
+			});
+		});
 }
 
 function runRouter(opts) {
@@ -54,15 +65,18 @@ function ensureRouterInstall() {
 }
 
 module.exports = function (opts) {
-	var localPort = process.env.PORT || 3002;
-	if (opts.local) {
-		return runLocal({ port: localPort });
-	}
-	return Promise.all([ ensureRouterInstall() ])
+	return downloadDevelopmentKeys()
 		.then(function() {
-			return Promise.all([
-				runLocal({ port: localPort }),
-				runRouter({ port: 5050, localPort: localPort })
-			]);
+			var localPort = process.env.PORT || 3002;
+			if (opts.local) {
+				return runLocal({ port: localPort });
+			}
+			return Promise.all([ ensureRouterInstall() ])
+				.then(function() {
+					return Promise.all([
+						runLocal({ port: localPort }),
+						runRouter({ port: 5050, localPort: localPort })
+					]);
+				});
 		});
 };
