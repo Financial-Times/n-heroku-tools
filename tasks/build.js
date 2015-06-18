@@ -32,7 +32,8 @@ function run(task, opts) {
 			console.log("Watching " + getGlob(task) + " and will trigger " + task);
 			gulp.watch(getGlob(task), [task]);
 		} else {
-			gulp.start([task], resolve);
+			gulp.start([task], resolve)
+				.on('error', reject);
 		}
 	});
 }
