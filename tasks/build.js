@@ -44,11 +44,12 @@ gulp.task('build-sass', function() {
 			buildFolder: buildFolder,
 			env: isDev ? 'development' : 'production'
 		})
-		.on('end', function () {
+		.on('end', function() {
 			console.log('build-sass completed');
 		})
-		.on('error', function () {
+		.on('error', function(err) {
 			console.warn('build-sass errored');
+			throw err;
 		});
 });
 
@@ -58,11 +59,12 @@ gulp.task('build-js', function() {
 			buildFolder: buildFolder,
 			env: 'development' // need to run as development as we do our own sourcemaps
 		})
-		.on('end', function () {
+		.on('end', function() {
 			console.log('build-js completed');
 		})
-		.on('error', function () {
+		.on('error', function() {
 			console.warn('build-js errored');
+			throw err;
 		});
 });
 
@@ -72,11 +74,12 @@ gulp.task('build-minify-js', ['build-js'], function() {
 		.pipe(extractSourceMap({ saveTo: buildFolder + mainJsSourceMapFile }))
 		.pipe(minify({ sourceMapIn: buildFolder + mainJsSourceMapFile, sourceMapOut: '/' + app + '/' + mainJsSourceMapFile }))
 		.pipe(gulp.dest(buildFolder))
-		.on('end', function () {
+		.on('end', function() {
 			console.log('build-minify-js completed');
 		})
-		.on('error', function () {
+		.on('error', function() {
 			console.log('build-minify-js errored');
+			throw err;
 		});
 });
 
