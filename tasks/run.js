@@ -73,6 +73,10 @@ module.exports = function (opts) {
 			}
 			return Promise.all([ ensureRouterInstall() ])
 				.then(function() {
+
+					// Silent update — throw away any errors
+					downloadDevelopmentKeys({ update: true });
+
 					return Promise.all([
 						runLocal({ port: localPort }),
 						runRouter({ port: 5050, localPort: localPort })
