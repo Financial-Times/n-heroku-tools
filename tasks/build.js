@@ -86,10 +86,10 @@ gulp.task('build-minify-js', ['build-js'], function() {
 module.exports = function(opts) {
 	isDev = opts.isDev;
 	var promises = [];
-	if (!skipSass) {
+	if (!opts.skipSass) {
 		promises.push(run('build-sass', opts));
 	}
-	if (!skipJs) {
+	if (!opts.skipJs) {
 		promises.push(run(opts.isDev ? 'build-js' : 'build-minify-js', opts));
 	}
 	return Promise.all(promises);
