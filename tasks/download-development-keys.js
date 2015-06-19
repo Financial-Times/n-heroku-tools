@@ -21,5 +21,8 @@ module.exports = function(opts) {
 		.then(function(data) {
 			console.log("Writing development keys to " + destination);
 			writeFileSync(destination, JSON.stringify(data, undefined, 2));
+		})
+		.catch(function(err) {
+			throw new Error("Could not download development keys from Heroku, make sure you have joined the ft-next-config-vars app");
 		});
 };
