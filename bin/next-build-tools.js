@@ -122,11 +122,15 @@ program
 	.command('build')
 	.option('--dev', 'Skip minification')
 	.option('--watch', 'Watches files')
+	.option('--skip-js', 'skips compilation of JavaScript')
+	.option('--skip-sass', 'skips compilation of Sass')
 	.description('build javascript and css')
 	.action(function(options) {
 		build({
 			isDev: options.dev,
-			watch: options.watch
+			watch: options.watch,
+			skipJs: options.skipJs,
+			skipSass: options.skipSass
 		}).catch(exit);
 	});
 
