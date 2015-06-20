@@ -3,7 +3,8 @@
 var configVarsKey = require('../lib/config-vars-key');
 var fetchres = require('fetchres');
 var fs = require('fs');
-var writeFileSync = fs.writeFileSync;
+var denodeify = require('denodeify');
+var writeFile = denodeify(fs.writeFile);
 var existsSync = fs.existsSync;
 
 module.exports = function(opts) {
@@ -20,7 +21,7 @@ module.exports = function(opts) {
 		.then(fetchres.json)
 		.then(function(data) {
 			console.log("Writing development keys to " + destination);
-			writeFileSync(destination, JSON.stringify(data, undefined, 2));
+			return writeFile(destination, JSON.stringify(data, undefined, 2));
 		})
 		.catch(function(err) {
 			throw new Error("Could not download development keys from Heroku, make sure you have joined the ft-next-config-vars app and have ‘operate’ permissions");
