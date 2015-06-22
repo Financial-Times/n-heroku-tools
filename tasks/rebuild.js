@@ -1,10 +1,7 @@
 'use strict';
 
 var fetchres = require('fetchres');
-var denodeify = require('denodeify');
-var fs = require('fs');
-var readFile = denodeify(fs.readFile);
-
+var keys = require('../lib/keys');
 var travisToken;
 
 function travisFetch(path, opts) {
@@ -38,8 +35,9 @@ function travisFetch(path, opts) {
 module.exports = function(options) {
 	var apps = options.apps;
 
-	return readFile(process.env.HOME + '/.github_token', { encoding: 'UTF8' })
-		.then(function(githubToken) {
+	return keys()
+		.then(function(env) {
+			var githubToken = env.GITHUB_AUTH_TOKEN;
 			return travisFetch('/auth/github', {
 				method: 'POST',
 				body: JSON.stringify({ github_token: githubToken })
