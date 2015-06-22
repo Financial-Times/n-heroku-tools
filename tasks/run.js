@@ -5,8 +5,7 @@ var spawn = require('child_process').spawn;
 var packageJson = require(process.cwd() + '/package.json');
 var normalizeName = require('../lib/normalize-name');
 var downloadDevelopmentKeys = require('./download-development-keys');
-var denodeify = require('denodeify');
-var readFile = denodeify(require('fs').readFile);
+var keys = require('../lib/keys');
 
 function toStdOut(data) {
 	process.stdout.write(data.toString());
@@ -17,9 +16,8 @@ function toStdErr(data) {
 }
 
 function runLocal(opts) {
-	return readFile(process.env.HOME + '/.next-development-keys.json', { encoding: 'utf8' })
+	return keys()
 		.then(function(env) {
-			env = JSON.parse(env);
 			var port = opts.port;
 			return new Promise(function(resolve, reject) {
 
