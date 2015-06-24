@@ -18,9 +18,11 @@ function obtVerify() {
 
 module.exports = function(opts) {
 	var checks = [
-		obtVerify(),
-		verifyNpmDeps()
+		obtVerify()
 	];
+	if (!opts.skipNpmChecks) {
+		verifyNpmDeps();
+	}
 
 	if (!opts.skipLayoutChecks) {
 		checks.push(verifyLayoutDeps({ layout: opts.layout }));
