@@ -94,7 +94,11 @@ program
 	.option('-l, --layout [type]', 'Only check dependencies whose templates are needed in this layout')
 	.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)')
 	.action(function(opts) {
-		verify({ skipLayoutChecks: opts.skipLayoutChecks, layout: opts.layout }).catch(exit);
+		verify({
+			skipLayoutChecks: opts.skipLayoutChecks,
+			skipNpmChecks: opts.skipNpmChecks,
+			layout: opts.layout
+		}).catch(exit);
 	});
 
 program
