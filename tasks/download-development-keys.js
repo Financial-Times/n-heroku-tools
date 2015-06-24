@@ -11,7 +11,7 @@ module.exports = function(opts) {
 	opts = opts || {};
 	var destination = process.env.HOME + "/.next-development-keys.json";
 	if (existsSync(destination) && !opts.update) {
-		console.log(destination + " already exists so not attempting to download & overwrite.  Re-run with `--update` to force an update");
+		console.log("Development keys found. Loading from " + destination);
 		return Promise.resolve();
 	}
 	return configVarsKey()
@@ -20,10 +20,10 @@ module.exports = function(opts) {
 		})
 		.then(fetchres.json)
 		.then(function(data) {
-			console.log("Writing development keys to " + destination);
+			console.log("Development keys downloaded. Writing to " + destination);
 			return writeFile(destination, JSON.stringify(data, undefined, 2));
 		})
 		.catch(function(err) {
-			throw new Error("Could not download development keys from Heroku, make sure you have joined the ft-next-config-vars app and have ‘operate’ permissions");
+			throw new Error("Could not download development keys from Heroku. Make sure you have joined the ft-next-config-vars app and have ‘operate’ permissions");
 		});
 };
