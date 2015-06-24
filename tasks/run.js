@@ -73,7 +73,7 @@ module.exports = function (opts) {
 				.then(function() {
 
 					// Silent update — throw away any errors
-					downloadDevelopmentKeys({ update: true });
+					downloadDevelopmentKeys();
 
 					return Promise.all([
 						runLocal({ port: localPort }),
