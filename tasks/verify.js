@@ -21,7 +21,7 @@ module.exports = function(opts) {
 		obtVerify()
 	];
 	if (!opts.skipNpmChecks) {
-		verifyNpmDeps()
+		verifyNpmDeps();
 	}
 
 	if (!opts.skipLayoutChecks) {
