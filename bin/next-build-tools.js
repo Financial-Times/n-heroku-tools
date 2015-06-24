@@ -13,6 +13,7 @@ var verify = require('../tasks/verify');
 var build = require('../tasks/build');
 var destroy = require('../tasks/destroy');
 var purge = require('../tasks/purge');
+var ingest = require('../tasks/ingest');
 var deployVcl = require('../tasks/deploy-vcl');
 var nightwatch = require('../tasks/nightwatch');
 var deployHashedAssets = require('../tasks/deploy-hashed-assets');
@@ -221,6 +222,15 @@ program
 	.action(function(apps) {
 		return rebuild({
 			apps: apps
+		}).catch(exit);
+	});
+
+program
+	.command('ingest [uuid...]')
+	.description('[Re-]ingest content into the Elastic Search cache [api v1 only]')
+	.action(function(uuids) {
+		return ingest({
+			uuids: uuids
 		}).catch(exit);
 	});
 
