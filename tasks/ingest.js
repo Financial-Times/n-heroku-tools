@@ -12,10 +12,10 @@ module.exports = function(options) {
 							method: "PUT",
 							timeout: 15 * 1000,
 							body: JSON.stringify({
-									id: uuid,
-									index: "v1_api_v2",
-									type: "item"
-							      }),
+								id: uuid,
+								index: "v1_api_v2",
+								type: "item"
+							}),
 							headers: {
 								'Content-Type': 'application/json'
 							}
