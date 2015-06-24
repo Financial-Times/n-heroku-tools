@@ -4,8 +4,10 @@ var exec = require('../lib/exec');
 var spawn = require('child_process').spawn;
 var packageJson = require(process.cwd() + '/package.json');
 var normalizeName = require('../lib/normalize-name');
-var downloadDevelopmentKeys = require('./download-development-keys');
+var downloadDevelopmentKeys = require('../lib/download-development-keys');
 var keys = require('../lib/keys');
+var developmentKeysPath = require('../lib/development-keys-path');
+var existsSync = require('fs').existsSync;
 
 function toStdOut(data) {
 	process.stdout.write(data.toString());
@@ -63,7 +65,7 @@ function ensureRouterInstall() {
 }
 
 module.exports = function (opts) {
-	return downloadDevelopmentKeys()
+	return (existsSync(developmentKeysPath) ? Promise.resolve() : downloadDevelopmentKeys())
 		.then(function() {
 			var localPort = process.env.PORT || 3002;
 			if (opts.local) {
@@ -73,7 +75,7 @@ module.exports = function (opts) {
 				.then(function() {
 
 					// Silent update — throw away any errors
-					downloadDevelopmentKeys({ update: true });
+					downloadDevelopmentKeys();
 
 					return Promise.all([
 						runLocal({ port: localPort }),
