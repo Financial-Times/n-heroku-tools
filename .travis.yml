@@ -2,7 +2,7 @@ sudo: false
 language: node_js
 script: make verify test
 node_js:
-- '0.12.2'
+- 0.12.2
 before_deploy:
 - npm-prepublish --verbose
 deploy:
@@ -14,3 +14,6 @@ deploy:
     all_branches: true
     tags: true
     repo: Financial-Times/next-build-tools
+notifications:
+  slack:
+    secure: xJi0x4seXSMwkkLyifm1GXUUAfWUbhtlf71kaugsZic1x1gXOK8CEyj0pfHxpJKOTtzE5hZ5B+uK8gu81ZNpKzNTUS9UlLibkolyeQXLEMUru/SJxJUuv/UDaNgkLcivVDvUnl/vOA1HmxuHjMcY17cyuFtatG0jdzbns5GPyG8=
