@@ -51,7 +51,7 @@ module.exports = function(opts) {
 							ContentType: determineContentType(file),
 							ACL: 'public-read',
 							Body: content,
-							CacheControl: opts.cache ? undefined : 'public, max-age=604800000'
+							CacheControl: opts.cache ? 'public, max-age=604800000' : undefined
 						}, function(err, data) {
 							if (err) {
 								reject(err);
