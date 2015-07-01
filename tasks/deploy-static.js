@@ -51,9 +51,7 @@ module.exports = function(opts) {
 							ContentType: determineContentType(file),
 							ACL: 'public-read',
 							Body: content,
-
-							// Copying next-build-tools for now
-							CacheControl: 'public, max-age=604800000'
+							CacheControl: opts.cache ? undefined : 'public, max-age=604800000'
 						}, function(err, data) {
 							if (err) {
 								reject(err);

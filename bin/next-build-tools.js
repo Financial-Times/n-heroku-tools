@@ -201,6 +201,7 @@ program
 	.option('--destination <destination>', 'Optionally add a prefix to the upload path')
 	.option('--region <region>', 'Optionally set the region (default to eu-west-1)')
 	.option('--bucket <bucket>', 'Optionally set the bucket (default to ft-next-qa)')
+	.option('--no-cache', 'Optionally don\'t set a far future cache')
 	.action(function(file, files, opts) {
 		files.unshift(file);
 		var region = opts.region || 'eu-west-1';
@@ -212,7 +213,8 @@ program
 			destination: destination,
 			region: region,
 			bucket: bucket,
-			strip: opts.strip
+			strip: opts.strip,
+			cache: opts.cache
 		}).catch(exit);
 	});
 
