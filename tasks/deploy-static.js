@@ -47,18 +47,18 @@ module.exports = function(opts) {
 				console.log("About to upload " + file + " to " + key);
 				return new Promise(function(resolve, reject) {
 					s3bucket.upload({
-							Key: key,
-							ContentType: determineContentType(file),
-							ACL: 'public-read',
-							Body: content,
-							CacheControl: opts.cache ? 'public, max-age=604800000' : undefined
-						}, function(err, data) {
-							if (err) {
-								reject(err);
-							} else {
-								resolve(data);
-							}
-						});
+						Key: key,
+						ContentType: determineContentType(file),
+						ACL: 'public-read',
+						Body: content,
+						CacheControl: opts.cacheControl || (opts.cache ? 'public, max-age=604800000' : undefined)
+					}, function(err, data) {
+						if (err) {
+							reject(err);
+						} else {
+							resolve(data);
+						}
+					});
 				})
 					.then(function(result) {
 						console.log("Successfully uploaded: " + key);
