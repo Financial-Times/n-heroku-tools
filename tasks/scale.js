@@ -1,10 +1,12 @@
 'use strict';
 
+require('array.prototype.find');
 var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
 var normalizeName = require('../lib/normalize-name');
 var fetchres = require('fetchres');
 var scale = require('haikro/lib/scale');
+
 
 module.exports = function(opts) {
 
@@ -21,10 +23,11 @@ module.exports = function(opts) {
 	}
 
 	function getProcessInfo(serviceData) {
-		return serviceData &&
-			serviceData.versions &&
-			serviceData.versions[Object.keys(serviceData.versions).length.toString()] &&
-			serviceData.versions[Object.keys(serviceData.versions).length.toString()].processes;
+		if (serviceData && serviceData.versions) {
+			return serviceData.versions[Object.keys(serviceData.versions).find(function (versionNumber) {
+				return serviceData.versions[versionNumber].isPrimary;
+			})].processes;
+		}
 	}
 
 	console.log('Scaling ' + target + ' using service registry information for ' + source);
@@ -44,7 +47,7 @@ module.exports = function(opts) {
 
 			var processInfo = getProcessInfo(serviceData);
 
-			if(!processInfo) {
+			if (!processInfo) {
 				throw new Error("Could not get process info for " + serviceData.name + ". Please check the service registry.");
 			}
 			var processProfiles = {
