@@ -24,6 +24,20 @@
         "platform": "WINDOWS"
       }
     },
+    "chrome43": {
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "version": "43.0",
+        "platform": "Windows 7"
+      }
+    },
+    "chrome42": {
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "version": "42.0",
+        "platform": "Windows 7"
+      }
+    },
     "chrome41": {
       "desiredCapabilities": {
         "browserName": "chrome",
@@ -35,6 +49,27 @@
       "desiredCapabilities": {
         "browserName": "chrome",
         "version": "40.0",
+        "platform": "Windows 7"
+      }
+    },
+    "firefox39": {
+      "desiredCapabilities": {
+        "browserName": "firefox",
+        "version": "39.0",
+        "platform": "Windows 7"
+      }
+    },
+    "firefox38": {
+      "desiredCapabilities": {
+        "browserName": "firefox",
+        "version": "38.0",
+        "platform": "Windows 7"
+      }
+    },
+    "firefox37": {
+      "desiredCapabilities": {
+        "browserName": "firefox",
+        "version": "37.0",
         "platform": "Windows 7"
       }
     },
