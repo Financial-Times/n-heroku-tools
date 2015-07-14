@@ -17,7 +17,7 @@
     "glob": "^5.0.3",
     "gulp": "^3.8.11",
     "gulp-watch": "^4.2.4",
-    "haikro": "i-like-robots/haikro#9c2194bae838d138eee65180cc02c0dee9c9d8bd",
+    "haikro": "i-like-robots/haikro#8c277c56fb7461621bad732bd4bdd801684237e2",
     "isomorphic-fetch": "^2.0.0",
     "next-gulp-tasks": "Financial-Times/next-gulp-tasks#v1",
     "origami-build-tools": "^3.1.0",
