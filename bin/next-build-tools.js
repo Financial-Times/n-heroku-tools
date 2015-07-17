@@ -73,8 +73,13 @@ program
 program
 	.command('scale [source] [target]')
 	.description('downloads process information from next-service-registry and scales/sizes the application servers')
-	.action(function(source, target) {
-		scale({ source: source, target: target }).catch(exit);
+	.option('-m, --minimal', 'scales each dyno to a single instance (useful for provisioning a test app)')
+	.action(function(source, target, options) {
+		scale({
+			source: source,
+			target: target,
+			minimal: options.minimal
+		}).catch(exit);
 	});
 
 program

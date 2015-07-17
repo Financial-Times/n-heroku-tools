@@ -58,8 +58,8 @@ module.exports = function(opts) {
 				if(processInfo.hasOwnProperty(process)) {
 					processProfiles.updates.push({
 						process: process,
-						size: processInfo[process].size,
-						quantity: processInfo[process].scale
+						size: opts.minimal ? 'standard-1X' : processInfo[process].size,
+						quantity: opts.minimal ? 1 : processInfo[process].scale
 					});
 				}
 			}
