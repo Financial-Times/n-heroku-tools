@@ -31,7 +31,7 @@ module.exports = function(opts) {
 		.then(function(keys) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
 			return Promise.all([
-				fetch('https://ft-next-config-vars.herokuapp.com/app/' + source, { headers: { Authorization: keys[1] } }),
+				fetch('https://ft-next-config-vars.herokuapp.com/production/' + source, { headers: { Authorization: keys[1] } }),
 				fetch('https://api.heroku.com/apps/' + source + '/config-vars', { headers: authorizedPostHeaders })
 			]);
 		})
