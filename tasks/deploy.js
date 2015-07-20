@@ -9,6 +9,7 @@ var deploy = require('haikro/lib/deploy');
 var logger = require('haikro/lib/logger');
 var normalizeName = require('../lib/normalize-name');
 var enablePreboot = require('../lib/enable-preboot');
+var waitForGtg = require('./wait-for-gtg');
 
 module.exports = function(opts) {
 	logger.setLevel('debug');
@@ -49,33 +50,7 @@ module.exports = function(opts) {
 		// Start polling
 		.then(function() {
 			if(!opts.skipGtg) {
-				return new Promise(function(resolve, reject) {
-					var timeout;
-					var checker;
-					function checkGtg() {
-						console.log('polling: http://' + name + '.herokuapp.com/__gtg');
-						fetch('http://' + name + '.herokuapp.com/__gtg', {
-								timeout: 2000,
-								follow: 0
-							})
-							.then(function(response) {
-								if (response.ok) {
-									console.log("poll ok");
-									clearTimeout(timeout);
-									clearInterval(checker);
-									resolve();
-								} else {
-									console.log("poll not ok");
-								}
-							});
-					}
-					checker = setInterval(checkGtg, 3000);
-					timeout = setTimeout(function() {
-						console.log("2 minutes passed, bailing");
-						reject(name + '.herokuapp.com/__gtg not responding with an ok response within 2 minutes');
-						clearInterval(checker);
-					}, 2*60*1000);
-				});
+				return waitForGtg({ app: name });
 			} else {
 				console.log("Skipping gtg check");
 			}
