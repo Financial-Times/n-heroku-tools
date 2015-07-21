@@ -98,12 +98,14 @@ program
 	.command('verify')
 	.option('--skip-layout-checks', 'run verify checks when the application doesn\'t have customer facing html pages')
 	.option('--skip-npm-checks', 'skip npm dependency checks')
+	.option('--skip-dotenv-check', 'skip checking `.gitignore` has `.env` in it')
 	.option('-l, --layout [type]', 'Only check dependencies whose templates are needed in this layout')
 	.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS.  Front End components should continue to use origami-build-tools verify)')
 	.action(function(opts) {
 		verify({
 			skipLayoutChecks: opts.skipLayoutChecks,
 			skipNpmChecks: opts.skipNpmChecks,
+			skipDotenvCheck: opts.skipDotenvCheck,
 			layout: opts.layout
 		}).catch(exit);
 	});
