@@ -5,6 +5,7 @@ var origamiBuildTools = require('origami-build-tools');
 var path = require('path');
 var verifyLayoutDeps = require('../lib/verify-layout-deps');
 var verifyNpmDeps = require('../lib/verify-npm-deps');
+var verifyDotenvInGitignore = require('../lib/verify-dotenv-in-gitignore');
 
 function obtVerify() {
 	return new Promise(function(resolve, reject) {
@@ -26,6 +27,10 @@ module.exports = function(opts) {
 
 	if (!opts.skipLayoutChecks) {
 		checks.push(verifyLayoutDeps({ layout: opts.layout }));
+	}
+
+	if (!opts.skipDotenvCheck) {
+		checks.push(verifyDotenvInGitignore());
 	}
 	return Promise.all(checks);
 };
