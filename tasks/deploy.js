@@ -11,6 +11,7 @@ var normalizeName = require('../lib/normalize-name');
 var enablePreboot = require('../lib/enable-preboot');
 var waitForGtg = require('./wait-for-gtg');
 var denodeify = require('denodeify');
+var fs = require('fs')
 var writeFile = denodeify(fs.writeFile);
 
 module.exports = function(opts) {
@@ -32,7 +33,7 @@ module.exports = function(opts) {
 			var buildPromise
 			if (opts.docker) {
 				console.log('Writing Dockerfile');
-				buildPromise = writeFile(process.cwd() + '/Dockerfile', "FROM jakechampion/next-heroku:0.12.6");
+				buildPromise = writeFile(process.cwd() + '/Dockerfile', 'FROM jakechampion/next-heroku:0.12.6');
 			} else {
 				buildPromise = build({ project: process.cwd() });
 			}
