@@ -10,6 +10,7 @@ var logger = require('haikro/lib/logger');
 var normalizeName = require('../lib/normalize-name');
 var enablePreboot = require('../lib/enable-preboot');
 var waitForGtg = require('./wait-for-gtg');
+var denodeify = require('denodeify');
 var writeFile = denodeify(fs.writeFile);
 
 module.exports = function(opts) {
