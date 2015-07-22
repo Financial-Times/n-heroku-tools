@@ -17,22 +17,50 @@ function toStdErr(data) {
 	process.stderr.write(data.toString());
 }
 
-function runLocal(opts) {
+
+function configure(opts) {
 	return keys()
 		.then(function(env) {
-			var port = opts.port;
+
+			// Overwrite any key specified locally
+			Object.keys(process.env).forEach(function(key) {
+				env[key] = process.env[key];
+			});
+			if (opts.port) {
+				env.PORT = opts.port;
+			}
+			return env;
+
+		});
+}
+
+function runLocal(opts) {
+	return configure(opts)
+		.then(function(env) {
+
 			return new Promise(function(resolve, reject) {
 
-				// Overwrite any key specified locally
-				Object.keys(process.env).forEach(function(key) {
-					env[key] = process.env[key];
-				});
-				env.PORT = port;
 				var args = ['server/app.js', '--watch server'];
 				if (opts.harmony) {
 					args.push('--harmony');
 				}
 				var local = spawn('nodemon', args, { cwd: process.cwd(), env: env });
+
+				local.stdout.on('data', toStdOut);
+				local.stderr.on('data', toStdErr);
+				local.on('error', reject);
+				local.on('close', resolve);
+			});
+		});
+}
+
+function runWorkers() {
+	return configure({})
+		.then(function(env) {
+
+			return new Promise(function(resolve, reject) {
+
+				var local = spawn('foreman', ['start'], { cwd: process.cwd(), env: env });
 
 				local.stdout.on('data', toStdOut);
 				local.stderr.on('data', toStdErr);
@@ -67,16 +95,20 @@ function ensureRouterInstall() {
 module.exports = function (opts) {
 	return (existsSync(developmentKeysPath) ? Promise.resolve() : downloadDevelopmentKeys())
 		.then(function() {
+			// Silent update — throw away any errors
+			downloadDevelopmentKeys();
+
 			var localPort = process.env.PORT || 3002;
 			if (opts.local) {
 				return runLocal({ port: localPort });
 			}
-			return Promise.all([ ensureRouterInstall() ])
+
+			if (opts.workers) {
+				return runWorkers();
+			}
+
+			return ensureRouterInstall()
 				.then(function() {
-
-					// Silent update — throw away any errors
-					downloadDevelopmentKeys();
-
 					return Promise.all([
 						runLocal({ port: localPort }),
 						runRouter({ port: 5050, localPort: localPort })
