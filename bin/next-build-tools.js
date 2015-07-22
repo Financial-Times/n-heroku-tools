@@ -40,6 +40,7 @@ program
 	.description('runs haikro deployment scripts with sensible defaults for Next projects')
 	.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
 	.option('--skip-enable-preboot', 'skip the preboot')
+	.option('--docker', 'deploy an app which uses docker')
 	.action(function(app, options) {
 		deploy({
 			app: app,
