@@ -39,12 +39,16 @@ module.exports = function(opts) {
 		})
 		.then(function() {
 			console.log('Next Build Tools going to deploy to ' + name);
-			return deploy({
-				app: name,
-				token: token,
-				project: process.cwd(),
-				commit: commit
-			});
+			if (opts.docker) {
+				return exec('heroku docker:release --app ' + name)
+			} else {
+				return deploy({
+					app: name,
+					token: token,
+					project: process.cwd(),
+					commit: commit
+				});
+			}
 		})
 
 		// Start polling
