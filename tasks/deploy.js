@@ -40,7 +40,7 @@ module.exports = function(opts) {
 		.then(function() {
 			console.log('Next Build Tools going to deploy to ' + name);
 			if (opts.docker) {
-				return exec('heroku docker:release --app ' + name)
+				return exec('heroku docker:release --app ' + name);
 			} else {
 				return deploy({
 					app: name,
