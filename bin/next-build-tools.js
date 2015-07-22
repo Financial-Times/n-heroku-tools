@@ -44,6 +44,7 @@ program
 	.action(function(app, options) {
 		deploy({
 			app: app,
+			docker: options.docker,
 			skipGtg: options.skipGtg,
 			skipEnablePreboot: options.skipEnablePreboot
 		}).catch(exit);
