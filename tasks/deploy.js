@@ -10,6 +10,7 @@ var logger = require('haikro/lib/logger');
 var normalizeName = require('../lib/normalize-name');
 var enablePreboot = require('../lib/enable-preboot');
 var waitForGtg = require('./wait-for-gtg');
+var writeFile = denodeify(fs.writeFile);
 
 module.exports = function(opts) {
 	logger.setLevel('debug');
@@ -27,7 +28,14 @@ module.exports = function(opts) {
 			return about({ name: name, commit: commit });
 		})
 		.then(function() {
-			var buildPromise = build({ project: process.cwd() });
+			var buildPromise
+			if (opts.docker) {
+				console.log('Writing Dockerfile');
+				buildPromise = writeFile(process.cwd() + '/Dockerfile', "FROM jakechampion/next-heroku:0.12.6");
+			} else {
+				buildPromise = build({ project: process.cwd() });
+			}
+
 			if (opts.skipEnablePreboot) {
 				console.log("Skipping enable preboot step");
 				return buildPromise;
