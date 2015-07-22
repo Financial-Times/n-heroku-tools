@@ -17,3 +17,6 @@ test: verify
 docs:
 	./scripts/generate-docs.sh > README.md
 
+install:
+	npm i
+
