@@ -14,6 +14,7 @@
     "es6-promise": "^2.0.1",
     "fastly": "Financial-Times/fastly#v2.5.0",
     "fetchres": "^1.0.4",
+    "foreman": "^1.4.1",
     "glob": "^5.0.3",
     "gulp": "^3.8.11",
     "gulp-watch": "^4.2.4",
