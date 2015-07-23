@@ -54,7 +54,7 @@ function runLocal(opts) {
 		});
 }
 
-function runWorkers() {
+function runProcfile() {
 	return configure({})
 		.then(function(env) {
 
@@ -103,8 +103,8 @@ module.exports = function (opts) {
 				return runLocal({ port: localPort });
 			}
 
-			if (opts.workers) {
-				return runWorkers();
+			if (opts.procfile) {
+				return runProcfile();
 			}
 
 			return ensureRouterInstall()

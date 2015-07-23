@@ -193,7 +193,7 @@ program
 	.description('Runs the local app through the router')
 	.option('-l, --local', 'Run the app but don\'t start the router')
 	.option('--harmony', 'Runs the local app with harmony')
-	.option('--workers', 'Runs the app with all workers (using foreman)')
+	.option('--procfile', 'Runs all processes specified in the Procfile')
 	.action(function(opts){
 		run(opts).catch(exit);
 	});
