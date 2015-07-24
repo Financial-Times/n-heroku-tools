@@ -13,6 +13,7 @@ var waitForGtg = require('./wait-for-gtg');
 var denodeify = require('denodeify');
 var fs = require('fs');
 var writeFile = denodeify(fs.writeFile);
+var exists = denodeify(fs.exists, function(exists) { return [undefined, exists] });
 
 module.exports = function(opts) {
 	logger.setLevel('debug');
@@ -32,8 +33,15 @@ module.exports = function(opts) {
 		.then(function() {
 			var buildPromise;
 			if (opts.docker) {
-				console.log('Writing Dockerfile');
-				buildPromise = writeFile(process.cwd() + '/Dockerfile', 'FROM jakechampion/next-heroku:0.12.6');
+				buildPromise = exists(process.cwd() + '/Dockerfile')
+					.then(function(dockerfileExists) {
+						if (dockerfileExists) {
+							console.log('Using existing Dockerfile');
+						} else {
+							console.log('Writing Dockerfile');
+							return writeFile(process.cwd() + '/Dockerfile', 'FROM jakechampion/next-heroku:0.12.6');
+						}
+					});
 			} else {
 				buildPromise = build({ project: process.cwd() });
 			}
