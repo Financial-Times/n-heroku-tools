@@ -39,7 +39,7 @@ module.exports = function(opts) {
 							console.log('Using existing Dockerfile');
 						} else {
 							console.log('Writing Dockerfile');
-							return writeFile(process.cwd() + '/Dockerfile', 'FROM jakechampion/next-heroku:0.12.6');
+							return writeFile(process.cwd() + '/Dockerfile', 'FROM financialtimes/next-heroku:0.12.6');
 						}
 					});
 			} else {
