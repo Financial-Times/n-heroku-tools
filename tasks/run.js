@@ -110,7 +110,7 @@ module.exports = function (opts) {
 			return ensureRouterInstall()
 				.then(function() {
 					return Promise.all([
-						runLocal({ port: localPort }),
+						runLocal({ port: localPort, harmony: opts.harmony }),
 						runRouter({ port: 5050, localPort: localPort })
 					]);
 				});
