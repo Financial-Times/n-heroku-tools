@@ -42,7 +42,7 @@ function runLocal(opts) {
 
 				var args = ['server/app.js', '--watch server'];
 				if (opts.harmony) {
-					args.push('--harmony');
+					args = ['--harmony'].concat(args);
 				}
 				var local = spawn('nodemon', args, { cwd: process.cwd(), env: env });
 
