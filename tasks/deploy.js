@@ -28,7 +28,16 @@ module.exports = function(opts) {
 		.then(function(results) {
 			token = results[0];
 			commit = results[1].trim();
-			return about({ name: name, commit: commit });
+			if (opts.docker) {
+				return exists(process.cwd() + '/public/__about.json')
+					.then(function(hasAbout) {
+						if (!hasAbout) {
+							throw new Error("/public/__about.json must be generated during the build step.");
+						}
+					});
+			} else {
+				return about({ name: name, commit: commit });
+			}
 		})
 		.then(function() {
 			var buildPromise;
