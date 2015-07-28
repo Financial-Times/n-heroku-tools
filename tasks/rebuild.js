@@ -74,7 +74,6 @@ module.exports = function(options) {
 				return lastMasterBuild(app)
 					.then(function(data) {
 						var lastBuild = data[0];
-						console.log(lastBuild);
 						if (lastBuild.status !== 'running' && lastBuild.status !== 'not_running') {
 							console.log("Clearing cache and triggering rebuild of last master build of " + app + " (" + lastBuild.committer_name + ": " + lastBuild.subject.replace(/\n/g, " ") + ")");
 							return clearCache(app).then(function() {
