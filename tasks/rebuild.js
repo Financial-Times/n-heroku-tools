@@ -84,7 +84,7 @@ module.exports = function(options) {
 						}
 					})
 					.catch(function() {
-						console.log("Skipped rebuild of " + app + " probably because Travis CI not set up for this repo");
+						console.log("Skipped rebuild of " + app + " probably because Circle CI not set up for this repo");
 					});
 			}));
 		});
