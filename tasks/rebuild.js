@@ -2,18 +2,15 @@
 
 var fetchres = require('fetchres');
 var keys = require('../lib/keys');
-var travisToken;
+var circleToken;
 
-function travisFetch(path, opts) {
+function circleFetch(path, opts) {
 	opts = opts || {};
-	path = 'https://api.travis-ci.org' + path;
+	path = 'https://circleci.com/api/v1' + path + '?circle-token=' + circleToken;
 	opts.timeout = opts.timeout || 3000;
 	opts.headers = opts.headers || {};
 	opts.headers['Content-Type'] = opts.headers['Content-Type'] || 'application/json';
-	opts.headers.Accept = opts.headers.Accept || 'application/vnd.travis-ci.2+json';
-	if (travisToken && !opts.headers.Authorization) {
-		opts.headers.Authorization = 'token ' + travisToken;
-	}
+	opts.headers.Accept = opts.headers.Accept || 'application/json';
 	return fetch(path, opts)
 		.then(function(res) {
 			var ok = res.ok;
@@ -32,26 +29,30 @@ function travisFetch(path, opts) {
 		});
 }
 
+function clearCache(project) {
+	return circleFetch('/project/Financial-Times/' + project + '/build-cache', { method: 'DELETE' });
+}
+
+function rebuildMasterBuild(project) {
+	return circleFetch('/project/Financial-Times/' + project + '/tree/master', { method: 'POST' });
+}
+
+function lastMasterBuild(project) {
+	return circleFetch('/project/Financial-Times/' + project + '/tree/master');
+}
+
 module.exports = function(options) {
 	var apps = options.apps;
 
 	return keys()
 		.then(function(env) {
-			var githubToken = env.GITHUB_AUTH_TOKEN;
-			return travisFetch('/auth/github', {
-				method: 'POST',
-				body: JSON.stringify({ github_token: githubToken })
-			});
-		})
-		.then(function(data) {
-			travisToken = data.access_token;
-
+			circleToken = env.CIRCLECI_REBUILD_KEY;
 			if (apps.length === 0) {
 				return fetch('http://next-registry.ft.com/services')
 					.then(fetchres.json)
 					.then(function(data) {
 						apps = data
-							.filter(function(apps) { return apps.versions['1']; })
+							.filter(function(apps) { return apps.versions['1'] || apps.versions['2']; })
 							.map(function(app) {
 								var repo;
 								Object.keys(app.versions).forEach(function(version) {
@@ -70,19 +71,20 @@ module.exports = function(options) {
 		.then(function() {
 			return Promise.all(apps.map(function(app) {
 				console.log("Considering whether to rebuild " + app);
-				return travisFetch('/repos/Financial-Times/' + app + '/branches/master')
+				return lastMasterBuild(app)
 					.then(function(data) {
-						if (data.branch.state === 'passed' || data.branch.state === 'failed') {
-							console.log("Triggering rebuild of last master build of " + app + " (" + data.commit.author_name + ": " + data.commit.message.replace(/\n/g, " ") + ")");
-							return travisFetch('/builds/' + data.branch.id + '/restart', {
-								method: 'POST'
-							});
+						var lastBuild = data[0];
+						if (lastBuild.status !== 'running' && lastBuild.status !== 'not_running') {
+							console.log("Clearing cache and triggering rebuild of last master build of " + app + " (" + lastBuild.committer_name + ": " + lastBuild.subject.replace(/\n/g, " ") + ")");
+							return clearCache(app).then(function() {
+									rebuildMasterBuild(app);
+								});
 						} else {
 							console.log("Skipping rebuild of " + app + " because job already exists.");
 						}
 					})
 					.catch(function() {
-						console.log("Skipped rebuild of " + app + " probably because Travis CI not set up for this repo");
+						console.log("Skipped rebuild of " + app + " probably because Circle CI not set up for this repo");
 					});
 			}));
 		});

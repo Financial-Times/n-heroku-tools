@@ -233,7 +233,7 @@ program
 
 program
 	.command('rebuild [apps...]')
-	.description('Trigger a rebuild of the latest master on Travis')
+	.description('Trigger a rebuild of the latest master on Circle')
 	.action(function(apps) {
 		return rebuild({
 			apps: apps
