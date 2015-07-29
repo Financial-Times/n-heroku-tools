@@ -7,11 +7,10 @@ before_deploy:
 - npm-prepublish --verbose
 deploy:
   provider: npm
-  email: matt@mattandre.ws
+  email: strategic.products@ft.com
   api_key:
-    secure: TCZYi8D2Z+nFtYmhxP7g3QvDVjFZFBdiSmnCnPafc6DmLkE3os3SZ+SfR0BB7JqL2mJYAjtw9ax1TTfnVOO5rehNX8K+5P4m7Tr00vzymqHpxgiLnHa8e0JVCdBBx/tgxDIPOVsYrSGSYm/X7xiItErfXeuskXXgWxczefpyDfY=
+    secure: VsJTIY8QoCROu0iL3CQFG8iSK3phbfs8YF15cGed4T891WcDNntJ+cSYgwxRqBZKBRNjYNtwc7KVygHa0QqQfekAAeqDQcKOgdm+yLSZ9+Lbzi92EsivtnxAUKa8DN9lHBTpEo30vdZuAfQ9hibwB+wVTwJgsrqrK6aCx3yQ0cQ=
   on:
-    all_branches: true
     tags: true
     repo: Financial-Times/next-build-tools
 notifications:
