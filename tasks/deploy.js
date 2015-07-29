@@ -13,7 +13,7 @@ var waitForGtg = require('./wait-for-gtg');
 var denodeify = require('denodeify');
 var fs = require('fs');
 var writeFile = denodeify(fs.writeFile);
-var exists = denodeify(fs.exists, function(exists) { return [undefined, exists] });
+var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
 
 module.exports = function(opts) {
 	logger.setLevel('debug');
@@ -23,12 +23,20 @@ module.exports = function(opts) {
 
 	return Promise.all([
 		herokuAuthToken(),
-		exec('git rev-parse HEAD')
+		exec('git rev-parse HEAD'),
+		exists(process.cwd() + '/public/__about.json')
 	])
 		.then(function(results) {
 			token = results[0];
 			commit = results[1].trim();
-			return about({ name: name, commit: commit });
+			var hasAbout = results[2];
+			if (opts.docker) {
+				if (!hasAbout) {
+					throw new Error("/public/__about.json must be generated during the build step.");
+				}
+			} else {
+				return about({ name: name, commit: commit });
+			}
 		})
 		.then(function() {
 			var buildPromise;
