@@ -39,10 +39,13 @@ function runLocal(opts) {
 		.then(function(env) {
 
 			return new Promise(function(resolve, reject) {
-
 				var args = ['server/app.js', '--watch server'];
+
 				if (opts.harmony) {
 					args = ['--harmony'].concat(args);
+				}
+				if (opts.debug) {
+					args = ['--debug'].concat(args);
 				}
 				var local = spawn('nodemon', args, { cwd: process.cwd(), env: env });
 
@@ -98,9 +101,11 @@ module.exports = function (opts) {
 			// Silent update — throw away any errors
 			downloadDevelopmentKeys();
 
-			var localPort = process.env.PORT || 3002;
+			var localOpts = opts;
+			var localPort = localOpts.port = process.env.PORT || 3002;
+
 			if (opts.local) {
-				return runLocal({ port: localPort });
+				return runLocal(localOpts);
 			}
 
 			if (opts.procfile) {
@@ -110,7 +115,7 @@ module.exports = function (opts) {
 			return ensureRouterInstall()
 				.then(function() {
 					return Promise.all([
-						runLocal({ port: localPort, harmony: opts.harmony }),
+						runLocal(localOpts),
 						runRouter({ port: 5050, localPort: localPort })
 					]);
 				});
