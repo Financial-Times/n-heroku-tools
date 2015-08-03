@@ -124,10 +124,8 @@
     },
     "iphone6_plus": {
       "desiredCapabilities": {
-        "browserName": "iPhone 6 Plus",
-        "platform": "OS X 10.10",
         "version": "8.3",
-        "deviceName": "iPhone Simulator",
+        "deviceName": "iPhone 6 Plus",
         "deviceOrientation": "portrait"
       }
     },
