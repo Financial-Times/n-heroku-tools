@@ -122,28 +122,11 @@
         "platform": "OS X 10.9"
       }
     },
-    "iphone8_1": {
+    "iphone6_plus": {
       "desiredCapabilities": {
-        "platform": "OS X 10.10",
-        "version": "8.1",
-        "deviceName": "iPhone Simulator",
-        "device-orientation": "portrait"
-      }
-    },
-    "iphone7": {
-      "desiredCapabilities": {
-        "platform": "OS X 10.10",
-        "version": "7.0",
-        "deviceName": "iPhone Simulator",
-        "device-orientation": "portrait"
-      }
-    },
-    "ipad8_0": {
-      "desiredCapabilities": {
-        "platform": "OS X 10.10",
-        "version": "8.0",
-        "deviceName": "iPad Simulator",
-        "device-orientation": "portrait"
+        "version": "8.3",
+        "deviceName": "iPhone 6 Plus",
+        "deviceOrientation": "portrait"
       }
     },
     "Android_Nexus7HD": {
