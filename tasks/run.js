@@ -34,18 +34,16 @@ function configure(opts) {
 		});
 }
 
+
 function runLocal(opts) {
 	return configure(opts)
 		.then(function(env) {
 
 			return new Promise(function(resolve, reject) {
-				var args = ['server/app.js', '--watch server'];
 
+				var args = ['server/app.js', '--watch server'];
 				if (opts.harmony) {
-					args = ['--harmony'].concat(args);
-				}
-				if (opts.debug) {
-					args = ['--debug'].concat(args);
+					args.push('--harmony');
 				}
 				var local = spawn('nodemon', args, { cwd: process.cwd(), env: env });
 
@@ -74,20 +72,25 @@ function runProcfile() {
 }
 
 function runRouter(opts) {
-	var localPort = opts.localPort;
-	var port = opts.port;
-	return new Promise(function(resolve, reject) {
-		var env = Object.create(process.env);
-		env.DEBUG = 'proxy';
-		env.PORT = port;
-		env[normalizeName(packageJson.name, { version: false })] = localPort;
-		var router = spawn('next-router', { env: env });
+	var envVars = {
+		DEBUG: 'proxy',
+		PORT: opts.port
+	};
 
-		router.stdout.on('data', toStdOut);
-		router.stderr.on('data', toStdErr);
-		router.on('error', reject);
-		router.on('close', resolve);
-	});
+	envVars[normalizeName(packageJson.name, { version: false })] = opts.localPort;
+
+	return configure(envVars)
+		.then(function (env) {
+			return new Promise(function(resolve, reject) {
+
+				var router = spawn('next-router', { env: env });
+
+				router.stdout.on('data', toStdOut);
+				router.stderr.on('data', toStdErr);
+				router.on('error', reject);
+				router.on('close', resolve);
+			});
+		});
 }
 
 function ensureRouterInstall() {
@@ -101,11 +104,9 @@ module.exports = function (opts) {
 			// Silent update — throw away any errors
 			downloadDevelopmentKeys();
 
-			var localOpts = opts;
-			var localPort = localOpts.port = process.env.PORT || 3002;
-
+			var localPort = process.env.PORT || 3002;
 			if (opts.local) {
-				return runLocal(localOpts);
+				return runLocal({ port: localPort });
 			}
 
 			if (opts.procfile) {
@@ -115,7 +116,7 @@ module.exports = function (opts) {
 			return ensureRouterInstall()
 				.then(function() {
 					return Promise.all([
-						runLocal(localOpts),
+						runLocal({ port: localPort }),
 						runRouter({ port: 5050, localPort: localPort })
 					]);
 				});
