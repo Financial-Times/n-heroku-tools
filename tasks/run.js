@@ -17,11 +17,9 @@ function toStdErr(data) {
 	process.stderr.write(data.toString());
 }
 
-
-function configure(opts) {
+function configureAndSpawn (opts, func) {
 	return keys()
 		.then(function(env) {
-
 			// Overwrite any key specified locally
 			Object.keys(process.env).forEach(function(key) {
 				env[key] = process.env[key];
@@ -30,63 +28,47 @@ function configure(opts) {
 				env.PORT = opts.port;
 			}
 			return env;
+		})
+		.then(function(env) {
+			var processToRun = func(env);
 
+			return new Promise(function(resolve, reject) {
+				var local = spawn.apply(null, processToRun);
+
+				local.stdout.on('data', toStdOut);
+				local.stderr.on('data', toStdErr);
+				local.on('error', reject);
+				local.on('close', resolve);
+			});
 		});
 }
 
 function runLocal(opts) {
-	return configure(opts)
-		.then(function(env) {
-
-			return new Promise(function(resolve, reject) {
-				var args = ['server/app.js', '--watch server'];
-
-				if (opts.harmony) {
-					args = ['--harmony'].concat(args);
-				}
-				if (opts.debug) {
-					args = ['--debug'].concat(args);
-				}
-				var local = spawn('nodemon', args, { cwd: process.cwd(), env: env });
-
-				local.stdout.on('data', toStdOut);
-				local.stderr.on('data', toStdErr);
-				local.on('error', reject);
-				local.on('close', resolve);
-			});
-		});
+	return configureAndSpawn(opts, function(env) {
+		var args = ['server/app.js', '--watch server'];
+		if (opts.harmony) {
+			args.push('--harmony');
+		}
+		return ['nodemon', args, { cwd: process.cwd(), env: env }];
+	});
 }
 
 function runProcfile() {
-	return configure({})
-		.then(function(env) {
-
-			return new Promise(function(resolve, reject) {
-
-				var local = spawn('foreman', ['start'], { cwd: process.cwd(), env: env });
-
-				local.stdout.on('data', toStdOut);
-				local.stderr.on('data', toStdErr);
-				local.on('error', reject);
-				local.on('close', resolve);
-			});
-		});
+	return configureAndSpawn({}, function(env) {
+		return ['foreman', ['start'], { cwd: process.cwd(), env: env }];
+	});
 }
 
 function runRouter(opts) {
-	var localPort = opts.localPort;
-	var port = opts.port;
-	return new Promise(function(resolve, reject) {
-		var env = Object.create(process.env);
-		env.DEBUG = 'proxy';
-		env.PORT = port;
-		env[normalizeName(packageJson.name, { version: false })] = localPort;
-		var router = spawn('next-router', { env: env });
+	var envVars = {
+		DEBUG: 'proxy',
+		PORT: opts.port
+	};
 
-		router.stdout.on('data', toStdOut);
-		router.stderr.on('data', toStdErr);
-		router.on('error', reject);
-		router.on('close', resolve);
+	envVars[normalizeName(packageJson.name, { version: false })] = opts.localPort;
+
+	return configureAndSpawn(envVars, function (env) {
+		return ['next-router', { env: env }];
 	});
 }
 
@@ -101,11 +83,9 @@ module.exports = function (opts) {
 			// Silent update — throw away any errors
 			downloadDevelopmentKeys();
 
-			var localOpts = opts;
-			var localPort = localOpts.port = process.env.PORT || 3002;
-
+			var localPort = process.env.PORT || 3002;
 			if (opts.local) {
-				return runLocal(localOpts);
+				return runLocal({ port: localPort });
 			}
 
 			if (opts.procfile) {
@@ -115,7 +95,7 @@ module.exports = function (opts) {
 			return ensureRouterInstall()
 				.then(function() {
 					return Promise.all([
-						runLocal(localOpts),
+						runLocal({ port: localPort }),
 						runRouter({ port: 5050, localPort: localPort })
 					]);
 				});
