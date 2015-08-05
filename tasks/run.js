@@ -17,11 +17,9 @@ function toStdErr(data) {
 	process.stderr.write(data.toString());
 }
 
-
-function configure(opts) {
+function configureAndSpawn (opts, func) {
 	return keys()
 		.then(function(env) {
-
 			// Overwrite any key specified locally
 			Object.keys(process.env).forEach(function(key) {
 				env[key] = process.env[key];
@@ -30,22 +28,12 @@ function configure(opts) {
 				env.PORT = opts.port;
 			}
 			return env;
-
-		});
-}
-
-
-function runLocal(opts) {
-	return configure(opts)
+		})
 		.then(function(env) {
+			var processToRun = func(env);
 
 			return new Promise(function(resolve, reject) {
-
-				var args = ['server/app.js', '--watch server'];
-				if (opts.harmony) {
-					args.push('--harmony');
-				}
-				var local = spawn('nodemon', args, { cwd: process.cwd(), env: env });
+				var local = spawn.apply(null, processToRun);
 
 				local.stdout.on('data', toStdOut);
 				local.stderr.on('data', toStdErr);
@@ -53,22 +41,22 @@ function runLocal(opts) {
 				local.on('close', resolve);
 			});
 		});
+}
+
+function runLocal(opts) {
+	return configureAndSpawn(opts, function(env) {
+		var args = ['server/app.js', '--watch server'];
+		if (opts.harmony) {
+			args.push('--harmony');
+		}
+		return ['nodemon', args, { cwd: process.cwd(), env: env }];
+	});
 }
 
 function runProcfile() {
-	return configure({})
-		.then(function(env) {
-
-			return new Promise(function(resolve, reject) {
-
-				var local = spawn('foreman', ['start'], { cwd: process.cwd(), env: env });
-
-				local.stdout.on('data', toStdOut);
-				local.stderr.on('data', toStdErr);
-				local.on('error', reject);
-				local.on('close', resolve);
-			});
-		});
+	return configureAndSpawn({}, function(env) {
+		return ['foreman', ['start'], { cwd: process.cwd(), env: env }];
+	});
 }
 
 function runRouter(opts) {
@@ -79,18 +67,9 @@ function runRouter(opts) {
 
 	envVars[normalizeName(packageJson.name, { version: false })] = opts.localPort;
 
-	return configure(envVars)
-		.then(function (env) {
-			return new Promise(function(resolve, reject) {
-
-				var router = spawn('next-router', { env: env });
-
-				router.stdout.on('data', toStdOut);
-				router.stderr.on('data', toStdErr);
-				router.on('error', reject);
-				router.on('close', resolve);
-			});
-		});
+	return configureAndSpawn(envVars, function (env) {
+		return ['next-router', { env: env }];
+	});
 }
 
 function ensureRouterInstall() {
