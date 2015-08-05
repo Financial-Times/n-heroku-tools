@@ -24,9 +24,10 @@ function configureAndSpawn (opts, func) {
 			Object.keys(process.env).forEach(function(key) {
 				env[key] = process.env[key];
 			});
-			if (opts.port) {
-				env.PORT = opts.port;
-			}
+
+			Object.keys(opts).forEach(function(key) {
+				env[key] = opts[key];
+			});
 			return env;
 		})
 		.then(function(env) {
@@ -62,11 +63,10 @@ function runProcfile() {
 function runRouter(opts) {
 	var envVars = {
 		DEBUG: 'proxy',
-		PORT: opts.port
+		PORT: opts.PORT
 	};
 
 	envVars[normalizeName(packageJson.name, { version: false })] = opts.localPort;
-
 	return configureAndSpawn(envVars, function (env) {
 		return ['next-router', { env: env }];
 	});
@@ -85,7 +85,7 @@ module.exports = function (opts) {
 
 			var localPort = process.env.PORT || 3002;
 			if (opts.local) {
-				return runLocal({ port: localPort });
+				return runLocal({ PORT: localPort });
 			}
 
 			if (opts.procfile) {
@@ -95,8 +95,8 @@ module.exports = function (opts) {
 			return ensureRouterInstall()
 				.then(function() {
 					return Promise.all([
-						runLocal({ port: localPort }),
-						runRouter({ port: 5050, localPort: localPort })
+						runLocal({ PORT: localPort }),
+						runRouter({ PORT: 5050, localPort: localPort })
 					]);
 				});
 		});
