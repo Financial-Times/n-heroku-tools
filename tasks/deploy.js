@@ -80,7 +80,10 @@ module.exports = function(opts) {
 		// Start polling
 		.then(function() {
 			if(!opts.skipGtg) {
-				return waitForGtg({ app: name });
+				return waitForGtg({
+					app: name,
+					urls: opts.gtgUrls
+				});
 			} else {
 				console.log("Skipping gtg check");
 			}
