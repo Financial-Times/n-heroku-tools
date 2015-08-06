@@ -9,6 +9,9 @@ require('es6-promise').polyfill();
 function replaceVars(vcls, vars) {
 	return vcls.map(function(vcl) {
 		vars.forEach(function(v) {
+			if (!process.env[v]) {
+				throw 'Environment variable ' + v + ' is required to deploy this vcl';
+			}
 			var regex = new RegExp('\\\$\\\{'+ v.trim()+'\\\}', 'gm');
 			vcl.content = vcl.content.replace(regex, process.env[v]);
 		});
@@ -25,7 +28,6 @@ module.exports = function(folder, opts) {
 	if(!fastlyApiKey) {
 		throw new Error("Fastly API Key Required");
 	}
-
 
 	var options = opts || {};
 	var mainVcl = options.main || 'main.vcl';
