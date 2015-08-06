@@ -41,11 +41,13 @@ program
 	.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
 	.option('--skip-enable-preboot', 'skip the preboot')
 	.option('--docker', 'deploy an app which uses docker')
+	.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', list)
 	.action(function(app, options) {
 		deploy({
 			app: app,
 			docker: options.docker,
 			skipGtg: options.skipGtg,
+			gtgUrls: options.gtgUrls,
 			skipEnablePreboot: options.skipEnablePreboot
 		}).catch(exit);
 	});
