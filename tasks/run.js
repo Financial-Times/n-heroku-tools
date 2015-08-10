@@ -29,9 +29,7 @@ function configureAndSpawn (opts, func) {
 			Object.keys(opts).forEach(function(key) {
 				env[key] = opts[key];
 			});
-			return env;
-		})
-		.then(function(env) {
+
 			var processToRun = func(env);
 
 			return new Promise(function(resolve, reject) {
@@ -97,24 +95,21 @@ module.exports = function (opts) {
 			downloadDevelopmentKeys();
 
 			var localPort = process.env.PORT || 3002;
+
 			if (opts.local) {
 				return runLocal({ PORT: localPort, harmony: opts.harmony });
-			}
-
-			if (opts.procfile) {
+			} else if (opts.procfile) {
 				return runProcfile();
-			}
-
-			if (opts.script) {
+			} else if (opts.script) {
 				return runScript({script: opts.script, harmony: opts.harmony});
+			} else {
+				return ensureRouterInstall()
+					.then(function() {
+						return Promise.all([
+							runLocal({ PORT: localPort, harmony: opts.harmony }),
+							runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony })
+						]);
+					});
 			}
-
-			return ensureRouterInstall()
-				.then(function() {
-					return Promise.all([
-						runLocal({ PORT: localPort, harmony: opts.harmony }),
-						runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony })
-					]);
-				});
 		});
 };
