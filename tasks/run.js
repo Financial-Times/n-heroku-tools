@@ -8,6 +8,7 @@ var downloadDevelopmentKeys = require('../lib/download-development-keys');
 var keys = require('../lib/keys');
 var developmentKeysPath = require('../lib/development-keys-path');
 var existsSync = require('fs').existsSync;
+var path = require('path');
 
 function toStdOut(data) {
 	process.stdout.write(data.toString());
@@ -54,6 +55,17 @@ function runLocal(opts) {
 	});
 }
 
+function runScript(opts) {
+	return configureAndSpawn({}, function(env) {
+		var args = [path.join(process.cwd(), opts.script)];
+		if (opts.harmony) {
+			args.push('--harmony');
+		}
+		return ['node', args, { cwd: process.cwd(), env: env }];
+	});
+}
+
+
 function runProcfile() {
 	return configureAndSpawn({}, function(env) {
 		return ['foreman', ['start'], { cwd: process.cwd(), env: env }];
@@ -80,23 +92,28 @@ function ensureRouterInstall() {
 module.exports = function (opts) {
 	return (existsSync(developmentKeysPath) ? Promise.resolve() : downloadDevelopmentKeys())
 		.then(function() {
+
 			// Silent update — throw away any errors
 			downloadDevelopmentKeys();
 
 			var localPort = process.env.PORT || 3002;
 			if (opts.local) {
-				return runLocal({ PORT: localPort });
+				return runLocal({ PORT: localPort, harmony: opts.harmony });
 			}
 
 			if (opts.procfile) {
 				return runProcfile();
 			}
 
+			if (opts.script) {
+				return runScript({script: opts.script, harmony: opts.harmony});
+			}
+
 			return ensureRouterInstall()
 				.then(function() {
 					return Promise.all([
-						runLocal({ PORT: localPort }),
-						runRouter({ PORT: 5050, localPort: localPort })
+						runLocal({ PORT: localPort, harmony: opts.harmony }),
+						runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony })
 					]);
 				});
 		});

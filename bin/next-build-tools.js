@@ -197,6 +197,7 @@ program
 	.option('--harmony', 'Runs the local app with harmony')
 	.option('--debug', 'Runs the local app with debug flag')
 	.option('--procfile', 'Runs all processes specified in the Procfile')
+	.option('-s, --script <file>', 'Runs a single javascript file, but with standard env vars etc. all set up')
 	.action(function(opts){
 		run(opts).catch(exit);
 	});
