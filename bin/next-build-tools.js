@@ -142,7 +142,7 @@ program
 	.option('--watch', 'Watches files')
 	.option('--skip-js', 'skips compilation of JavaScript')
 	.option('--skip-sass', 'skips compilation of Sass')
-	.option('--skip-worker', 'skips compilation of Service Worker JavaScript')
+	.option('--worker', 'additionally builds Service Worker JavaScript')
 	.description('build javascript and css')
 	.action(function(options) {
 		build({
@@ -150,7 +150,7 @@ program
 			watch: options.watch,
 			skipJs: options.skipJs,
 			skipSass: options.skipSass,
-			skipWorker: options.skipWorker
+			worker: options.worker
 		}).catch(exit);
 	});
 

@@ -67,12 +67,8 @@ function buildJs(jsFile) {
 		console.log('build-js completed for ' + jsFile);
 	})
 	.on('error', function(err) {
-		if(err.message.indexOf('Cannot find module' === 0)) {
-			console.warn('File:' + jsFile + ' does not exist. Skipping.');
-		} else {
-			console.warn('build-js errored for ' + jsFile);
-			throw err;
-		}
+		console.warn('build-js errored for ' + jsFile);
+		throw err;
 	});
 }
 
@@ -104,7 +100,6 @@ gulp.task('build-minify-js', ['build-js'], function() {
 });
 
 gulp.task('build-minify-worker', ['build-worker'], function() {
-
 	return buildMinifyJs(workerJsFile, workerJsSourceMapFile);
 });
 
@@ -117,7 +112,7 @@ module.exports = function(opts) {
 	if (!opts.skipJs) {
 		promises.push(run(opts.isDev ? 'build-js' : 'build-minify-js', opts));
 	}
-	if(!opts.skipWorker) {
+	if(opts.worker) {
 		promises.push(run(opts.isDev ? 'build-worker' : 'build-minify-worker', opts));
 	}
 	return Promise.all(promises);
