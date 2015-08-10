@@ -10,10 +10,12 @@ var minify = require('next-gulp-tasks').minify;
 var packageJson = require(process.cwd() + '/package.json');
 
 var mainJsFile = 'main.js';
+var workerJsFile = 'worker.js';
 var mainScssFile = 'main.scss';
 var sourceFolder = './client/';
 var buildFolder = './public/';
 var mainJsSourceMapFile = 'main.js.map';
+var workerJsSourceMapFile = 'worker.js.map';
 var isDev = false;
 
 function getGlob(task) {
@@ -21,6 +23,7 @@ function getGlob(task) {
 		case 'build-sass':
 			return './client/**/*.scss';
 		case 'build-js':
+		case 'build-worker':
 		case 'build-minify-js':
 			return './client/**/*.js';
 	}
@@ -53,34 +56,56 @@ gulp.task('build-sass', function() {
 		});
 });
 
-gulp.task('build-js', function() {
+function buildJs(jsFile) {
 	return obt.build.js(gulp, {
-			js: sourceFolder + mainJsFile,
-			buildFolder: buildFolder,
-			env: 'development' // need to run as development as we do our own sourcemaps
-		})
+		js: sourceFolder + jsFile,
+		buildFolder: buildFolder,
+		buildJs: jsFile,
+		env: 'development' // need to run as development as we do our own sourcemaps
+	})
+	.on('end', function() {
+		console.log('build-js completed for ' + jsFile);
+	})
+	.on('error', function(err) {
+		if(err.message.indexOf('Cannot find module' === 0)) {
+			console.warn('File:' + jsFile + ' does not exist. Skipping.');
+		} else {
+			console.warn('build-js errored for ' + jsFile);
+			throw err;
+		}
+	});
+}
+
+function buildMinifyJs(jsFile, sourceMapFile) {
+	var app = normalizeName(packageJson.name, { version: false });
+	return gulp.src(buildFolder + jsFile)
+		.pipe(extractSourceMap({ saveTo: buildFolder + sourceMapFile }))
+		.pipe(minify({ sourceMapIn: buildFolder + sourceMapFile, sourceMapOut: '/' + app + '/' + sourceMapFile }))
+		.pipe(gulp.dest(buildFolder))
 		.on('end', function() {
-			console.log('build-js completed');
+			console.log('build-minify-js completed for ' + jsFile);
 		})
 		.on('error', function(err) {
-			console.warn('build-js errored');
+			console.log('build-minify-js errored' + jsFile);
 			throw err;
 		});
+}
+
+gulp.task('build-js', function() {
+	return buildJs(mainJsFile);
+});
+
+gulp.task('build-worker', function() {
+	return buildJs(workerJsFile);
 });
 
 gulp.task('build-minify-js', ['build-js'], function() {
-	var app = normalizeName(packageJson.name, { version: false });
-	return gulp.src(buildFolder + mainJsFile)
-		.pipe(extractSourceMap({ saveTo: buildFolder + mainJsSourceMapFile }))
-		.pipe(minify({ sourceMapIn: buildFolder + mainJsSourceMapFile, sourceMapOut: '/' + app + '/' + mainJsSourceMapFile }))
-		.pipe(gulp.dest(buildFolder))
-		.on('end', function() {
-			console.log('build-minify-js completed');
-		})
-		.on('error', function(err) {
-			console.log('build-minify-js errored');
-			throw err;
-		});
+	return buildMinifyJs(mainJsFile, mainJsSourceMapFile);
+});
+
+gulp.task('build-minify-worker', ['build-worker'], function() {
+
+	return buildMinifyJs(workerJsFile, workerJsSourceMapFile);
 });
 
 module.exports = function(opts) {
@@ -91,6 +116,9 @@ module.exports = function(opts) {
 	}
 	if (!opts.skipJs) {
 		promises.push(run(opts.isDev ? 'build-js' : 'build-minify-js', opts));
+	}
+	if(!opts.skipWorker) {
+		promises.push(run(opts.isDev ? 'build-worker' : 'build-minify-worker', opts));
 	}
 	return Promise.all(promises);
 };
