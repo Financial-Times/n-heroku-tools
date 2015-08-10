@@ -38,7 +38,10 @@ module.exports = function(opts) {
 		.then(fetchres.json)
 		.catch(function(err) {
 			if (err instanceof fetchres.BadServerResponseError) {
-				throw new Error("Could not download config vars for " + source + ", check it's set up in ft-next-config-vars and that you have already joined it on Heroku");
+				if (err.message === 404) {
+					throw new Error("Could not download config vars for " + source + ", check it's set up in ft-next-config-vars");
+				}
+				throw new Error("Could not download config vars for " + source + ", check you have already joined it on Heroku");
 			} else {
 				throw err;
 			}
