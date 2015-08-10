@@ -8,6 +8,7 @@ var downloadDevelopmentKeys = require('../lib/download-development-keys');
 var keys = require('../lib/keys');
 var developmentKeysPath = require('../lib/development-keys-path');
 var existsSync = require('fs').existsSync;
+var path = require('path');
 
 function toStdOut(data) {
 	process.stdout.write(data.toString());
@@ -28,9 +29,7 @@ function configureAndSpawn (opts, func) {
 			Object.keys(opts).forEach(function(key) {
 				env[key] = opts[key];
 			});
-			return env;
-		})
-		.then(function(env) {
+
 			var processToRun = func(env);
 
 			return new Promise(function(resolve, reject) {
@@ -53,6 +52,17 @@ function runLocal(opts) {
 		return ['nodemon', args, { cwd: process.cwd(), env: env }];
 	});
 }
+
+function runScript(opts) {
+	return configureAndSpawn({}, function(env) {
+		var args = [path.join(process.cwd(), opts.script)];
+		if (opts.harmony) {
+			args.push('--harmony');
+		}
+		return ['node', args, { cwd: process.cwd(), env: env }];
+	});
+}
+
 
 function runProcfile() {
 	return configureAndSpawn({}, function(env) {
@@ -80,24 +90,26 @@ function ensureRouterInstall() {
 module.exports = function (opts) {
 	return (existsSync(developmentKeysPath) ? Promise.resolve() : downloadDevelopmentKeys())
 		.then(function() {
+
 			// Silent update — throw away any errors
 			downloadDevelopmentKeys();
 
 			var localPort = process.env.PORT || 3002;
+
 			if (opts.local) {
-				return runLocal({ PORT: localPort });
-			}
-
-			if (opts.procfile) {
+				return runLocal({ PORT: localPort, harmony: opts.harmony });
+			} else if (opts.procfile) {
 				return runProcfile();
+			} else if (opts.script) {
+				return runScript({script: opts.script, harmony: opts.harmony});
+			} else {
+				return ensureRouterInstall()
+					.then(function() {
+						return Promise.all([
+							runLocal({ PORT: localPort, harmony: opts.harmony }),
+							runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony })
+						]);
+					});
 			}
-
-			return ensureRouterInstall()
-				.then(function() {
-					return Promise.all([
-						runLocal({ PORT: localPort }),
-						runRouter({ PORT: 5050, localPort: localPort })
-					]);
-				});
 		});
 };
