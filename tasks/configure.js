@@ -31,20 +31,28 @@ module.exports = function(opts) {
 		.then(function(keys) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
 			return Promise.all([
-				fetch('https://ft-next-config-vars.herokuapp.com/production/' + source, { headers: { Authorization: keys[1] } }),
+				fetch('https://ft-next-config-vars.herokuapp.com/production/' + source, { headers: { Authorization: keys[1] } })
+					.then(fetchres.json)
+					.catch(function(err) {
+						if (err instanceof fetchres.BadServerResponseError) {
+							if (err.message === 404) {
+								throw new Error("Could not download config vars for " + source + ", check it's set up in ft-next-config-vars");
+							}
+							throw new Error("Could not download config vars for " + source + ", check you have already joined it on Heroku");
+						} else {
+							throw err;
+						}
+					}),
 				fetch('https://api.heroku.com/apps/' + source + '/config-vars', { headers: authorizedPostHeaders })
+					.then(fetchres.json)
+					.catch(function(err) {
+						if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
+							throw new Error(source + " app needs to be manually added to heroku before it, or any branches, can be deployed");
+						} else {
+							throw err;
+						}
+					})
 			]);
-		})
-		.then(fetchres.json)
-		.catch(function(err) {
-			if (err instanceof fetchres.BadServerResponseError) {
-				if (err.message === 404) {
-					throw new Error("Could not download config vars for " + source + ", check it's set up in ft-next-config-vars");
-				}
-				throw new Error("Could not download config vars for " + source + ", check you have already joined it on Heroku");
-			} else {
-				throw err;
-			}
 		})
 		.then(function(data) {
 			var desired = data[0];
