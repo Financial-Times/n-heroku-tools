@@ -81,8 +81,7 @@ module.exports = function(opts) {
 		.then(function() {
 			if(!opts.skipGtg) {
 				return waitForGtg({
-					app: name,
-					urls: opts.gtgUrls
+					app: name
 				});
 			} else {
 				console.log("Skipping gtg check");
