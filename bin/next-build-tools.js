@@ -45,7 +45,7 @@ program
 	.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', list)
 	.action(function(app, options) {
 
-		if (options.gtgUrls && process.env.NODE_ENV !== 'production') {
+		if (options.gtgUrls) {
 			throw 'Configuring gtg urls is now supported in a separate task: nbt test-urls';
 		}
 
