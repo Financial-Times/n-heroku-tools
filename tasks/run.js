@@ -54,10 +54,14 @@ function runLocal(opts) {
 }
 
 function runScript(opts) {
+
 	return configureAndSpawn({}, function(env) {
 		var args = [path.join(process.cwd(), opts.script)];
 		if (opts.harmony) {
 			args.push('--harmony');
+		}
+		if (opts.subargs) {
+			args = args.concat(opts.subargs.replace(/^\[/, '').replace(/]$/, '').split(','));
 		}
 		return ['node', args, { cwd: process.cwd(), env: env }];
 	});
@@ -101,7 +105,7 @@ module.exports = function (opts) {
 			} else if (opts.procfile) {
 				return runProcfile();
 			} else if (opts.script) {
-				return runScript({script: opts.script, harmony: opts.harmony});
+				return runScript({script: opts.script, harmony: opts.harmony, subargs: opts.subargs});
 			} else {
 				return ensureRouterInstall()
 					.then(function() {
