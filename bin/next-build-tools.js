@@ -23,6 +23,7 @@ var downloadDevelopmentKeys = require('../tasks/download-development-keys');
 var run = require('../tasks/run');
 var about = require('../tasks/about');
 var rebuild = require('../tasks/rebuild');
+var testUrls = require('../tasks/test-urls');
 
 function list(val) {
 	return val.split(',');
@@ -43,12 +44,28 @@ program
 	.option('--docker', 'deploy an app which uses docker')
 	.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', list)
 	.action(function(app, options) {
+
+		if (options.gtgUrls) {
+			throw 'Configuring gtg urls is now supported in a separate task: nbt test-urls';
+		}
+
 		deploy({
 			app: app,
 			docker: options.docker,
 			skipGtg: options.skipGtg,
-			gtgUrls: options.gtgUrls,
 			skipEnablePreboot: options.skipEnablePreboot
+		}).catch(exit);
+	});
+
+program
+	.command('test-urls [app]')
+	.description('Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist')
+	.action(function(app, options) {
+		testUrls({
+			app: app,
+			urls: options.urls,
+			headers: options.headers,
+			timeout: options.timeout
 		}).catch(exit);
 	});
 
