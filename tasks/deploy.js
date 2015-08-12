@@ -79,12 +79,14 @@ module.exports = function(opts) {
 
 		// Start polling
 		.then(function() {
-			if(!opts.skipGtg) {
+			// Always skip gtg if preboot enabled as heroku's implementation of preboot means
+			// we are most likley hitting the last successful deploy, not the current one
+			if (opts.skipEnablePreboot && !opts.skipGtg) {
 				return waitForGtg({
 					app: name
 				});
 			} else {
-				console.log("Skipping gtg check");
+				console.log("Skipping gtg check. (Note: gtg is always skipped if preboot is turned on to avoid false positives)");
 			}
 		});
 };
