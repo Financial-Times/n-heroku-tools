@@ -20,8 +20,8 @@ function testUrls (opts) {
 			}
 			var timeout;
 			var checker;
+			console.log('polling:' + baseUrl + url);
 			function checkGtg() {
-				console.log('polling:' + baseUrl + url);
 				fetch(baseUrl + url, {
 						timeout: opts.timeout || 2000,
 						headers: headers
