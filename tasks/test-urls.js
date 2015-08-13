@@ -34,8 +34,6 @@ function testUrls (opts) {
 						} else {
 							if (response.status === expected) {
 								end('poll ' + url + ' status as expected');
-							} else {
-								console.log('poll ' + url + ' not ok');
 							}
 						}
 					});
