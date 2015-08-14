@@ -1,4 +1,5 @@
 'use strict';
+require('array.prototype.find');
 var path = require('path');
 var normalizeName = require('../lib/normalize-name');
 var packageJson = require(process.cwd() + '/package.json');
@@ -10,6 +11,18 @@ function testUrls (opts) {
 	var headers = opts.headers || {};
 	return Promise.all(Object.keys(opts.urls).map(function (url) {
 		var expected = opts.urls[url];
+
+		if (typeof expected === 'string') {
+			expected = {
+				redirect: expected
+			};
+		} else if (typeof expected === 'number') {
+			expected = {
+				status: expected
+			};
+		}
+
+		expected.status = expected.status || 200;
 
 		return new Promise(function(resolve, reject) {
 
@@ -30,24 +43,63 @@ function testUrls (opts) {
 						headers: headers
 					})
 					.then(function(response) {
-						if (typeof expected === 'string') {
-							var arrivedAt = response.url.replace(baseUrl, '');
-							if (arrivedAt === expected) {
-								end('poll ' + url + ' redirected ok');
-							} else {
-								if (arrivedAt !== failures[failures.length -1]) {
-									failures.push(arrivedAt);
+
+						new Promise(function (reolve, reject) {
+							if (response.status !== expected.statsu) {
+								if (failures.indexOf('bad status: ' + response.status) === -1) {
+									failures.push('bad status: ' + response.status);
+								}
+								return reject();
+							}
+
+							if (expected.redirect) {
+								var arrivedAt = response.url.replace(baseUrl, '');
+								if (arrivedAt !== expected.redirect) {
+									if (failures.indexOf('bad redirect: ' + arrivedAt) === -1) {
+										failures.push('bad redirect: ' + arrivedAt);
+									}
+									return reject();
 								}
 							}
-						} else {
-							if (response.status === expected) {
-								end('poll ' + url + ' status as expected');
-							} else {
-								if (response.status !== failures[failures.length -1]) {
-									failures.push(response.status);
+
+							if (expected.headers) {
+								var badHeaders = Object.keys(expected.headers).filter(function (key) {
+									return response.headers.get(key) !== expected.headers[key];
+								});
+
+								if (badHeaders.length) {
+									badHeaders = badHeaders.map(function (header) {
+										return header + ':' + response.headers.get(header);
+									}).join('; ');
+
+									if (failures.indexOf('bad headers: ' + badHeaders) === -1) {
+										failures.push('bad headers: ' + badHeaders);
+									}
+									return reject();
 								}
 							}
-						}
+
+							if (expected.content) {
+								return response
+									.text()
+									.then(function (text) {
+										if (text !== expected.content) {
+											if (failures.indexOf('bad content: ' + text) === -1) {
+												failures.push('bad content: ' + text);
+											}
+											reject();
+										} else {
+											resolve();
+										}
+									});
+							}
+
+							resolve();
+						})
+							.then(function () {
+								end(url + ' responded as expected');
+							});
+
 					});
 			}
 			checker = setInterval(checkGtg, 3000);
