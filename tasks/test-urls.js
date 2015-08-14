@@ -45,7 +45,7 @@ function testUrls (opts) {
 					.then(function(response) {
 
 						new Promise(function (reolve, reject) {
-							if (response.status !== expected.statsu) {
+							if (response.status !== expected.status) {
 								if (failures.indexOf('bad status: ' + response.status) === -1) {
 									failures.push('bad status: ' + response.status);
 								}
