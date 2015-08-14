@@ -16,13 +16,14 @@ function testUrls (opts) {
 			expected = {
 				redirect: expected
 			};
-		} else if (typeof expected === 'number') {
-			expected = {
-				status: expected
-			};
+		} else {
+			if (typeof expected === 'number') {
+				expected = {
+					status: expected
+				};
+			}
+			expected.status = expected.status || 200;
 		}
-
-		expected.status = expected.status || 200;
 
 		return new Promise(function(resolve, reject) {
 
@@ -44,12 +45,14 @@ function testUrls (opts) {
 					})
 					.then(function(response) {
 
-						new Promise(function (reolve, reject) {
-							if (response.status !== expected.status) {
-								if (failures.indexOf('bad status: ' + response.status) === -1) {
-									failures.push('bad status: ' + response.status);
+						new Promise(function (resolve, reject) {
+							if (expected.status) {
+								if (response.status !== expected.status) {
+									if (failures.indexOf('bad status: ' + response.status) === -1) {
+										failures.push('bad status: ' + response.status);
+									}
+									return reject();
 								}
-								return reject();
 							}
 
 							if (expected.redirect) {
