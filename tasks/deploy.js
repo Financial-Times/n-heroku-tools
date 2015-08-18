@@ -47,13 +47,13 @@ module.exports = function(opts) {
 							console.log('Using existing Dockerfile');
 						} else {
 							console.log('Writing Dockerfile');
-							return writeFile(process.cwd() + '/Dockerfile', 'FROM financialtimes/next-heroku:0.12.6');
+							return writeFile(process.cwd() + '/Dockerfile', 'FROM financialtimes/next-heroku:0.12.7');
 						}
 					})
 
 					// HACK: Workaround the great heroku docker upgrade of 18/08/2015
 					.then(function() {
-						return writeFile(process.cwd() + '/app.json', JSON.stringify({ mount_dir: "../src" }));
+						return writeFile(process.cwd() + '/app.json', "{}");
 					})
 					.then(function() {
 						return writeFile(process.cwd() + '/docker-compose.yml', "web:\n  build: .");
