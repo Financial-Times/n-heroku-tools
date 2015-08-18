@@ -49,6 +49,9 @@ module.exports = function(opts) {
 							console.log('Writing Dockerfile');
 							return writeFile(process.cwd() + '/Dockerfile', 'FROM financialtimes/next-heroku:0.12.6');
 						}
+					})
+					.then(function() {
+						return writeFile(process.cwd() + '/app.json', JSON.stringify({ mount_dir: "../src" }));
 					});
 			} else {
 				buildPromise = build({ project: process.cwd() });
