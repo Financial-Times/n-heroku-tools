@@ -27,7 +27,7 @@ function testUrls (opts) {
 
 		return new Promise(function(resolve, reject) {
 
-			function end (message) {
+			function end(message) {
 				console.log(message);
 				clearTimeout(timeout);
 				clearInterval(checker);
@@ -36,9 +36,8 @@ function testUrls (opts) {
 			var timeout;
 			var checker;
 			var failures = [];
-			console.log('polling:' + baseUrl + url);
 			function checkGtg() {
-
+				console.log('polling:' + baseUrl + url);
 				fetch(baseUrl + url, {
 						timeout: opts.timeout || 2000,
 						headers: headers
@@ -100,7 +99,7 @@ function testUrls (opts) {
 							resolve();
 						})
 							.then(function () {
-								end(url + ' responded as expected');
+								end(baseUrl + url + ' responded as expected');
 							});
 
 					});
