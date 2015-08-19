@@ -100,6 +100,9 @@ function testUrls (opts) {
 						})
 							.then(function () {
 								end(baseUrl + url + ' responded as expected');
+							})
+							.catch(function(err) {
+								failures.push('timeout:' + err.toString());
 							});
 
 					});
