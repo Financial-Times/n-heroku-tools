@@ -43,8 +43,7 @@ function testUrls (opts) {
 						headers: headers
 					})
 					.then(function(response) {
-
-						new Promise(function (resolve, reject) {
+						return new Promise(function (resolve, reject) {
 							if (expected.status) {
 								if (response.status !== expected.status) {
 									if (failures.indexOf('bad status: ' + response.status) === -1) {
@@ -100,11 +99,11 @@ function testUrls (opts) {
 						})
 							.then(function () {
 								end(baseUrl + url + ' responded as expected');
-							})
-							.catch(function(err) {
-								failures.push('timeout:' + err.toString());
 							});
 
+					})
+					.catch(function(err) {
+						failures.push('endpoint too slow');
 					});
 			}
 			checker = setInterval(checkGtg, 3000);
