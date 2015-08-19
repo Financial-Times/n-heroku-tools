@@ -103,7 +103,9 @@ function testUrls (opts) {
 
 					})
 					.catch(function(err) {
-						failures.push('endpoint too slow');
+						if (err.message.indexOf('timeout') > -1 ) {
+							failures.push('endpoint too slow');
+						}
 					});
 			}
 			checker = setInterval(checkGtg, 3000);
