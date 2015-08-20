@@ -42,7 +42,7 @@ function testUrls (opts) {
 				var failures = [];
 				function checkGtg() {
 					console.log('polling:' + baseUrl + url);
-					 fetch(baseUrl + url, {
+					fetch(baseUrl + url, {
 							timeout: opts.timeout || 2000,
 							headers: headers
 						})
