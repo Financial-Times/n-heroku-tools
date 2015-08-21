@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+usr/bin/env node
 'use strict';
 
 require('es6-promise').polyfill();
@@ -54,7 +54,8 @@ program
 			app: app,
 			docker: options.docker,
 			skipGtg: options.skipGtg,
-			skipEnablePreboot: options.skipEnablePreboot
+			skipEnablePreboot: options.skipEnablePreboot,
+			log: log
 		}).catch(exit);
 	});
 

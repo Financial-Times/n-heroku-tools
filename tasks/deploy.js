@@ -39,12 +39,14 @@ module.exports = function(opts) {
 			}
 		})
 		.then(function() {
-			return fyi({
-				summary: 'Deployment of ' + commit,
-				description: 'Deployment of ' + commit,
-				environment: 'production',
-				app: name
-			});
+			if (opts.log) {
+				return fyi({
+					summary: 'Deployment of ' + commit,
+					description: 'Deployment of ' + commit,
+					environment: 'production',
+					app: name
+				});
+			}
 		})
 		.then(function() {
 			var buildPromise;
