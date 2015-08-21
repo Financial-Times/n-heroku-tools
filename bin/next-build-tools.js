@@ -1,4 +1,4 @@
-usr/bin/env node
+#!/usr/bin/env node
 'use strict';
 
 require('es6-promise').polyfill();
