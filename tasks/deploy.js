@@ -14,7 +14,7 @@ var fs = require('fs');
 var writeFile = denodeify(fs.writeFile);
 var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
 var commit = require('../lib/commit');
-var fyi = require('../lib/fyi');
+var log = require('../lib/fyi');
 
 module.exports = function(opts) {
 	var token;
@@ -40,9 +40,9 @@ module.exports = function(opts) {
 		})
 		.then(function() {
 			if (opts.log) {
-				return fyi({
-					summary: 'Deployment of ' + commit,
-					description: 'Deployment of ' + commit,
+				console.log("Logging this deploy to CMDB");
+				return log({
+					summary: 'Deployment of ' + hash,
 					environment: name.indexOf('branch') > -1 ? 'Test': 'Production',
 					app: name
 				});
