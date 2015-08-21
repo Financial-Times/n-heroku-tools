@@ -14,6 +14,7 @@ var fs = require('fs');
 var writeFile = denodeify(fs.writeFile);
 var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
 var commit = require('../lib/commit');
+var fyi = require('../lib/fyi');
 
 module.exports = function(opts) {
 	var token;
@@ -36,6 +37,14 @@ module.exports = function(opts) {
 			} else {
 				return about({ name: name, commit: hash });
 			}
+		})
+		.then(function() {
+			return fyi({
+				summary: 'Deployment of ' + commit,
+				description: 'Deployment of ' + commit,
+				environment: 'production',
+				app: name
+			});
 		})
 		.then(function() {
 			var buildPromise;
