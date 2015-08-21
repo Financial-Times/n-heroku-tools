@@ -55,7 +55,7 @@ program
 			docker: options.docker,
 			skipGtg: options.skipGtg,
 			skipEnablePreboot: options.skipEnablePreboot,
-			log: log
+			log: options.log
 		}).catch(exit);
 	});
 
