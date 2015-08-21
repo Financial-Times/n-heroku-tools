@@ -43,7 +43,7 @@ module.exports = function(opts) {
 				return fyi({
 					summary: 'Deployment of ' + commit,
 					description: 'Deployment of ' + commit,
-					environment: 'production',
+					environment: name.indexOf('branch') > -1 ? 'Test': 'Production',
 					app: name
 				});
 			}
