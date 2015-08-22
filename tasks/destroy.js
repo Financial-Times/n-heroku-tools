@@ -1,16 +1,18 @@
 "use strict";
 
-var destroy = require('haikro/lib/destroy');
-var herokuAuthToken = require('../lib/heroku-auth-token');
-var logger = require('haikro/lib/logger');
+var spawn = require('../lib/spawn');
 
-module.exports = function(app) {
-	logger.setLevel('debug');
-	return herokuAuthToken()
-		.then(function(token) {
-			return destroy({
-				app: app,
-				token: token
+module.exports = function(options) {
+	var app = options.app;
+	var verbose = options.verbose;
+	var promise = Promise.resolve();
+	if (verbose) {
+		promise = promise.then(function() {
+				return spawn(['heroku', 'logs', '-a', app], { verbose: true });
 			});
+	}
+	promise = promise.then(function() {
+			return spawn(['heroku', 'destroy', '-a', app, '--confirm', app], { verbose: true });
 		});
+	return promise;
 };

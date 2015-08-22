@@ -174,10 +174,14 @@ program
 
 program
 	.command('destroy [app]')
+	.option('--skip-logs', 'skips trying to output the logs before destroying the app')
 	.description('deletes the app from heroku')
-	.action(function(app) {
+	.action(function(app, options) {
 		if (app) {
-			destroy(app).catch(exit);
+			destroy({
+				app: app,
+				verbose: !options.skipLogs
+			}).catch(exit);
 		} else {
 			exit("Please provide an app name");
 		}
