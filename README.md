@@ -17,7 +17,7 @@
     nightwatch [options] [test]                         runs nightwatch with some sensible defaults
     deploy-hashed-assets                                deploys hashed asset files to S3 (if AWS keys set correctly)
     build [options]                                     build javascript and css
-    destroy [app]                                       deletes the app from heroku
+    destroy [options] [app]                             deletes the app from heroku
     purge [options] [url]                               purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
     deploy-vcl [options] [folder]                       Deploys VCL in [folder] to the specified fastly service.  Requires FASTLY_KEY env var
     run [options]                                       Runs the local app through the router

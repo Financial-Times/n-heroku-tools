@@ -18,7 +18,7 @@ function toStdErr(data) {
 	process.stderr.write(data.toString());
 }
 
-function configureAndSpawn (opts, func) {
+function configureAndSpawn(opts, func) {
 	return keys()
 		.then(function(env) {
 			// Overwrite any key specified locally
