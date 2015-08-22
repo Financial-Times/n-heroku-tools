@@ -2,7 +2,7 @@ sudo: false
 language: node_js
 script: make verify test
 node_js:
-- 0.12.2
+- 0.12.7
 before_deploy:
 - npm-prepublish --verbose
 deploy:
