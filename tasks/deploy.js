@@ -14,28 +14,29 @@ var denodeify = require('denodeify');
 var fs = require('fs');
 var writeFile = denodeify(fs.writeFile);
 var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
+var commit = require('../lib/commit');
 
 module.exports = function(opts) {
 	logger.setLevel('debug');
 	var token;
-	var commit;
+	var hash;
 	var name = (opts.app) ? opts.app : 'ft-next-' + normalizeName(packageJson.name);
 
 	return Promise.all([
 		herokuAuthToken(),
-		exec('git rev-parse HEAD'),
+		commit(),
 		exists(process.cwd() + '/public/__about.json')
 	])
 		.then(function(results) {
 			token = results[0];
-			commit = results[1].trim();
+			hash = results[1].trim();
 			var hasAbout = results[2];
 			if (opts.docker) {
 				if (!hasAbout) {
 					throw new Error("/public/__about.json must be generated during the build step.");
 				}
 			} else {
-				return about({ name: name, commit: commit });
+				return about({ name: name, commit: hash });
 			}
 		})
 		.then(function() {
@@ -80,7 +81,7 @@ module.exports = function(opts) {
 					app: name,
 					token: token,
 					project: process.cwd(),
-					commit: commit
+					commit: hash
 				});
 			}
 		})
