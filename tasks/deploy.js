@@ -14,6 +14,7 @@ var denodeify = require('denodeify');
 var fs = require('fs');
 var writeFile = denodeify(fs.writeFile);
 var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
+var commit = require('../lib/commit');
 
 module.exports = function(opts) {
 	logger.setLevel('debug');
@@ -23,7 +24,7 @@ module.exports = function(opts) {
 
 	return Promise.all([
 		herokuAuthToken(),
-		exec('git rev-parse HEAD'),
+		commit(),
 		exists(process.cwd() + '/public/__about.json')
 	])
 		.then(function(results) {
