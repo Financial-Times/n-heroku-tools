@@ -19,4 +19,3 @@ docs:
 
 install:
 	npm i
-
