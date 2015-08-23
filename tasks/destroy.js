@@ -1,6 +1,6 @@
 "use strict";
 
-var spawn = require('../lib/spawn');
+var spawn = require('shellpromise');
 
 module.exports = function(options) {
 	var app = options.app;
@@ -8,11 +8,11 @@ module.exports = function(options) {
 	var promise = Promise.resolve();
 	if (verbose) {
 		promise = promise.then(function() {
-				return spawn(['heroku', 'logs', '-a', app], { verbose: true });
+				return spawn('heroku logs -a ' + app, { verbose: true });
 			});
 	}
 	promise = promise.then(function() {
-			return spawn(['heroku', 'destroy', '-a', app, '--confirm', app], { verbose: true });
+			return spawn('heroku destroy -a ' + app + ' --confirm ' + app, { verbose: true });
 		});
 	return promise;
 };
