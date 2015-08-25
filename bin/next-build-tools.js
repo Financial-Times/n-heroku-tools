@@ -43,6 +43,7 @@ program
 	.option('--skip-enable-preboot', 'skip the preboot')
 	.option('--docker', 'deploy an app which uses docker')
 	.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', list)
+	.option('--app <appname>', 'The app to deploy to (defaults to the name in package.json')
 	.action(function(app, options) {
 
 		if (options.gtgUrls) {
