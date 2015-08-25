@@ -43,7 +43,7 @@ module.exports = function(opts) {
 							throw err;
 						}
 					}),
-				fetch('https://api.heroku.com/apps/' + source + '/config-vars', { headers: authorizedPostHeaders })
+				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
 					.then(fetchres.json)
 					.catch(function(err) {
 						if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
