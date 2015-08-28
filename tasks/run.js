@@ -49,6 +49,9 @@ function runLocal(opts) {
 		if (opts.harmony) {
 			args.push('--harmony');
 		}
+		if (opts.debug) {
+			args.unshift('--debug');
+		}
 		return ['nodemon', args, { cwd: process.cwd(), env: env }];
 	});
 }
@@ -59,6 +62,9 @@ function runScript(opts) {
 		var args = [path.join(process.cwd(), opts.script)];
 		if (opts.harmony) {
 			args.push('--harmony');
+		}
+		if (opts.debug) {
+			args.push('--debug');
 		}
 		if (opts.subargs) {
 			args = args.concat(opts.subargs.replace(/^\[/, '').replace(/]$/, '').split(','));
@@ -101,16 +107,16 @@ module.exports = function (opts) {
 			var localPort = process.env.PORT || 3002;
 
 			if (opts.local) {
-				return runLocal({ PORT: localPort, harmony: opts.harmony });
+				return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug });
 			} else if (opts.procfile) {
 				return runProcfile();
 			} else if (opts.script) {
-				return runScript({script: opts.script, harmony: opts.harmony, subargs: opts.subargs});
+				return runScript({script: opts.script, harmony: opts.harmony, debug: opts.debug, subargs: opts.subargs});
 			} else {
 				return ensureRouterInstall()
 					.then(function() {
 						return Promise.all([
-							runLocal({ PORT: localPort, harmony: opts.harmony }),
+							runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug }),
 							runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony })
 						]);
 					});
