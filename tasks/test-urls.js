@@ -35,7 +35,7 @@ var UrlTest = function (url, headers, expectation, timeout) {
 
 UrlTest.prototype.runner = function () {
 	return function () {
-		this.run();
+		return this.run();
 	}.bind(this);
 };
 
@@ -47,7 +47,7 @@ UrlTest.prototype.end = function (message) {
 };
 
 UrlTest.prototype.run  = function () {
-
+	console.log('polling:' + this.url);
 	this.checkUrl();
 	this.timeout = setTimeout(function() {
 		console.error(this.url + ' keeps failing with: ' + this.failures.join(', '));
@@ -62,7 +62,7 @@ UrlTest.prototype.run  = function () {
 };
 
 UrlTest.prototype.checkUrl = function () {
-	console.log('polling:' + this.url);
+
 	fetch(this.url, {
 		timeout: this.timeout || 2000,
 		headers: this.headers
@@ -136,9 +136,7 @@ function testUrls (opts) {
 	var fetchers = Object.keys(opts.urls).map(function (url) {
 		return new UrlTest(baseUrl + url, opts.headers, opts.urls[url], opts.timeout).runner();
 	});
-
 	return directly(10, fetchers);
-
 }
 
 
