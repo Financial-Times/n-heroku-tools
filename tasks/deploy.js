@@ -6,7 +6,6 @@ var about = require('../lib/about');
 var exec = require('../lib/exec');
 var build = require('haikro/lib/build');
 var deploy = require('haikro/lib/deploy');
-var logger = require('haikro/lib/logger');
 var normalizeName = require('../lib/normalize-name');
 var enablePreboot = require('../lib/enable-preboot');
 var waitForGtg = require('./wait-for-gtg');
@@ -17,7 +16,6 @@ var exists = denodeify(fs.exists, function(exists) { return [undefined, exists];
 var commit = require('../lib/commit');
 
 module.exports = function(opts) {
-	logger.setLevel('debug');
 	var token;
 	var hash;
 	var name = (opts.app) ? opts.app : 'ft-next-' + normalizeName(packageJson.name);
