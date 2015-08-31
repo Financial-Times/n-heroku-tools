@@ -60,7 +60,7 @@ module.exports = function(opts) {
 				}
 			}
 
-			return shellpromise('heroku ps:scale ' + processProfiles.join(' ') + ' --app ' + target);
+			return shellpromise('heroku ps:scale ' + processProfiles.join(' ') + ' --app ' + target, { verbose: true });
 
 		})
 		.then(function(processProfiles) {
