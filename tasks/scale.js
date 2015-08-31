@@ -5,8 +5,7 @@ var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
 var normalizeName = require('../lib/normalize-name');
 var fetchres = require('fetchres');
-var scale = require('haikro/lib/scale');
-
+var shellpromise = require('shellpromise');
 
 module.exports = function(opts) {
 
@@ -50,26 +49,18 @@ module.exports = function(opts) {
 			if (!processInfo) {
 				throw new Error("Could not get process info for " + serviceData.name + ". Please check the service registry.");
 			}
-			var processProfiles = {
-				updates: []
-			};
 
-			for( var process in processInfo ) {
-				if(processInfo.hasOwnProperty(process)) {
-					processProfiles.updates.push({
-						process: process,
-						size: opts.minimal ? 'standard-1X' : processInfo[process].size,
-						quantity: opts.minimal ? 1 : processInfo[process].scale
-					});
+			var processProfiles = [];
+
+			for (var process in processInfo) {
+				if (processInfo.hasOwnProperty(process)) {
+					processProfiles.push(process
+						+ '=' + (opts.minimal ? 1 : processInfo[process].scale)
+						+ ':' + (opts.minimal ? 'standard-1X' : processInfo[process].size));
 				}
 			}
 
-			return scale({
-				token: token,
-				app: target,
-				processProfiles: processProfiles
-			});
-
+			return shellpromise('heroku ps:scale ' + processProfiles.join(' ') + ' --app ' + target, { verbose: true });
 
 		})
 		.then(function(processProfiles) {
