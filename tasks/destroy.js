@@ -8,7 +8,9 @@ module.exports = function(options) {
 	var promise = Promise.resolve();
 	if (verbose) {
 		promise = promise.then(function() {
-				return spawn('heroku logs -a ' + app, { verbose: true });
+
+				// `|| echo` to stop this failing failing builds
+				return spawn('heroku logs -a ' + app + ' || echo', { verbose: true });
 			});
 	}
 	promise = promise.then(function() {
