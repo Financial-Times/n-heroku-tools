@@ -17,6 +17,7 @@
     "fastly": "Financial-Times/fastly#v2.5.0",
     "fetchres": "^1.0.4",
     "foreman": "^1.4.1",
+    "form-data": "^1.0.0-rc3",
     "glob": "^5.0.3",
     "gulp": "^3.8.11",
     "gulp-watch": "^4.2.4",
