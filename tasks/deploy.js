@@ -29,7 +29,7 @@ module.exports = function(opts) {
 			hash = results[1].trim();
 			var hasAbout = results[2];
 			if (!hasAbout) {
-				throw new Error("/public/__about.json must be generated during the build step.");
+				throw new Error("/public/__about.json must be generated during the build step.  Make sure your app implements `make build-production` that contains all the build steps including `nbt about`");
 			}
 		})
 		.then(function() {
