@@ -50,9 +50,19 @@ UrlTest.prototype.run  = function () {
 	console.log('polling:' + this.url);
 	this.checkUrl();
 	this.timeout = setTimeout(function() {
-		console.error(this.url + ' keeps failing with: ' + this.failures.join(', '));
+
+		var message = this.url;
+		if (Object.keys(this.headers).length) {
+			var headers = this.headers;
+			message += ' (with ' + Object.keys(headers).reduce(function (arr, key) {
+				arr.push(key + ': ' + headers[key]);
+				return arr;
+			}, []).join(', ') + ')';
+		}
+		message += ' keeps failing with: ' + this.failures.join(', ');
+		console.error(message);
 		this.reject('Test url polling failed');
-	}.bind(this), 6*1000);
+	}.bind(this), 2 * 60 * 1000);
 
 	return new Promise(function (resolve, reject) {
 		this.resolve = resolve;
@@ -84,7 +94,7 @@ UrlTest.prototype.checkUrl = function () {
 			if (this.expected.headers) {
 				var badHeaders = Object.keys(this.expected.headers).filter(function (key) {
 					return response.headers.get(key) !== this.expected.headers[key];
-				});
+				}.bind(this));
 
 				if (badHeaders.length) {
 					badHeaders = badHeaders.map(function (header) {
