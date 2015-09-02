@@ -2,7 +2,6 @@
 
 var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
-var about = require('../lib/about');
 var exec = require('../lib/exec');
 var build = require('haikro/lib/build');
 var deploy = require('haikro/lib/deploy');
@@ -29,12 +28,8 @@ module.exports = function(opts) {
 			token = results[0];
 			hash = results[1].trim();
 			var hasAbout = results[2];
-			if (opts.docker) {
-				if (!hasAbout) {
-					throw new Error("/public/__about.json must be generated during the build step.");
-				}
-			} else {
-				return about({ name: name, commit: hash });
+			if (!hasAbout) {
+				throw new Error("/public/__about.json must be generated during the build step.");
 			}
 		})
 		.then(function() {
