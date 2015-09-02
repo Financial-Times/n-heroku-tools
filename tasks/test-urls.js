@@ -136,7 +136,7 @@ function testUrls (opts) {
 	var fetchers = Object.keys(opts.urls).map(function (url) {
 		return new UrlTest(baseUrl + url, opts.headers, opts.urls[url], opts.timeout).runner();
 	});
-	return directly(10, fetchers);
+	return directly(5, fetchers);
 }
 
 
