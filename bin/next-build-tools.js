@@ -259,10 +259,12 @@ program
 
 program
 	.command('rebuild [apps...]')
+	.option('--serves <type>', 'Trigger rebuilds of apps where type is served.')
 	.description('Trigger a rebuild of the latest master on Circle')
-	.action(function(apps) {
+	.action(function(apps, opts) {
 		return rebuild({
-			apps: apps
+			apps: apps,
+			serves: opts.serves
 		}).catch(exit);
 	});
 
