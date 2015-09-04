@@ -43,6 +43,7 @@ function lastMasterBuild(project) {
 
 module.exports = function(options) {
 	var apps = options.apps;
+	var serves = options.serves;
 
 	return keys()
 		.then(function(env) {
@@ -52,7 +53,11 @@ module.exports = function(options) {
 					.then(fetchres.json)
 					.then(function(data) {
 						apps = data
-							.filter(function(apps) { return apps.versions['1'] || apps.versions['2']; })
+							.filter(function(app) {
+								if (serves) { return app.serves && app.serves.indexOf(serves) > -1; }
+								return true;
+							})
+							.filter(function(app) { return app.versions['1'] || app.versions['2']; })
 							.map(function(app) {
 								var repo;
 								Object.keys(app.versions).forEach(function(version) {
