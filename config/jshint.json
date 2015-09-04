@@ -5,7 +5,6 @@
   "freeze": true,
   "immed": true,
   "laxbreak": true,
-  "newcap": true,
   "noarg": true,
   "nonbsp": true,
   "undef": true,
