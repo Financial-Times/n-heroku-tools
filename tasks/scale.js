@@ -35,7 +35,7 @@ module.exports = function(opts) {
 			token = authToken;
 		})
 		.then(function() {
-			return fetch('https://ft-next-service-registry.herokuapp.com/services');
+			return fetch('http://next-registry.ft.com/');
 		})
 		.then(fetchres.json)
 		.then(function(data) {
