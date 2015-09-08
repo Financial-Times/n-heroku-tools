@@ -68,6 +68,7 @@ module.exports = function(opts) {
 		})
 		.catch(function(err) {
 			console.log('Error scaling processes - ' + err);
+			console.log("Pro tip: Check that your process names haven't changed");
 			throw err;
 		});
 };
