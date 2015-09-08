@@ -35,7 +35,7 @@ module.exports = function(opts) {
 			token = authToken;
 		})
 		.then(function() {
-			return fetch('http://next-registry.ft.com/');
+			return fetch('https://next-registry.ft.com/');
 		})
 		.then(fetchres.json)
 		.then(function(data) {
