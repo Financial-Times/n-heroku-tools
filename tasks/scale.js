@@ -67,6 +67,8 @@ module.exports = function(opts) {
 			console.log(target + " config vars are set to", processProfiles);
 		})
 		.catch(function(err) {
-			console.log ('Error scaling processes - ' + err);
+			console.log('Error scaling processes - ' + err);
+			console.log("Pro tip: Check that your process names haven't changed");
+			throw err;
 		});
 };
