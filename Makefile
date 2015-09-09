@@ -2,6 +2,9 @@
 SHOULD_BE = $(shell ./scripts/generate-docs.sh | md5 -q)
 IS = $(shell md5 -q README.md)
 
+clean:
+	git clean -fxd
+
 verify:
 ifeq ($(SHOULD_BE),$(IS))
 	@echo "README.md up-to-date"
