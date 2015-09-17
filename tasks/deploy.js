@@ -45,7 +45,7 @@ module.exports = function(opts) {
 				return log.open({
 					summary: 'Deployment of ' + hash,
 					environment: name.indexOf('branch') > -1 ? 'Test': 'Production',
-					app: name
+					name: name
 				})
 					.then(function(sfId) {
 						salesForceReleaseId = sfId;
