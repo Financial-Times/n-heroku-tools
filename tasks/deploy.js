@@ -45,7 +45,7 @@ module.exports = function(opts) {
 				return log.open({
 					summary: 'Deployment of ' + hash,
 					environment: name.indexOf('branch') > -1 ? 'Test': 'Production',
-					name: name,
+					name: packageJson.name,
 					gateway: opts.logGateway
 				})
 					.then(function(sfId) {
