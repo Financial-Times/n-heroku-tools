@@ -24,6 +24,7 @@ var run = require('../tasks/run');
 var about = require('../tasks/about');
 var rebuild = require('../tasks/rebuild');
 var testUrls = require('../tasks/test-urls');
+var log = require('../tasks/log');
 
 function list(val) {
 	return val.split(',');
@@ -285,6 +286,20 @@ program
 	.action(function(uuids) {
 		return ingest({
 			uuids: uuids
+		}).catch(exit);
+	});
+
+program
+	.command('log')
+	.description('Logs to SalesForce™®©')
+	.option('--summary [summary]', 'An Enterprise™ summary of the change')
+	.option('--environment [environment]', 'Which Enterprise™ environment was the change in?  ‘Test’ (capital T) or ‘Production’ (capital P)')
+	.option('--name [name]', 'Name of Enterprise™ service, e.g. ft-next-front-page')
+	.action(function(options) {
+		log({
+			summary: options.summary,
+			environment: options.environment,
+			name: options.name
 		}).catch(exit);
 	});
 

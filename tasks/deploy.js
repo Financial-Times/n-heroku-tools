@@ -14,12 +14,13 @@ var fs = require('fs');
 var writeFile = denodeify(fs.writeFile);
 var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
 var commit = require('../lib/commit');
-var log = require('../lib/fyi');
+var log = require('../lib/log');
 
 module.exports = function(opts) {
 	var token;
 	var hash;
 	var name = (opts.app) ? opts.app : 'ft-next-' + normalizeName(packageJson.name);
+	var salesForceReleaseId;
 
 	return Promise.all([
 		herokuAuthToken(),
@@ -41,11 +42,14 @@ module.exports = function(opts) {
 		.then(function() {
 			if (opts.log) {
 				console.log("Logging this deploy to CMDB");
-				return log({
+				return log.open({
 					summary: 'Deployment of ' + hash,
 					environment: name.indexOf('branch') > -1 ? 'Test': 'Production',
 					app: name
-				});
+				})
+					.then(function(sfId) {
+						salesForceReleaseId = sfId;
+					});
 			}
 		})
 		.then(function() {
@@ -92,6 +96,11 @@ module.exports = function(opts) {
 					project: process.cwd(),
 					commit: hash
 				});
+			}
+		})
+		.then(function() {
+			if (opts.log) {
+				return log.close(salesForceReleaseId);
 			}
 		})
 
