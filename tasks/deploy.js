@@ -99,11 +99,6 @@ module.exports = function(opts) {
 				});
 			}
 		})
-		.then(function() {
-			if (opts.log) {
-				return log.close(salesForceReleaseId, { gateway: opts.logGateway });
-			}
-		})
 
 		// Start polling
 		.then(function() {
@@ -116,5 +111,15 @@ module.exports = function(opts) {
 			} else {
 				console.log("Skipping gtg check. (Note: gtg is always skipped if preboot is turned on to avoid false positives)");
 			}
+		})
+		.then(function() {
+			if (opts.log) {
+				return log.close(salesForceReleaseId, { gateway: opts.logGateway });
+			}
+		}, function(err) {
+			if (opts.log) {
+				return log.close(salesForceReleaseId, { gateway: opts.logGateway, closeCategory: 'Rejected' });
+			}
+			throw err;
 		});
 };
