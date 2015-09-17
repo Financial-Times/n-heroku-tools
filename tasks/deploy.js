@@ -13,11 +13,13 @@ var fs = require('fs');
 var writeFile = denodeify(fs.writeFile);
 var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
 var commit = require('../lib/commit');
+var log = require('../lib/log');
 
 module.exports = function(opts) {
 	var token;
 	var hash;
 	var name = (opts.app) ? opts.app : 'ft-next-' + normalizeName(packageJson.name);
+	var salesForceReleaseId;
 
 	return Promise.all([
 		herokuAuthToken(),
@@ -30,6 +32,20 @@ module.exports = function(opts) {
 			var hasAbout = results[2];
 			if (!hasAbout) {
 				throw new Error("/public/__about.json must be generated during the build step.  Make sure your app implements `make build-production` that contains all the build steps including `nbt about`");
+			}
+		})
+		.then(function() {
+			if (opts.log) {
+				console.log("Logging this deploy to CMDB");
+				return log.open({
+					summary: 'Deployment of ' + hash,
+					environment: name.indexOf('branch') > -1 ? 'Test': 'Production',
+					name: packageJson.name,
+					gateway: opts.logGateway
+				})
+					.then(function(sfId) {
+						salesForceReleaseId = sfId;
+					});
 			}
 		})
 		.then(function() {
@@ -90,5 +106,15 @@ module.exports = function(opts) {
 			} else {
 				console.log("Skipping gtg check. (Note: gtg is always skipped if preboot is turned on to avoid false positives)");
 			}
+		})
+		.then(function() {
+			if (opts.log) {
+				return log.close(salesForceReleaseId, { gateway: opts.logGateway });
+			}
+		}, function(err) {
+			if (opts.log) {
+				return log.close(salesForceReleaseId, { gateway: opts.logGateway, closeCategory: 'Rejected' });
+			}
+			throw err;
 		});
 };

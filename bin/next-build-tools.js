@@ -24,6 +24,7 @@ var run = require('../tasks/run');
 var about = require('../tasks/about');
 var rebuild = require('../tasks/rebuild');
 var testUrls = require('../tasks/test-urls');
+var log = require('../tasks/log');
 
 function list(val) {
 	return val.split(',');
@@ -43,6 +44,8 @@ program
 	.option('--skip-enable-preboot', 'skip the preboot')
 	.option('--docker', 'deploy an app which uses docker')
 	.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', list)
+	.option('--log', 'Log the deployment to CMDB')
+	.option('--log-gateway [log-gateway]', 'Which log gateway to use: mashery, internal or konstructor')
 	.action(function(app, options) {
 
 		if (options.gtgUrls) {
@@ -53,7 +56,9 @@ program
 			app: app,
 			docker: options.docker,
 			skipGtg: options.skipGtg,
-			skipEnablePreboot: options.skipEnablePreboot
+			skipEnablePreboot: options.skipEnablePreboot,
+			log: options.log,
+			logGateway: options.logGateway || 'konstructor'
 		}).catch(exit);
 	});
 
@@ -283,6 +288,22 @@ program
 	.action(function(uuids) {
 		return ingest({
 			uuids: uuids
+		}).catch(exit);
+	});
+
+program
+	.command('log')
+	.description('Logs to SalesForce™®©')
+	.option('--summary [summary]', 'An Enterprise™ summary of the change')
+	.option('--environment [environment]', 'Which Enterprise™ environment was the change in?  ‘Test’ (capital T) or ‘Production’ (capital P)')
+	.option('--name [name]', 'Name of Enterprise™ service, e.g. ft-next-front-page')
+	.option('--gateway [gateway]', 'Name of Enterprise™ gateway, e.g. ‘mashery’, ‘internal’, ‘konstructor’')
+	.action(function(options) {
+		log({
+			summary: options.summary,
+			environment: options.environment,
+			name: options.name,
+			gateway: options.gateway || 'konstructor'
 		}).catch(exit);
 	});
 

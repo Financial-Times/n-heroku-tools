@@ -26,6 +26,7 @@
     rebuild [options] [apps...]                         Trigger a rebuild of the latest master on Circle
     wait-for-gtg <app>                                  Polls the /__gtg endpoint of a given app until it returns 200
     ingest [uuid...]                                    [Re-]ingest content into the Elastic Search cache [api v1 only]
+    log [options]                                       Logs to SalesForce™®©
     *                                                   
 
   Options:
