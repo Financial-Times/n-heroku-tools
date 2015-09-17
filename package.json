@@ -17,7 +17,6 @@
     "fastly": "Financial-Times/fastly#v2.5.0",
     "fetchres": "^1.0.4",
     "foreman": "^1.4.1",
-    "form-data": "^1.0.0-rc3",
     "glob": "^5.0.3",
     "gulp": "^3.8.11",
     "gulp-watch": "^4.2.4",
@@ -26,8 +25,7 @@
     "next-gulp-tasks": "Financial-Times/next-gulp-tasks#v1",
     "origami-build-tools": "^3.1.0",
     "semver": "^4.3.1",
-    "shellpromise": "^1.0.0",
-    "time": "^0.11.4"
+    "shellpromise": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^2.3.0",
