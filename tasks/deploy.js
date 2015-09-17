@@ -45,7 +45,8 @@ module.exports = function(opts) {
 				return log.open({
 					summary: 'Deployment of ' + hash,
 					environment: name.indexOf('branch') > -1 ? 'Test': 'Production',
-					name: name
+					name: name,
+					gateway: opts.logGateway
 				})
 					.then(function(sfId) {
 						salesForceReleaseId = sfId;
@@ -100,7 +101,7 @@ module.exports = function(opts) {
 		})
 		.then(function() {
 			if (opts.log) {
-				return log.close(salesForceReleaseId);
+				return log.close(salesForceReleaseId, { gateway: opts.logGateway });
 			}
 		})
 
