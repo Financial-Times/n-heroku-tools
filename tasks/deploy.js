@@ -39,7 +39,7 @@ module.exports = function(opts) {
 				var environment = name.indexOf('branch') > -1 ? 'Test': 'Production'
 				console.log("Logging this deploy to CMDB");
 				return log.open({
-					summary: 'Releasing ' + packageJson.name + ' version' + hash.substring(0, 20) + ' to ' + environment,
+					summary: 'Releasing ' + packageJson.name + ' version ' + hash.substring(0, 20) + ' to ' + environment,
 					environment: environment,
 					name: packageJson.name,
 					gateway: opts.logGateway
