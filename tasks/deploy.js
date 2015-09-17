@@ -113,7 +113,10 @@ module.exports = function(opts) {
 			}
 		}, function(err) {
 			if (opts.log) {
-				return log.close(salesForceReleaseId, { gateway: opts.logGateway, closeCategory: 'Rejected' });
+				return log.close(salesForceReleaseId, { gateway: opts.logGateway, closeCategory: 'Rejected' })
+					.then(function() {
+						throw err;
+					});
 			}
 			throw err;
 		});
