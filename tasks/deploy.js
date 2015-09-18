@@ -48,7 +48,7 @@ module.exports = function(opts) {
 						salesForceReleaseId = sfId;
 					})
 					.catch(function(err) {
-						console.log("Logging to SalesForce failed!  Check your `package.json`'s name exists in CMDB.  If you've only just created an app try adding `--skip-logging` to `nbt deploy`");
+						console.log("Logging to SalesForce failed!  Check `" + name + "` exists in CMDB.  If you've only just created an app try adding `--skip-logging` to `nbt deploy`");
 						throw err;
 					});
 			}
