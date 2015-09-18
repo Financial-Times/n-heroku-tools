@@ -44,7 +44,7 @@ program
 	.option('--skip-enable-preboot', 'skip the preboot')
 	.option('--docker', 'deploy an app which uses docker')
 	.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', list)
-	.option('--log', 'Log the deployment to CMDB')
+	.option('--skip-logging', 'Skips trying to log to SalesForce')
 	.option('--log-gateway [log-gateway]', 'Which log gateway to use: mashery, internal or konstructor')
 	.action(function(app, options) {
 
@@ -57,7 +57,7 @@ program
 			docker: options.docker,
 			skipGtg: options.skipGtg,
 			skipEnablePreboot: options.skipEnablePreboot,
-			log: options.log,
+			log: !options.skipLogging,
 			logGateway: options.logGateway || 'konstructor'
 		}).catch(exit);
 	});
