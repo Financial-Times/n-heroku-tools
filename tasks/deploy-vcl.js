@@ -29,6 +29,10 @@ module.exports = function(folder, opts) {
 		throw new Error("Fastly API Key Required");
 	}
 
+	if(opts.env){
+		require('dotenv').load();
+	}
+
 	var options = opts || {};
 	var mainVcl = options.main || 'main.vcl';
 	var serviceId = options.service;
