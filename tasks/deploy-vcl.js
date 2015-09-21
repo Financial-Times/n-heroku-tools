@@ -33,11 +33,17 @@ module.exports = function(folder, opts) {
 		require('dotenv').load();
 	}
 
+
 	var options = opts || {};
 	var mainVcl = options.main || 'main.vcl';
 	var serviceId = options.service;
 	var fastly = require('fastly')(fastlyApiKey, encodeURIComponent(serviceId), { verbose: false });
 	options.vars = options.vars ? options.vars.split(',') : [];
+
+	// if service ID is needed use the given serviceId
+	if(options.vars.indexOf('SERVICEID') > -1){
+		process.env.SERVICEID = serviceId;
+	}
 
 
 	// The VCL we want to deploy
