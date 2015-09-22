@@ -1,10 +1,7 @@
 'use strict';
-
-var fastlyApiKey = process.env.FASTLY_APIKEY;
 var fs = require('fs');
 var activeVersion, newVersion;
 var debug = console.log;
-require('es6-promise').polyfill();
 
 function replaceVars(vcls, vars) {
 	return vcls.map(function(vcl) {
@@ -21,7 +18,15 @@ function replaceVars(vcls, vars) {
 }
 
 module.exports = function(folder, opts) {
-	if(!opts.service) {
+
+	if(opts.env){
+		require('dotenv').load();
+	}
+
+	var fastlyApiKey = process.env.FASTLY_APIKEY;
+	var serviceId = process.env[opts.service] || opts.service;
+
+	if(!serviceId) {
 		throw new Error("Service ID required");
 	}
 
@@ -29,14 +34,11 @@ module.exports = function(folder, opts) {
 		throw new Error("Fastly API Key Required");
 	}
 
-	if(opts.env){
-		require('dotenv').load();
-	}
+
 
 
 	var options = opts || {};
 	var mainVcl = options.main || 'main.vcl';
-	var serviceId = options.service;
 	var fastly = require('fastly')(fastlyApiKey, encodeURIComponent(serviceId), { verbose: false });
 	options.vars = options.vars ? options.vars.split(',') : [];
 
