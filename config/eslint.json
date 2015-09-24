@@ -1,0 +1,7 @@
+{
+  "extends": "../node_modules/origami-build-tools/.eslintrc",
+
+  "rules": {
+	"no-var": 1
+  }
+}

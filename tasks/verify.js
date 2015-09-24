@@ -10,7 +10,7 @@ var verifyDotenvInGitignore = require('../lib/verify-dotenv-in-gitignore');
 function obtVerify() {
 	return new Promise(function(resolve, reject) {
 		origamiBuildTools.verify(gulp, {
-			jsHintPath: path.join(__dirname, '..', 'config', 'jshint.json')
+			esLintPath: path.join(__dirname, '..', 'config', 'eslint.json')
 		})
 			.on('end', resolve)
 			.on('error', reject);
