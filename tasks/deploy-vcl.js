@@ -1,6 +1,7 @@
 'use strict';
 var fs = require('fs');
-var activeVersion, newVersion;
+var activeVersion;
+var newVersion;
 var debug = console.log;
 
 function replaceVars(vcls, vars) {
@@ -84,7 +85,7 @@ module.exports = function(folder, opts) {
 				})
 			);
 		})
-		.then(function(res) {                                      // 5. Update with our shiny new VCL
+		.then(function() {                                      // 5. Update with our shiny new VCL
 			return Promise.all(
 				vcls.map(function(vcl) {
 					debug('Uploading new VCL ' + vcl.name + ' with version %s', newVersion);
@@ -96,11 +97,11 @@ module.exports = function(folder, opts) {
 			);
 		})
 
-		.then(function(res) {                                      // 6. Set the 'main' VCL as the main one
+		.then(function() {                                      // 6. Set the 'main' VCL as the main one
 			debug('Set "%s" as the main entry point', mainVcl);
 			return fastly.setVclAsMain(newVersion, mainVcl);
 		})
-		.then(function(res) {                                      // 7. Validate the new VCL
+		.then(function() {                                      // 7. Validate the new VCL
 			debug('Validate version %s', newVersion);
 			return fastly.validateVersion(newVersion);
 		})
@@ -112,10 +113,10 @@ module.exports = function(folder, opts) {
 			} else {
 				debug('Version %s looks bad', newVersion);
 				debug(res);  // the vcl compile/syntax error
-				throw new Error('VCL is invalid: ' +  res);
+				throw new Error('VCL is invalid: ' + res);
 			}
 		})
-		.then(function(res) {
+		.then(function() {
 			debug('New version %s installed and activated', newVersion);        // 9. Complete
 			return true;
 		});

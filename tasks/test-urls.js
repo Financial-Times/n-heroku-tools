@@ -45,7 +45,7 @@ UrlTest.prototype.end = function (error, message) {
 	}
 };
 
-UrlTest.prototype.run  = function () {
+UrlTest.prototype.run = function () {
 	console.log('polling:' + this.url);
 	this.checkUrl();
 
