@@ -3,16 +3,3 @@ language: node_js
 script: make verify test
 node_js:
 - 0.12.7
-before_deploy:
-- npm-prepublish --verbose
-deploy:
-  provider: npm
-  email: strategic.products@ft.com
-  api_key:
-    secure: VsJTIY8QoCROu0iL3CQFG8iSK3phbfs8YF15cGed4T891WcDNntJ+cSYgwxRqBZKBRNjYNtwc7KVygHa0QqQfekAAeqDQcKOgdm+yLSZ9+Lbzi92EsivtnxAUKa8DN9lHBTpEo30vdZuAfQ9hibwB+wVTwJgsrqrK6aCx3yQ0cQ=
-  on:
-    tags: true
-    repo: Financial-Times/next-build-tools
-notifications:
-  slack:
-    secure: xJi0x4seXSMwkkLyifm1GXUUAfWUbhtlf71kaugsZic1x1gXOK8CEyj0pfHxpJKOTtzE5hZ5B+uK8gu81ZNpKzNTUS9UlLibkolyeQXLEMUru/SJxJUuv/UDaNgkLcivVDvUnl/vOA1HmxuHjMcY17cyuFtatG0jdzbns5GPyG8=
