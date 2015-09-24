@@ -33,22 +33,22 @@ var UrlTest = function (url, headers, expectation, timeout) {
 	this.checkUrl = this.checkUrl.bind(this);
 };
 
-UrlTest.prototype.runner = function () {
-	return function () {
-		return this.run();
-	}.bind(this);
-};
+UrlTest.prototype.end = function (error, message) {
 
-UrlTest.prototype.end = function (message) {
-	console.log(message);
 	clearTimeout(this.timeout);
 	delete this.timeout;
-	this.resolve();
+
+	if (error) {
+		this.reject(error);
+	} else {
+		this.resolve(message);
+	}
 };
 
 UrlTest.prototype.run  = function () {
 	console.log('polling:' + this.url);
 	this.checkUrl();
+
 	this.timeout = setTimeout(function() {
 
 		var message = this.url;
@@ -114,11 +114,9 @@ UrlTest.prototype.checkUrl = function () {
 						}
 					}.bind(this));
 			}
-
-			return;
 		}.bind(this))
-		.then(function () {
-			this.end(this.url + ' responded as expected');
+		.then(function() {
+			this.end(null, this.url + ' responded as expected');
 		}.bind(this))
 		.catch(function(err) {
 
@@ -132,19 +130,14 @@ UrlTest.prototype.checkUrl = function () {
 			if (this.failures.indexOf(err) === -1) {
 				this.failures.push(err);
 			}
-		}.bind(this))
-		.then(function () {
-			if (!this.timeout) {
-				throw 'Already exited';
-			}
-		}.bind(this))
-		.then(this.checkUrl);
+			this.end(this.url + ': ' + err, null);
+		}.bind(this));
 };
 
 function testUrls (opts) {
-
 	var fetchers = Object.keys(opts.urls).map(function (url) {
-		return new UrlTest(baseUrl + url, opts.headers, opts.urls[url], opts.timeout).runner();
+		var test = new UrlTest(baseUrl + url, opts.headers, opts.urls[url], opts.timeout);
+		return test.run.bind(test);
 	});
 	return directly(opts.throttle || 5, fetchers);
 }
