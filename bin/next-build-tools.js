@@ -65,12 +65,14 @@ program
 program
 	.command('test-urls [app]')
 	.description('Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist')
+	.option('-t, --throttle <n>', 'The maximum number of tests to run concurrently. default: 5')
 	.action(function(app, options) {
 		testUrls({
 			app: app,
 			urls: options.urls,
 			headers: options.headers,
-			timeout: options.timeout
+			timeout: options.timeout,
+			throttle: options.throttle
 		}).catch(exit);
 	});
 
