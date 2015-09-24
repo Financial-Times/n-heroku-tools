@@ -23,7 +23,6 @@
 	"no-multi-spaces": 2,
 	"one-var": [2, "never"],
 
-	// intentionally different from obt while we make the move to ES6 proper
 	"no-var": 1
   },
   "globals": {
