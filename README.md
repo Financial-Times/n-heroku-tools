@@ -8,7 +8,7 @@
   Commands:
 
     deploy [options] [app]                              runs haikro deployment scripts with sensible defaults for Next projects
-    test-urls [app]                                     Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
+    test-urls [options] [app]                           Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
     configure [options] [source] [target]               downloads environment variables from next-config-vars and uploads them to the current app
     download-development-keys [options]                 downloads development environment variables from next-config-vars and stores them in your home directory if a file doesn't already exist
     scale [options] [source] [target]                   downloads process information from next-service-registry and scales/sizes the application servers
