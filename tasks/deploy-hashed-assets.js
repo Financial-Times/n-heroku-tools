@@ -44,7 +44,7 @@ function hashAndUpload(opts) {
 				params.ContentType = 'text/css';
 				break;
 		}
-		s3bucket.upload(params, function(err, data) {
+		s3bucket.upload(params, function(err) {
 			if (err) {
 				console.log("Error uploading data: ", err);
 				reject(err);

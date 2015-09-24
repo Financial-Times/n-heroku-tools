@@ -60,7 +60,7 @@ module.exports = function(opts) {
 						}
 					});
 				})
-					.then(function(result) {
+					.then(function() {
 						console.log("Successfully uploaded: " + key);
 					});
 			});
