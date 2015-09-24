@@ -138,7 +138,9 @@ UrlTest.prototype.checkUrl = function () {
 				throw 'Already exited';
 			}
 		}.bind(this))
-		.then(this.checkUrl);
+		.then(function () {
+			window.setTimeout(this.checkUrl, 1000);
+		});
 };
 
 function testUrls (opts) {
