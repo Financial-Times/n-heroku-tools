@@ -60,9 +60,6 @@ function runScript(opts) {
 
 	return configureAndSpawn({}, function(env) {
 		var args = [path.join(process.cwd(), opts.script)];
-		if (opts.harmony) {
-			args.push('--harmony');
-		}
 		if (opts.debug) {
 			args.push('--debug');
 		}
