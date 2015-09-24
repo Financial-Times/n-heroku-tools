@@ -46,7 +46,7 @@ UrlTest.prototype.end = function (message) {
 	this.resolve();
 };
 
-UrlTest.prototype.run  = function () {
+UrlTest.prototype.run = function () {
 	console.log('polling:' + this.url);
 	this.checkUrl();
 	this.timeout = setTimeout(function() {

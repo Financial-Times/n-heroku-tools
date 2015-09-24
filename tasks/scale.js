@@ -12,7 +12,6 @@ module.exports = function(opts) {
 	var source = opts.source || normalizeName(packageJson.name, { version: false });
 	var target = opts.target || packageJson.name;
 	var overrides = {};
-	var token;
 
 	if (opts.overrides) {
 		opts.overrides.map(function (o) {
@@ -31,9 +30,6 @@ module.exports = function(opts) {
 
 	console.log('Scaling ' + target + ' using service registry information for ' + source);
 	return herokuAuthToken()
-		.then(function(authToken) {
-			token = authToken;
-		})
 		.then(function() {
 			return fetch('https://next-registry.ft.com/');
 		})
@@ -47,7 +43,7 @@ module.exports = function(opts) {
 			var processInfo = getProcessInfo(serviceData);
 
 			if (!processInfo) {
-				throw new Error("Could not get process info for " + serviceData.name + ". Please check the service registry.");
+				throw new Error('Could not get process info for ' + serviceData.name + '. Please check the service registry.');
 			}
 
 			var processProfiles = [];
@@ -64,11 +60,11 @@ module.exports = function(opts) {
 
 		})
 		.then(function(processProfiles) {
-			console.log(target + " config vars are set to", processProfiles);
+			console.log(target + ' config vars are set to', processProfiles);
 		})
 		.catch(function(err) {
 			console.log('Error scaling processes - ' + err);
-			console.log("Pro tip: Check that your process names haven't changed");
+			console.log('Pro tip: Check that your process names haven\'t changed');
 			throw err;
 		});
 };
