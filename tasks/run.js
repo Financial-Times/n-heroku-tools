@@ -45,14 +45,24 @@ function configureAndSpawn(opts, func) {
 
 function runLocal(opts) {
 	return configureAndSpawn(opts, function(env) {
-		var args = ['server/app.js', '--watch server'];
+		var args = ['server/app.js'];
+
 		if (opts.harmony) {
 			args.push('--harmony');
 		}
+
 		if (opts.debug) {
 			args.unshift('--debug');
 		}
-		return ['nodemon', args, { cwd: process.cwd(), env: env }];
+
+		if(opts.nodemon) {
+			args.push('--watch server');
+
+			return ['nodemon', args, { cwd: process.cwd(), env: env }];
+		} else {
+			return ['node', args, { cwd: process.cwd(), env: env }];
+		}
+
 	});
 }
 
@@ -113,7 +123,7 @@ module.exports = function (opts) {
 				return ensureRouterInstall()
 					.then(function() {
 						return Promise.all([
-							runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug }),
+							runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
 							runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony })
 						]);
 					});

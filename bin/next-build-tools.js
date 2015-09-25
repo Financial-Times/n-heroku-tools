@@ -228,6 +228,7 @@ program
 	.option('--procfile', 'Runs all processes specified in the Procfile')
 	.option('-s, --script <file>', 'Runs a single javascript file')
 	.option('--subargs [subargs]', 'Sub arguments to pass to a single script', /^\[.+]$/)
+	.option('--no-nodemon', 'Do not run through nodemon')
 	.action(function(opts){
 		run(opts).catch(exit);
 	});
