@@ -45,7 +45,8 @@ gulp.task('build-sass', function() {
 	return obt.build.sass(gulp, {
 			sass: sourceFolder + mainScssFile,
 			buildFolder: buildFolder,
-			env: isDev ? 'development' : 'production'
+			env: isDev ? 'development' : 'production',
+			sourcemaps: true
 		})
 		.on('end', function() {
 			console.log('build-sass completed');
@@ -61,7 +62,8 @@ function buildJs(jsFile) {
 		js: sourceFolder + jsFile,
 		buildFolder: buildFolder,
 		buildJs: jsFile,
-		env: 'development' // need to run as development as we do our own sourcemaps
+		env: isDev ? 'development' : 'production',
+		sourcemaps: true
 	})
 	.on('end', function() {
 		console.log('build-js completed for ' + jsFile);
@@ -110,7 +112,7 @@ module.exports = function(opts) {
 		promises.push(run('build-sass', opts));
 	}
 	if (!opts.skipJs) {
-		promises.push(run(opts.isDev ? 'build-js' : 'build-minify-js', opts));
+		promises.push(run('build-js'));
 	}
 	if(opts.worker) {
 		promises.push(run(opts.isDev ? 'build-worker' : 'build-minify-worker', opts));
