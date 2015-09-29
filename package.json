@@ -14,7 +14,7 @@
     "aws-sdk": "^2.1.19",
     "commander": "^2.6.0",
     "denodeify": "^1.2.0",
-    "directly": "^2.0.3",
+    "directly": "^1.0.1",
     "dotenv": "^1.2.0",
     "fastly": "Financial-Times/fastly#v2.5.0",
     "fetchres": "^1.0.4",
