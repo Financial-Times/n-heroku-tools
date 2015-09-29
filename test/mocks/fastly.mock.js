@@ -1,5 +1,4 @@
 'use strict';
-require('es6-promise').polyfill();
 var sinon = require('sinon');
 
 var fakeServiceId = '1234567';

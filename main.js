@@ -1,7 +1,5 @@
 'use strict';
 
-require('es6-promise').polyfill();
-
 module.exports = {
 	build: require('./tasks/build'),
 	configure: require('./tasks/configure'),
