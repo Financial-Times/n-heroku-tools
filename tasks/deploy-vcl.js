@@ -32,7 +32,7 @@ module.exports = function(folder, opts) {
 	}
 
 	if(!fastlyApiKey) {
-		throw new Error("Fastly API Key Required");
+		throw new Error("Missing FASTLY_APIKEY env var");
 	}
 
 
