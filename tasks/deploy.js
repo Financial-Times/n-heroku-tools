@@ -2,7 +2,6 @@
 
 var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
-var build = require('haikro/lib/build');
 var deploy = require('haikro/lib/deploy');
 var normalizeName = require('../lib/normalize-name');
 var enablePreboot = require('../lib/enable-preboot');
@@ -52,16 +51,11 @@ module.exports = function(opts) {
 			}
 		})
 		.then(function() {
-			var buildPromise = build({ project: process.cwd() });
-
 			if (opts.skipEnablePreboot) {
 				console.log("Skipping enable preboot step");
-				return buildPromise;
+			} else {
+				return enablePreboot({ app: name, token: token });
 			}
-			return Promise.all([
-				buildPromise,
-				enablePreboot({ app: name, token: token })
-			]);
 		})
 		.then(function() {
 			console.log('Next Build Tools going to deploy to ' + name);

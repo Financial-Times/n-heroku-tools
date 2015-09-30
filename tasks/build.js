@@ -7,6 +7,7 @@ var obt = require('origami-build-tools');
 var normalizeName = require('../lib/normalize-name');
 var extractSourceMap = require('next-gulp-tasks').extractSourceMap;
 var minify = require('next-gulp-tasks').minify;
+var build = require('haikro/lib/build');
 var packageJson = require(process.cwd() + '/package.json');
 
 var mainJsFile = 'main.js';
@@ -112,8 +113,11 @@ module.exports = function(opts) {
 	if (!opts.skipJs) {
 		promises.push(run(opts.isDev ? 'build-js' : 'build-minify-js', opts));
 	}
-	if(opts.worker) {
+	if (opts.worker) {
 		promises.push(run(opts.isDev ? 'build-worker' : 'build-minify-worker', opts));
 	}
-	return Promise.all(promises);
+	return Promise.all(promises)
+		.then(() => {
+			return build({ project: process.cwd() });
+		});
 };
