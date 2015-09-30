@@ -1,6 +1,6 @@
 .PHONY: test
-SHOULD_BE = $(shell ./scripts/generate-docs.sh | md5 -q)
-IS = $(shell md5 -q README.md)
+SHOULD_BE = $(shell ./scripts/generate-docs.sh)
+IS = $(shell cat README.md)
 
 clean:
 	git clean -fxd
