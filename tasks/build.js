@@ -30,13 +30,16 @@ function getGlob(task) {
 	}
 }
 
-function run(task, opts) {
+function run(tasks, opts) {
 	return new Promise(function(resolve, reject) {
 		if (opts.watch) {
-			console.log("Watching " + getGlob(task) + " and will trigger " + task);
-			gulp.watch(getGlob(task), [task]);
+			tasks.forEach(task => {
+				console.log(`Watching ${getGlob(task)} and will trigger ${task}`);
+				gulp.watch(getGlob(task), [task]);
+			});
 		} else {
-			gulp.start([task], resolve)
+			console.log(`Starting to run ${tasks.join(', ')}`);
+			gulp.start(tasks, resolve)
 				.on('error', reject);
 		}
 	});
@@ -59,18 +62,18 @@ gulp.task('build-sass', function() {
 
 function buildJs(jsFile) {
 	return obt.build.js(gulp, {
-		js: sourceFolder + jsFile,
-		buildFolder: buildFolder,
-		buildJs: jsFile,
-		env: 'development' // need to run as development as we do our own sourcemaps
-	})
-	.on('end', function() {
-		console.log('build-js completed for ' + jsFile);
-	})
-	.on('error', function(err) {
-		console.warn('build-js errored for ' + jsFile);
-		throw err;
-	});
+			js: sourceFolder + jsFile,
+			buildFolder: buildFolder,
+			buildJs: jsFile,
+			env: 'development' // need to run as development as we do our own sourcemaps
+		})
+		.on('end', function() {
+			console.log('build-js completed for ' + jsFile);
+		})
+		.on('error', function(err) {
+			console.warn('build-js errored for ' + jsFile);
+			throw err;
+		});
 }
 
 function buildMinifyJs(jsFile, sourceMapFile) {
@@ -106,18 +109,21 @@ gulp.task('build-minify-worker', ['build-worker'], function() {
 
 module.exports = function(opts) {
 	isDev = opts.isDev;
-	var promises = [];
+	var tasks = [];
 	if (!opts.skipSass) {
-		promises.push(run('build-sass', opts));
+		tasks.push('build-sass');
 	}
 	if (!opts.skipJs) {
-		promises.push(run(opts.isDev ? 'build-js' : 'build-minify-js', opts));
+		tasks.push(opts.isDev ? 'build-js' : 'build-minify-js');
 	}
 	if (opts.worker) {
-		promises.push(run(opts.isDev ? 'build-worker' : 'build-minify-worker', opts));
+		tasks.push(opts.isDev ? 'build-worker' : 'build-minify-worker');
 	}
-	return Promise.all(promises)
+	return run(tasks, opts)
 		.then(() => {
-			return build({ project: process.cwd() });
+			if (!opts.isDev) {
+				console.log("Building the Heroku tarball");
+				return build({ project: process.cwd() });
+			}
 		});
 };
