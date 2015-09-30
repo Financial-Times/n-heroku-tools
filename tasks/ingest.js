@@ -1,5 +1,3 @@
-"use strict";
-
 var keys = require('../lib/keys');
 
 module.exports = function(options) {

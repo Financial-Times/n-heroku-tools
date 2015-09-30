@@ -1,4 +1,3 @@
-'use strict';
 var sinon = require('sinon');
 
 var fakeServiceId = '1234567';

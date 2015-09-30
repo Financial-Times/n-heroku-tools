@@ -1,5 +1,3 @@
-'use strict';
-
 var gulp = require('gulp');
 var origamiBuildTools = require('origami-build-tools');
 var path = require('path');

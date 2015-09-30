@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = function(opts) {
 	var name = opts.app;
 

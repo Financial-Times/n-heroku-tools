@@ -1,5 +1,3 @@
-"use strict";
-
 var packageJson = require(process.cwd() + '/package.json');
 var denodeify = require('denodeify');
 var normalizeName = require('../lib/normalize-name');

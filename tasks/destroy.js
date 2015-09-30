@@ -1,5 +1,3 @@
-"use strict";
-
 var spawn = require('shellpromise');
 
 module.exports = function(options) {

@@ -1,4 +1,3 @@
-'use strict';
 require('array.prototype.find');
 var path = require('path');
 var normalizeName = require('../lib/normalize-name');

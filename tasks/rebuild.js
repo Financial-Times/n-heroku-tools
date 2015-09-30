@@ -1,5 +1,3 @@
-'use strict';
-
 var fetchres = require('fetchres');
 var keys = require('../lib/keys');
 var circleToken;

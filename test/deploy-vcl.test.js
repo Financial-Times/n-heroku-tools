@@ -1,5 +1,4 @@
 /* global describe, it, before, after */
-'use strict';
 var sinon = require('sinon');
 var expect = require('chai').expect;
 process.env.FASTLY_APIKEY ='12345';
