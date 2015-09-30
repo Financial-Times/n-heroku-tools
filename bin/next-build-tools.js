@@ -41,7 +41,6 @@ program
 	.description('runs haikro deployment scripts with sensible defaults for Next projects')
 	.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
 	.option('--skip-enable-preboot', 'skip the preboot')
-	.option('--docker', 'deploy an app which uses docker')
 	.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', list)
 	.option('--skip-logging', 'Skips trying to log to SalesForce')
 	.option('--log-gateway [log-gateway]', 'Which log gateway to use: mashery, internal or konstructor')
@@ -53,7 +52,6 @@ program
 
 		deploy({
 			app: app,
-			docker: options.docker,
 			skipGtg: options.skipGtg,
 			skipEnablePreboot: options.skipEnablePreboot,
 			log: !options.skipLogging,
