@@ -12,7 +12,7 @@ else
 	@echo "README.md out-of-sync with ./bin/next-build-tools.js, run \`make docs\` and commit"
 	@exit 1
 endif
-	./bin/next-build-tools.js verify --skip-layout-checks --skip-dotenv-check | grep Error
+	./bin/next-build-tools.js verify --skip-layout-checks --skip-dotenv-check
 
 unit-test:
 	mocha -r loadvars.js
