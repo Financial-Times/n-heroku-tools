@@ -21,14 +21,14 @@ module.exports = function(opts) {
 	return Promise.all([
 		herokuAuthToken(),
 		commit(),
-		exists(process.cwd() + '/public/__about.json')
+		exists(process.cwd() + '/.haikro-cache/slug.tgz')
 	])
 		.then(function(results) {
 			token = results[0];
 			hash = results[1].trim();
 			var hasAbout = results[2];
 			if (!hasAbout) {
-				throw new Error("/public/__about.json must be generated during the build step.  Make sure your app implements `make build-production` that contains all the build steps including `nbt about`");
+				throw new Error("/.haikro-cache/slug.tgz must be generated during the build step.  Make sure your app implements `make build-production` that contains all the build steps including `nbt build`");
 			}
 		})
 		.then(function() {

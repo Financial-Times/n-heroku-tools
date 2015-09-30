@@ -9,6 +9,7 @@ var extractSourceMap = require('next-gulp-tasks').extractSourceMap;
 var minify = require('next-gulp-tasks').minify;
 var build = require('haikro/lib/build');
 var packageJson = require(process.cwd() + '/package.json');
+var about = require('../lib/about');
 
 var mainJsFile = 'main.js';
 var workerJsFile = 'worker.js';
@@ -119,7 +120,10 @@ module.exports = function(opts) {
 	if (opts.worker) {
 		tasks.push(opts.isDev ? 'build-worker' : 'build-minify-worker');
 	}
-	return run(tasks, opts)
+	return Promise.all([
+			run(tasks, opts),
+			about()
+		])
 		.then(() => {
 			if (!opts.isDev) {
 				console.log("Building the Heroku tarball");

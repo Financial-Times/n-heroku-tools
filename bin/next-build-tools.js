@@ -20,7 +20,6 @@ var deployHashedAssets = require('../tasks/deploy-hashed-assets');
 var deployStatic = require('../tasks/deploy-static');
 var downloadDevelopmentKeys = require('../tasks/download-development-keys');
 var run = require('../tasks/run');
-var about = require('../tasks/about');
 var rebuild = require('../tasks/rebuild');
 var testUrls = require('../tasks/test-urls');
 var log = require('../tasks/log');
@@ -228,13 +227,6 @@ program
 	.option('--no-nodemon', 'Do not run through nodemon')
 	.action(function(opts){
 		run(opts).catch(exit);
-	});
-
-program
-	.command('about')
-	.description('Creates an __about.json file for the app')
-	.action(function(){
-		about().catch(exit);
 	});
 
 program
