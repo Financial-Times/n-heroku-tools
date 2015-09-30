@@ -2,7 +2,6 @@
 
 var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
-var exec = require('../lib/exec');
 var build = require('haikro/lib/build');
 var deploy = require('haikro/lib/deploy');
 var normalizeName = require('../lib/normalize-name');
@@ -10,7 +9,6 @@ var enablePreboot = require('../lib/enable-preboot');
 var waitForGtg = require('./wait-for-gtg');
 var denodeify = require('denodeify');
 var fs = require('fs');
-var writeFile = denodeify(fs.writeFile);
 var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
 var commit = require('../lib/commit');
 var log = require('../lib/log');
