@@ -2,7 +2,6 @@
 
 var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
-var exec = require('../lib/exec');
 var build = require('haikro/lib/build');
 var deploy = require('haikro/lib/deploy');
 var normalizeName = require('../lib/normalize-name');
@@ -10,7 +9,6 @@ var enablePreboot = require('../lib/enable-preboot');
 var waitForGtg = require('./wait-for-gtg');
 var denodeify = require('denodeify');
 var fs = require('fs');
-var writeFile = denodeify(fs.writeFile);
 var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
 var commit = require('../lib/commit');
 var log = require('../lib/log');
@@ -54,28 +52,7 @@ module.exports = function(opts) {
 			}
 		})
 		.then(function() {
-			var buildPromise;
-			if (opts.docker) {
-				buildPromise = exists(process.cwd() + '/Dockerfile')
-					.then(function(dockerfileExists) {
-						if (dockerfileExists) {
-							console.log('Using existing Dockerfile');
-						} else {
-							console.log('Writing Dockerfile');
-							return writeFile(process.cwd() + '/Dockerfile', 'FROM financialtimes/next-heroku:0.12.7');
-						}
-					})
-
-					// HACK: Workaround the great heroku docker upgrade of 18/08/2015
-					.then(function() {
-						return writeFile(process.cwd() + '/app.json', "{}");
-					})
-					.then(function() {
-						return writeFile(process.cwd() + '/docker-compose.yml', "web:\n  build: .");
-					});
-			} else {
-				buildPromise = build({ project: process.cwd() });
-			}
+			var buildPromise = build({ project: process.cwd() });
 
 			if (opts.skipEnablePreboot) {
 				console.log("Skipping enable preboot step");
@@ -88,16 +65,12 @@ module.exports = function(opts) {
 		})
 		.then(function() {
 			console.log('Next Build Tools going to deploy to ' + name);
-			if (opts.docker) {
-				return exec('heroku docker:release --app ' + name);
-			} else {
-				return deploy({
-					app: name,
-					token: token,
-					project: process.cwd(),
-					commit: hash
-				});
-			}
+			return deploy({
+				app: name,
+				token: token,
+				project: process.cwd(),
+				commit: hash
+			});
 		})
 
 		// Start polling
