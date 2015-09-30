@@ -1,4 +1,5 @@
 /* global describe, it */
+'use strict';
 var expect = require('chai').expect;
 
 var purge = require('../tasks/purge');

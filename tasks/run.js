@@ -1,3 +1,5 @@
+'use strict';
+
 var exec = require('../lib/exec');
 var spawn = require('child_process').spawn;
 var packageJson = require(process.cwd() + '/package.json');

@@ -1,3 +1,5 @@
+'use strict';
+
 var developmentKeysPath = require('../lib/development-keys-path');
 var downloadDevelopmentKeys = require('../lib/download-development-keys');
 var existsSync = require('fs').existsSync;

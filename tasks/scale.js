@@ -1,3 +1,5 @@
+'use strict';
+
 require('array.prototype.find');
 var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');

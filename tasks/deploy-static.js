@@ -1,3 +1,5 @@
+"use strict";
+
 var aws = require('aws-sdk');
 var denodeify = require('denodeify');
 var fs = require('fs');

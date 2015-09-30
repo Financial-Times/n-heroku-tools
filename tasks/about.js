@@ -1,3 +1,5 @@
+'use strict';
+
 var about = require('../lib/about');
 var packageJson = require(process.cwd() + '/package.json');
 var normalizeName = require('../lib/normalize-name');

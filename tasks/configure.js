@@ -1,3 +1,5 @@
+'use strict';
+
 var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
 var configVarsKey = require('../lib/config-vars-key');
