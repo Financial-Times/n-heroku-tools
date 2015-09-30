@@ -40,7 +40,7 @@ describe('lib/pipelines', function(){
 	});
 
 	it('Should be able to get the apps associated with a given pipeline', function(){
-		this.timeout(5000);
+		this.timeout(10000);
 		setup({mockShellPromise:false});
 		return co(function* (){
 			let apps = yield pipelines.getApps('ft-next-health');
