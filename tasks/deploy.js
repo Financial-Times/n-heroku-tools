@@ -2,7 +2,6 @@
 
 var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
-var build = require('haikro/lib/build');
 var deploy = require('haikro/lib/deploy');
 var normalizeName = require('../lib/normalize-name');
 var enablePreboot = require('../lib/enable-preboot');
@@ -22,14 +21,14 @@ module.exports = function(opts) {
 	return Promise.all([
 		herokuAuthToken(),
 		commit(),
-		exists(process.cwd() + '/public/__about.json')
+		exists(process.cwd() + '/.haikro-cache/slug.tgz')
 	])
 		.then(function(results) {
 			token = results[0];
 			hash = results[1].trim();
 			var hasAbout = results[2];
 			if (!hasAbout) {
-				throw new Error("/public/__about.json must be generated during the build step.  Make sure your app implements `make build-production` that contains all the build steps including `nbt about`");
+				throw new Error("/.haikro-cache/slug.tgz must be generated during the build step.  Make sure your app implements `make build-production` that contains all the build steps including `nbt build`");
 			}
 		})
 		.then(function() {
@@ -52,16 +51,11 @@ module.exports = function(opts) {
 			}
 		})
 		.then(function() {
-			var buildPromise = build({ project: process.cwd() });
-
 			if (opts.skipEnablePreboot) {
 				console.log("Skipping enable preboot step");
-				return buildPromise;
+			} else {
+				return enablePreboot({ app: name, token: token });
 			}
-			return Promise.all([
-				buildPromise,
-				enablePreboot({ app: name, token: token })
-			]);
 		})
 		.then(function() {
 			console.log('Next Build Tools going to deploy to ' + name);
