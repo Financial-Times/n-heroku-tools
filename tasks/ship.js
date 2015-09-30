@@ -3,7 +3,6 @@ const co = require('co');
 const scale = require('./scale');
 const configure = require('./configure');
 const packageJson = require(process.cwd() + '/package.json');
-const herokuAuthToken = require('../lib/heroku-auth-token');
 const normalizeName = require('../lib/normalize-name');
 const pipelines = require('../lib/pipelines');
 const deploy = require('./deploy');

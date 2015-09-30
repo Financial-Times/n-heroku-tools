@@ -1,5 +1,4 @@
 'use strict';
-const expect = require('chai').expect;
 const mockery = require('mockery');
 const sinon = require('sinon');
 const co = require('co');
