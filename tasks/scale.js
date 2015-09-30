@@ -13,6 +13,10 @@ module.exports = function(opts) {
 	var target = opts.target || packageJson.name;
 	var overrides = {};
 
+	if(opts.scale){
+		return shellpromise('heroku ps:scale ' + opts.scale + ' --app ' + target, { verbose: true });
+	}
+
 	if (opts.overrides) {
 		opts.overrides.map(function (o) {
 			var t = o.split('=');

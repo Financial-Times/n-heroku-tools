@@ -31,6 +31,7 @@ function list(val) {
 
 function exit(err) {
 	console.log(err);
+	console.log(err.stack);
 	process.exit(1);
 }
 
@@ -308,6 +309,17 @@ program
 			name: options.name,
 			gateway: options.gateway || 'konstructor'
 		}).catch(exit);
+	});
+
+program
+	.command('ship')
+	.description('Ships code.  Deploys using pipelines, also running the configure and scale steps automatically')
+	.option('-c --no-configure', 'Skip the configure step')
+	.option('-s --no-scale', 'Skip the scale step')
+	.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
+	.option('-m --multiregion', 'Will expect a US app as well as an EU one')
+	.action(function(options){
+		require('../tasks/ship')(options).catch(exit);
 	});
 
 program

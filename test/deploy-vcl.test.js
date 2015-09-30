@@ -9,7 +9,7 @@ var fastlyMock = require('./mocks/fastly.mock');
 mockery.registerMock('fastly', fastlyMock);
 var path = require('path');
 
-describe.only('Deploy VCL', function(){
+describe('Deploy VCL', function(){
 
 	var deployVcl;
 

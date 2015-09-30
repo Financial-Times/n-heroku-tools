@@ -7,11 +7,11 @@ var exec = denodeify(require('child_process').exec, function(err, stdout, stderr
 	return [err, stdout];
 });
 
-var FASTLY_KEY = process.env.FASTLY_KEY;
+var FASTLY_KEY = process.env.FASTLY_APIKEY;
 
 module.exports = function(url, opts){
 	if(!FASTLY_KEY){
-		throw new Error('No Fastly Key Found!');
+		throw new Error('Missing FASTLY_APIKEY!');
 	}
 
 	var options = opts || {};
