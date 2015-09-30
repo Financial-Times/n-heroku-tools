@@ -61,7 +61,7 @@ describe('tasks/ship', function(){
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
 
-			sinon.assert.calledWith(mockDeploy, {app:mockApps.staging});
+			sinon.assert.calledWith(mockDeploy, {app:mockApps.staging, skipEnablePreboot:true});
 		});
 	});
 
@@ -76,12 +76,13 @@ describe('tasks/ship', function(){
 
 	it('Should be able to run the scale task on the production apps', function(){
 		let pipelineName = 'test';
+		let appName = 'build-tools';
 		return co(function* (){
 			yield ship({pipeline:pipelineName,scale:true,multiregion:true});
 
-			sinon.assert.calledWith(mockScale, {source:pipelineName, target:mockApps.staging});
-			sinon.assert.calledWith(mockScale, {source:pipelineName, target:mockApps.production.eu});
-			sinon.assert.calledWith(mockScale, {source:pipelineName, target:mockApps.production.us});
+			sinon.assert.calledWith(mockScale, {source:appName, target:mockApps.staging});
+			sinon.assert.calledWith(mockScale, {source:appName, target:mockApps.production.eu});
+			sinon.assert.calledWith(mockScale, {source:appName, target:mockApps.production.us});
 
 		});
 	});
