@@ -20,7 +20,6 @@ var deployHashedAssets = require('../tasks/deploy-hashed-assets');
 var deployStatic = require('../tasks/deploy-static');
 var downloadDevelopmentKeys = require('../tasks/download-development-keys');
 var run = require('../tasks/run');
-var about = require('../tasks/about');
 var rebuild = require('../tasks/rebuild');
 var testUrls = require('../tasks/test-urls');
 var log = require('../tasks/log');
@@ -31,6 +30,7 @@ function list(val) {
 
 function exit(err) {
 	console.log(err);
+	console.log(err.stack);
 	process.exit(1);
 }
 
@@ -41,7 +41,6 @@ program
 	.description('runs haikro deployment scripts with sensible defaults for Next projects')
 	.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
 	.option('--skip-enable-preboot', 'skip the preboot')
-	.option('--docker', 'deploy an app which uses docker')
 	.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', list)
 	.option('--skip-logging', 'Skips trying to log to SalesForce')
 	.option('--log-gateway [log-gateway]', 'Which log gateway to use: mashery, internal or konstructor')
@@ -53,7 +52,6 @@ program
 
 		deploy({
 			app: app,
-			docker: options.docker,
 			skipGtg: options.skipGtg,
 			skipEnablePreboot: options.skipEnablePreboot,
 			log: !options.skipLogging,
@@ -233,13 +231,6 @@ program
 	});
 
 program
-	.command('about')
-	.description('Creates an __about.json file for the app')
-	.action(function(){
-		about().catch(exit);
-	});
-
-program
 	.command('deploy-static <source> [otherSources...]')
 	.description('Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars')
 	.option('--strip <strip>', 'Optionally strip off the <strip> leading components off of the source file name')
@@ -308,6 +299,25 @@ program
 			name: options.name,
 			gateway: options.gateway || 'konstructor'
 		}).catch(exit);
+	});
+
+program
+	.command('hash-assets')
+	.description('Generates an asset-hashes.json file')
+	.action(() => {
+		const generateAssetHashesJson = require('../lib/hash-assets');
+		generateAssetHashesJson().catch(exit);
+	});
+
+program
+	.command('ship')
+	.description('Ships code.  Deploys using pipelines, also running the configure and scale steps automatically')
+	.option('-c --no-configure', 'Skip the configure step')
+	.option('-s --no-scale', 'Skip the scale step')
+	.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
+	.option('-m --multiregion', 'Will expect a US app as well as an EU one')
+	.action(function(options){
+		require('../tasks/ship')(options).catch(exit);
 	});
 
 program

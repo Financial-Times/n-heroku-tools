@@ -7,7 +7,9 @@ var obt = require('origami-build-tools');
 var normalizeName = require('../lib/normalize-name');
 var extractSourceMap = require('next-gulp-tasks').extractSourceMap;
 var minify = require('next-gulp-tasks').minify;
+var build = require('haikro/lib/build');
 var packageJson = require(process.cwd() + '/package.json');
+var about = require('../lib/about');
 
 var mainJsFile = 'main.js';
 var workerJsFile = 'worker.js';
@@ -17,6 +19,7 @@ var buildFolder = './public/';
 var mainJsSourceMapFile = 'main.js.map';
 var workerJsSourceMapFile = 'worker.js.map';
 var isDev = false;
+const hashAssets = require('../lib/hash-assets');
 
 function getGlob(task) {
 	switch(task) {
@@ -29,13 +32,19 @@ function getGlob(task) {
 	}
 }
 
-function run(task, opts) {
+function run(tasks, opts) {
+	if (tasks.length === 0) {
+		return Promise.resolve();
+	}
 	return new Promise(function(resolve, reject) {
 		if (opts.watch) {
-			console.log("Watching " + getGlob(task) + " and will trigger " + task);
-			gulp.watch(getGlob(task), [task]);
+			tasks.forEach(task => {
+				console.log(`Watching ${getGlob(task)} and will trigger ${task}`);
+				gulp.watch(getGlob(task), [task]);
+			});
 		} else {
-			gulp.start([task], resolve)
+			console.log(`Starting to run ${tasks.join(', ')}`);
+			gulp.start(tasks, resolve)
 				.on('error', reject);
 		}
 	});
@@ -58,18 +67,18 @@ gulp.task('build-sass', function() {
 
 function buildJs(jsFile) {
 	return obt.build.js(gulp, {
-		js: sourceFolder + jsFile,
-		buildFolder: buildFolder,
-		buildJs: jsFile,
-		env: 'development' // need to run as development as we do our own sourcemaps
-	})
-	.on('end', function() {
-		console.log('build-js completed for ' + jsFile);
-	})
-	.on('error', function(err) {
-		console.warn('build-js errored for ' + jsFile);
-		throw err;
-	});
+			js: sourceFolder + jsFile,
+			buildFolder: buildFolder,
+			buildJs: jsFile,
+			env: 'development' // need to run as development as we do our own sourcemaps
+		})
+		.on('end', function() {
+			console.log('build-js completed for ' + jsFile);
+		})
+		.on('error', function(err) {
+			console.warn('build-js errored for ' + jsFile);
+			throw err;
+		});
 }
 
 function buildMinifyJs(jsFile, sourceMapFile) {
@@ -105,15 +114,29 @@ gulp.task('build-minify-worker', ['build-worker'], function() {
 
 module.exports = function(opts) {
 	isDev = opts.isDev;
-	var promises = [];
+	let tasks = [];
 	if (!opts.skipSass) {
-		promises.push(run('build-sass', opts));
+		tasks.push('build-sass');
 	}
 	if (!opts.skipJs) {
-		promises.push(run(opts.isDev ? 'build-js' : 'build-minify-js', opts));
+		tasks.push(opts.isDev ? 'build-js' : 'build-minify-js');
 	}
-	if(opts.worker) {
-		promises.push(run(opts.isDev ? 'build-worker' : 'build-minify-worker', opts));
+	if (opts.worker) {
+		tasks.push(opts.isDev ? 'build-worker' : 'build-minify-worker');
 	}
-	return Promise.all(promises);
+	return Promise.all([
+			run(tasks, opts),
+			about()
+		])
+		.then(() => {
+			if (!opts.isDev) {
+				return hashAssets();
+			}
+		})
+		.then(() => {
+			if (!opts.isDev) {
+				console.log("Building the Heroku tarball");
+				return build({ project: process.cwd() });
+			}
+		});
 };

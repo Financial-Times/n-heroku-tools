@@ -21,12 +21,13 @@
     purge [options] [url]                               purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
     deploy-vcl [options] [folder]                       Deploys VCL in [folder] to the specified fastly service.  Requires FASTLY_KEY env var
     run [options]                                       Runs the local app through the router
-    about                                               Creates an __about.json file for the app
     deploy-static [options] <source> [otherSources...]  Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars
     rebuild [options] [apps...]                         Trigger a rebuild of the latest master on Circle
     wait-for-gtg <app>                                  Polls the /__gtg endpoint of a given app until it returns 200
     ingest [uuid...]                                    [Re-]ingest content into the Elastic Search cache [api v1 only]
     log [options]                                       Logs to SalesForce™®©
+    hash-assets                                         Generates an asset-hashes.json file
+    ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
     *                                                   
 
   Options:
