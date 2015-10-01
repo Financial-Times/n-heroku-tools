@@ -16,7 +16,7 @@ module.exports = function ship(opts){
 		}
 
 		let appName = packageJson.name;
-		let pipelineName = opts.pipeline || ('ft-next-' + appName);
+		let pipelineName = opts.pipeline || appName;
 		log.info('Deploy to ' + pipelineName);
 		let apps = yield pipelines.getApps(pipelineName);
 		if(!apps.staging){
