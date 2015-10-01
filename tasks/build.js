@@ -33,6 +33,9 @@ function getGlob(task) {
 }
 
 function run(tasks, opts) {
+	if (tasks.length === 0) {
+		return Promise.resolve();
+	}
 	return new Promise(function(resolve, reject) {
 		if (opts.watch) {
 			tasks.forEach(task => {
