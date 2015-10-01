@@ -76,8 +76,10 @@ module.exports = app => {
 							break;
 					}
 					return upload(params)
-						.then(() => waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`))
-						.then(() => waitForOk(`http://${usBucket}.s3-website-${usRegion}.amazonaws.com/${key}`));
+						.then(() => Promise.all([
+							waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`),
+							waitForOk(`http://${usBucket}.s3-website-${usRegion}.amazonaws.com/${key}`)
+						]));
 				});
 		}));
 };
