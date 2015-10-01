@@ -27,6 +27,7 @@
     ingest [uuid...]                                    [Re-]ingest content into the Elastic Search cache [api v1 only]
     log [options]                                       Logs to SalesForce™®©
     ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
+    drydock [options] [name]                            Creates a new pipeline with a staging and EU production app
     *                                                   
 
   Options:
