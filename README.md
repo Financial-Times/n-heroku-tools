@@ -28,6 +28,7 @@
     log [options]                                       Logs to SalesForce™®©
     hash-assets                                         Generates an asset-hashes.json file
     ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
+    float [options]                                     Deploys code to a test app and checks it doesn't die
     *                                                   
 
   Options:
