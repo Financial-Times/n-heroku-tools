@@ -5,7 +5,6 @@ require('isomorphic-fetch');
 
 var program = require('commander');
 var deploy = require('../tasks/deploy');
-var waitForGtg = require('../tasks/wait-for-gtg');
 var configure = require('../tasks/configure');
 var scale = require('../tasks/scale');
 var provision = require('../tasks/provision');
@@ -264,15 +263,6 @@ program
 		return rebuild({
 			apps: apps,
 			serves: opts.serves
-		}).catch(exit);
-	});
-
-program
-	.command('wait-for-gtg <app>')
-	.description('Polls the /__gtg endpoint of a given app until it returns 200')
-	.action(function(app) {
-		return waitForGtg({
-			app: app
 		}).catch(exit);
 	});
 

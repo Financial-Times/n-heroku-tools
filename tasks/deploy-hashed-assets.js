@@ -4,19 +4,22 @@ const packageJson = require(process.cwd() + '/package.json');
 const denodeify = require('denodeify');
 const normalizeName = require('../lib/normalize-name');
 const readFile = denodeify(require('fs').readFile);
+const waitForOk = require('../lib/wait-for-ok');
 const path = require('path');
 const aws = require('aws-sdk');
 
 const AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process.env.aws_access_hashed_assets;
 const AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.env.aws_secret_hashed_assets;
 
+const bucket = 'ft-next-hashed-assets-prod';
+const region = 'eu-west-1';
+
 aws.config.update({
 	accessKeyId: AWS_ACCESS_HASHED_ASSETS,
 	secretAccessKey: AWS_SECRET_HASHED_ASSETS,
-	region: 'eu-west-1'
+	region
 });
 
-const bucket = 'ft-next-hashed-assets-prod';
 const s3bucket = new aws.S3({ params: { Bucket: bucket } });
 
 function upload(params) {
@@ -70,7 +73,10 @@ module.exports = app => {
 							params.ContentType = 'text/css';
 							break;
 					}
-					return upload(params);
+					return upload(params)
+						.then(() => {
+							return waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`);
+						});
 				});
 		}));
 };
