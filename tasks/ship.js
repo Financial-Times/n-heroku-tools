@@ -3,7 +3,6 @@ const co = require('co');
 const scale = require('./scale');
 const configure = require('./configure');
 const packageJson = require(process.cwd() + '/package.json');
-const normalizeName = require('../lib/normalize-name');
 const pipelines = require('../lib/pipelines');
 const deploy = require('./deploy');
 const log = require('../lib/logger');
@@ -16,8 +15,8 @@ module.exports = function ship(opts){
 			return;
 		}
 
-		let appName = normalizeName(packageJson.name, { version: false });
-		let pipelineName = opts.pipeline || ('ft-next-' + appName);
+		let appName = packageJson.name;
+		let pipelineName = opts.pipeline || appName;
 		log.info('Deploy to ' + pipelineName);
 		let apps = yield pipelines.getApps(pipelineName);
 		if(!apps.staging){
