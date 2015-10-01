@@ -5,7 +5,7 @@ var herokuAuthToken = require('../lib/heroku-auth-token');
 var deploy = require('haikro/lib/deploy');
 var normalizeName = require('../lib/normalize-name');
 var enablePreboot = require('../lib/enable-preboot');
-var waitForGtg = require('./wait-for-gtg');
+var waitForOk = require('../lib/wait-for-ok');
 var denodeify = require('denodeify');
 var fs = require('fs');
 var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
@@ -68,13 +68,11 @@ module.exports = function(opts) {
 		})
 
 		// Start polling
-		.then(function() {
+		.then(() => {
 			// Always skip gtg if preboot enabled as heroku's implementation of preboot means
 			// we are most likley hitting the last successful deploy, not the current one
 			if (opts.skipEnablePreboot && !opts.skipGtg) {
-				return waitForGtg({
-					app: name
-				});
+				return waitForOk(`http://${name}.herokuapp.com/__gtg`);
 			} else {
 				console.log("Skipping gtg check. (Note: gtg is always skipped if preboot is turned on to avoid false positives)");
 			}
