@@ -12,7 +12,9 @@ const AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process
 const AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.env.aws_secret_hashed_assets;
 
 const bucket = 'ft-next-hashed-assets-prod';
+const usBucket = 'ft-next-hashed-assets-prod-us';
 const region = 'eu-west-1';
+const usRegion = 'us-east-1';
 
 aws.config.update({
 	accessKeyId: AWS_ACCESS_HASHED_ASSETS,
@@ -74,9 +76,8 @@ module.exports = app => {
 							break;
 					}
 					return upload(params)
-						.then(() => {
-							return waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`);
-						});
+						.then(() => waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`))
+						.then(() => waitForOk(`http://${usBucket}.s3-website-${usRegion}.amazonaws.com/${key}`));
 				});
 		}));
 };
