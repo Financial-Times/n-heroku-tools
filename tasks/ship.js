@@ -54,7 +54,7 @@ module.exports = function ship(opts){
 		}
 
 		log.info('Scale staging app to 1 dyno');
-		yield scale({target:apps.staging, scale:'web=1'}).catch(function(err){
+		yield scale({target:apps.staging, scale:'web=1'}).catch(function(){
 			log.info('Failed to scale up staging app - is this the first run?')
 		});
 
