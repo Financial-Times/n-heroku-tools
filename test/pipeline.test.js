@@ -61,4 +61,15 @@ describe('lib/pipelines', function(){
 		});
 	});
 
+	it('Should be able to create a new pipeline', function(){
+		let app = 'test-pipeline-staging';
+		this.timeout(5000);
+		setup({mockShellPromise:true, shellPromiseReturns:Promise.resolve(null)});
+		return co(function* (){
+			yield pipelines.create(app);
+
+			sinon.assert.calledWith(shellPromiseMock, 'heroku pipelines:create -s staging -a ' + app)
+		});
+	})
+
 });

@@ -54,7 +54,9 @@ module.exports = function ship(opts){
 		}
 
 		log.info('Scale staging app to 1 dyno');
-		yield scale({target:apps.staging, scale:'web=1'});
+		yield scale({target:apps.staging, scale:'web=1'}).catch(function(err){
+			log.info('Failed to scale up staging app - is this the first run?')
+		});
 
 		log.info('Deploy to staging app and run gtg checks');
 		yield deploy({app:apps.staging, skipEnablePreboot:true});
