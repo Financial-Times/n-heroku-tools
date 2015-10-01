@@ -28,6 +28,7 @@
     log [options]                                       Logs to SalesForce™®©
     hash-assets                                         Generates an asset-hashes.json file
     ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
+    drydock [options] [name]                            Creates a new pipeline with a staging and EU production app
     *                                                   
 
   Options:
