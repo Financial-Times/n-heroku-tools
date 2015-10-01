@@ -18,7 +18,18 @@ aws.config.update({
 
 const bucket = 'ft-next-hashed-assets-prod';
 const s3bucket = new aws.S3({ params: { Bucket: bucket } });
-const upload = denodeify(s3bucket.upload);
+
+function upload(params) {
+	return new Promise((resolve, reject) => {
+		return s3bucket.upload(params, err => {
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
+				});
+			});
+}
 
 module.exports = app => {
 	let assetHashes;
