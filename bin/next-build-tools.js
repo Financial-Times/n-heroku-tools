@@ -321,6 +321,16 @@ program
 	});
 
 program
+	.command('float')
+	.description('Deploys code to a test app and checks it doesn\'t die')
+	.option('-a --app', 'Name of the app')
+	.option('-t --testapp', 'Name of the app to be created')
+	.option('-m --master', "Run even if on master branch (not required if using nbt ship).")
+	.action(function(options){
+		require('../tasks/float')(options).catch(exit);
+	});
+
+program
 	.command('*')
 	.description('')
 	.action(function(app) {

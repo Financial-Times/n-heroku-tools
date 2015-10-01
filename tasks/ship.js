@@ -16,7 +16,7 @@ module.exports = function ship(opts){
 			return;
 		}
 
-		let appName = normalizeName(packageJson.name, { version: false });
+		let appName = packageJson.name;
 		let pipelineName = opts.pipeline || ('ft-next-' + appName);
 		log.info('Deploy to ' + pipelineName);
 		let apps = yield pipelines.getApps(pipelineName);
@@ -57,7 +57,7 @@ module.exports = function ship(opts){
 		yield scale({target:apps.staging, scale:'web=1'});
 
 		log.info('Deploy to staging app and run gtg checks');
-		yield deploy({app:apps.staging, skipEnablePreboot:true});
+		yield deploy({app:apps.staging, skipEnablePreboot:true, log:true});
 		log.success('Deploy successful');
 
 		log.info('Promote slug to production');
