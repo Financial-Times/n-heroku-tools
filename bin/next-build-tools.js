@@ -331,6 +331,17 @@ program
 	});
 
 program
+	.command('drydock [name]')
+	.description('Creates a new pipeline with a staging and EU production app')
+	.option('-m --multiregion', 'Will create an additional app in the US')
+	.action(function(name, options){
+		if(!name){
+			throw new Error('Please specifiy a name for the pipeline');
+		}
+		require('../tasks/drydock')(name, options).catch(exit);
+	});
+
+program
 	.command('*')
 	.description('')
 	.action(function(app) {

@@ -29,6 +29,7 @@
     hash-assets                                         Generates an asset-hashes.json file
     ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
     float [options]                                     Deploys code to a test app and checks it doesn't die
+    drydock [options] [name]                            Creates a new pipeline with a staging and EU production app
     *                                                   
 
   Options:
