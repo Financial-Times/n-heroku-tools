@@ -24,7 +24,7 @@ module.exports = function(opts){
 
 
 		let appName = opts.app || packageJson.name;
-		testAppName =  opts.testapp || appName + '-' + host.buildNumber();
+		testAppName = opts.testapp || appName + '-' + host.buildNumber();
 
 
 		log.info('Creating test app');
