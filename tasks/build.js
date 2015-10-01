@@ -19,6 +19,7 @@ var buildFolder = './public/';
 var mainJsSourceMapFile = 'main.js.map';
 var workerJsSourceMapFile = 'worker.js.map';
 var isDev = false;
+const hashAssets = require('../lib/hash-assets');
 
 function getGlob(task) {
 	switch(task) {
@@ -110,7 +111,7 @@ gulp.task('build-minify-worker', ['build-worker'], function() {
 
 module.exports = function(opts) {
 	isDev = opts.isDev;
-	var tasks = [];
+	let tasks = [];
 	if (!opts.skipSass) {
 		tasks.push('build-sass');
 	}
@@ -124,6 +125,11 @@ module.exports = function(opts) {
 			run(tasks, opts),
 			about()
 		])
+		.then(() => {
+			if (!opts.isDev) {
+				return hashAssets();
+			}
+		})
 		.then(() => {
 			if (!opts.isDev) {
 				console.log("Building the Heroku tarball");

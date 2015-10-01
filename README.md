@@ -26,6 +26,7 @@
     wait-for-gtg <app>                                  Polls the /__gtg endpoint of a given app until it returns 200
     ingest [uuid...]                                    [Re-]ingest content into the Elastic Search cache [api v1 only]
     log [options]                                       Logs to SalesForce™®©
+    hash-assets                                         Generates an asset-hashes.json file
     ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
     *                                                   
 

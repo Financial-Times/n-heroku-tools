@@ -302,6 +302,14 @@ program
 	});
 
 program
+	.command('hash-assets')
+	.description('Generates an asset-hashes.json file')
+	.action(() => {
+		const generateAssetHashesJson = require('../lib/hash-assets');
+		generateAssetHashesJson().catch(exit);
+	});
+
+program
 	.command('ship')
 	.description('Ships code.  Deploys using pipelines, also running the configure and scale steps automatically')
 	.option('-c --no-configure', 'Skip the configure step')
