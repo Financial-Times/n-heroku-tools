@@ -311,7 +311,7 @@ program
 
 program
 	.command('ship')
-	.description('Ships code.  Deploys using pipelines, also running the configure and scale steps automatically')
+	.description('Ships code.  Deploys using pipelines, also running the configure and scale steps automatically (beta)')
 	.option('-c --no-configure', 'Skip the configure step')
 	.option('-s --no-scale', 'Skip the scale step')
 	.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
