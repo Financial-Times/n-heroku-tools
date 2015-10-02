@@ -58,7 +58,7 @@ module.exports = function ship(opts){
 		});
 
 		log.info('Deploy to staging app and run gtg checks');
-		yield deploy({app:apps.staging, skipEnablePreboot:true, log:true});
+		yield deploy({app:apps.staging, skipEnablePreboot:true, log:true, logGateway:'konstructor'});
 		log.success('Deploy successful');
 
 		log.info('Promote slug to production');
