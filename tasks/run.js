@@ -45,7 +45,13 @@ function configureAndSpawn(opts, func) {
 
 function runLocal(opts) {
 	return configureAndSpawn(opts, function(env) {
-		var args = ['server/app.js'];
+		var args = [];
+
+		if(opts.script) {
+			args.push(opts.script);
+		} else {
+			args.push('server/app.js');
+		}
 
 		if (opts.harmony) {
 			args.push('--harmony');
@@ -114,7 +120,7 @@ module.exports = function (opts) {
 			var localPort = process.env.PORT || 3002;
 
 			if (opts.local) {
-				return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug });
+				return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script });
 			} else if (opts.procfile) {
 				return runProcfile();
 			} else if (opts.script) {
