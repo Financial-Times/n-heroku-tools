@@ -61,7 +61,7 @@ describe('tasks/ship', function(){
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
 
-			sinon.assert.calledWith(mockDeploy, {app:mockApps.staging, skipEnablePreboot:true, log:true});
+			sinon.assert.calledWith(mockDeploy, {app:mockApps.staging, skipEnablePreboot:true, log:true, logGateway: "konstructor"});
 		});
 	});
 
