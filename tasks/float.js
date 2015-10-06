@@ -10,6 +10,7 @@ const log = require('../lib/logger');
 
 
 module.exports = function(opts){
+	console.log('float', opts);
 	var testAppName;
 	return co(function* (){
 		let isMaster = host.isMasterBranch();
@@ -18,7 +19,7 @@ module.exports = function(opts){
 		}
 
 		if(isMaster && !opts.master){
-			log.info('On master branch and skipmaster is true - don\'t run float');
+			log.info('On master branch - don\'t run float.  Use --master option if you want to do this');
 			return;
 		}
 
@@ -27,7 +28,7 @@ module.exports = function(opts){
 		testAppName = opts.testapp || appName + '-' + host.buildNumber();
 
 
-		log.info('Creating test app');
+		log.info('Creating test app %s', testAppName);
 		yield provision(testAppName);
 		log.success('Created app %s', testAppName);
 
@@ -39,16 +40,23 @@ module.exports = function(opts){
 		yield deploy({app:testAppName, skipEnablePreboot:true});
 		log.success('Deployed successfully');
 
-		log.info('Destroy test app');
-		yield destroy({app:testAppName});
-		log.success('Removed Test App');
+		if(opts.destroy){
+			log.info('Destroy test app');
+			yield destroy({app:testAppName});
+			log.success('Removed Test App');
+		}
 
 		log.art.canoe();
 		log.success('IT FLOATS!');
 	}).catch(function(err){
 		log.error('Man overboard', err);
-		return destroy({app:testAppName, verbose:true}).then(function(){
-			throw err;
-		});
+		if(opts.destroy){
+			return destroy({app:testAppName, verbose:true}).then(function(){
+				throw err;
+			});
+		}else{
+			return Promise.resolve(null);
+		}
+
 	});
 };
