@@ -314,8 +314,9 @@ program
 	.command('float')
 	.description('Deploys code to a test app and checks it doesn\'t die')
 	.option('-a --app', 'Name of the app')
-	.option('-t --testapp', 'Name of the app to be created')
+	.option('-t --testapp [value]', 'Name of the app to be created')
 	.option('-m --master', "Run even if on master branch (not required if using nbt ship).")
+	.option('-d, --no-destroy', 'Don\'t automatically destroy new apps')
 	.action(function(options){
 		require('../tasks/float')(options).catch(exit);
 	});

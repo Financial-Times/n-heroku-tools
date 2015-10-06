@@ -85,6 +85,7 @@ module.exports = function(opts) {
 			if (opts.log) {
 				return log.close(salesForceReleaseId, { gateway: opts.logGateway, closeCategory: 'Rejected' })
 					.then(function() {
+						console.log("An error has occurred", err);
 						throw err;
 					});
 			}
