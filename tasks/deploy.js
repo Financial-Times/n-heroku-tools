@@ -116,13 +116,13 @@ module.exports = function(opts) {
 			if (opts.log) {
 				return log.close(salesForceReleaseId, { gateway: opts.logGateway });
 			}
-		}, function(err) {
+		}, function() {
 			if (opts.log) {
 				return log.close(salesForceReleaseId, { gateway: opts.logGateway, closeCategory: 'Rejected' })
 					.then(function() {
-						throw err;
+						// throw err;
 					});
 			}
-			throw err;
+			// throw err;
 		});
 };
