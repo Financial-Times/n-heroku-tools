@@ -120,9 +120,9 @@ module.exports = function(opts) {
 			if (opts.log) {
 				return log.close(salesForceReleaseId, { gateway: opts.logGateway, closeCategory: 'Rejected' })
 					.then(function() {
-						throw err;
+						// throw err;
 					});
 			}
-			throw err;
+			// throw err;
 		});
 };
