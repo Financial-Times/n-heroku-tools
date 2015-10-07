@@ -3,7 +3,8 @@
   "version": "4.3.0",
   "bin": {
     "next-build-tools": "./bin/next-build-tools.js",
-    "nbt": "./bin/next-build-tools.js"
+    "nbt": "./bin/next-build-tools.js",
+    "jira": "./node_modules/jira-cmd/bin/jira.js"
   },
   "scripts": {
     "prepublish": "curl -s http://bertha.ig.ft.com/view/publish/gss/1mbJQYJOgXAH2KfgKUM1Vgxq8FUIrahumb39wzsgStu0/devs > devs.json"
@@ -24,6 +25,7 @@
     "gulp-watch": "^4.2.4",
     "haikro": "^2.2.0",
     "isomorphic-fetch": "^2.0.0",
+    "jira-cmd": "financial-times/jira-cmd#v1.0.1",
     "next-gulp-tasks": "Financial-Times/next-gulp-tasks#v1",
     "origami-build-tools": "^4.0.0",
     "semver": "^5.0.3",
