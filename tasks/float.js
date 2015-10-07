@@ -10,7 +10,6 @@ const log = require('../lib/logger');
 
 
 module.exports = function(opts){
-	console.log('float', opts);
 	var testAppName;
 	return co(function* (){
 		let isMaster = host.isMasterBranch();
