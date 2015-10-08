@@ -28,6 +28,7 @@
 	"strict": [1, "global"]
   },
   "globals": {
-	"fetch": true
+	"fetch": true,
+	"requireText": true
   }
 }
