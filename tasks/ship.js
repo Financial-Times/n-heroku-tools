@@ -6,6 +6,7 @@ const packageJson = require(process.cwd() + '/package.json');
 const pipelines = require('../lib/pipelines');
 const deploy = require('./deploy');
 const log = require('../lib/logger');
+const enablePreboot = require('../lib/enable-preboot');
 
 module.exports = function ship(opts){
 	return co(function* (){
@@ -60,6 +61,13 @@ module.exports = function ship(opts){
 		log.info('Deploy to staging app and run gtg checks');
 		yield deploy({app:apps.staging, skipEnablePreboot:true, log:true, logGateway:'konstructor'});
 		log.success('Deploy successful');
+
+		log.info('Ensures preboot enabled for production app');
+		let prebootTasks = [enablePreboot({ app: apps.production.eu })];
+		if (opts.multiregion) {
+			prebootTasks.push(enablePreboot({ app: apps.production.us }));
+		}
+		yield Promise.all(prebootTasks);
 
 		log.info('Promote slug to production');
 		yield pipelines.promote(apps.staging);
