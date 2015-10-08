@@ -306,7 +306,7 @@ program
 	.option('-s --no-scale', 'Skip the scale step')
 	.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
 	.option('-m --multiregion', 'Will expect a US app as well as an EU one')
-	.option('-l --skip-logging', "Don't log to Salesforce™®©")
+	.option('-l --no-logging', "Don't log to Salesforce™®©")
 	.action(function(options){
 		options.log = !options.skipLogging;
 		require('../tasks/ship')(options).catch(exit);
