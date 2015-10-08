@@ -16,6 +16,7 @@ module.exports = function ship(opts){
 			return;
 		}
 
+
 		let appName = packageJson.name.replace('ft-next-', '');
 		let pipelineName = opts.pipeline || packageJson.name;
 		log.info('Deploy to ' + pipelineName);
@@ -24,6 +25,8 @@ module.exports = function ship(opts){
 			log.error('No staging app found');
 			return;
 		}
+
+		let doLogging = opts.log || true;
 
 		if(!apps.production.eu){
 			log.error('No EU production app found');
@@ -59,7 +62,7 @@ module.exports = function ship(opts){
 		});
 
 		log.info('Deploy to staging app and run gtg checks');
-		yield deploy({app:apps.staging, skipEnablePreboot:true, log:true, logGateway:'konstructor'});
+		yield deploy({app:apps.staging, skipEnablePreboot:true, log:doLogging, logGateway:'konstructor'});
 		log.success('Deploy successful');
 
 		log.info('Ensures preboot enabled for production app');
