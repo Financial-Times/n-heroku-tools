@@ -63,7 +63,7 @@ module.exports = function ship(opts){
 		log.success('Deploy successful');
 
 		log.info('Ensures preboot enabled for production app');
-		let prebootTasks = [enablePreboot({ app: apps.production.eu })];
+		const prebootTasks = [enablePreboot({ app: apps.production.eu })];
 		if (opts.multiregion) {
 			prebootTasks.push(enablePreboot({ app: apps.production.us }));
 		}
