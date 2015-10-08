@@ -54,7 +54,7 @@ module.exports = function(opts) {
 			if (opts.skipEnablePreboot) {
 				console.log("Skipping enable preboot step");
 			} else {
-				return enablePreboot({ app: name, token: token });
+				return enablePreboot({ app: name });
 			}
 		})
 		.then(function() {
