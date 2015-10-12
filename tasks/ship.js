@@ -48,7 +48,7 @@ module.exports = function ship(opts){
 				configure({source:source, target:apps.production.eu, overrides:['REGION=EU']})
 			];
 			if(opts.multiregion){
-				configureTasks.push(configure({source:source, target:apps.production.us, overrides:['REGION=US']}))
+				configureTasks.push(configure({source:source, target:apps.production.us, overrides:['REGION=US'], splunk:!!(opts.splunk)}))
 			}
 
 			log.log('Configure all apps');
