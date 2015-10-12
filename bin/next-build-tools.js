@@ -307,6 +307,7 @@ program
 	.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
 	.option('-m --multiregion', 'Will expect a US app as well as an EU one')
 	.option('-l --no-logging', "Don't log to Salesforce™®©")
+	.option('-n, --no-splunk', 'configure not to drain logs to splunk')
 	.action(function(options){
 		options.log = !options.skipLogging;
 		require('../tasks/ship')(options).catch(exit);
