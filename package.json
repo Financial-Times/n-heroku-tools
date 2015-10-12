@@ -1,6 +1,6 @@
 {
   "name": "next-build-tools",
-  "version": "4.3.2",
+  "version": "5.0.0",
   "bin": {
     "next-build-tools": "./bin/next-build-tools.js",
     "nbt": "./bin/next-build-tools.js"
@@ -12,6 +12,8 @@
   "dependencies": {
     "array.prototype.find": "^1.0.0",
     "aws-sdk": "^2.1.19",
+    "co": "^4.6.0",
+    "colors": "^1.1.2",
     "commander": "^2.6.0",
     "denodeify": "^1.2.0",
     "directly": "^1.0.1",
@@ -34,5 +36,8 @@
     "mocha": "^2.2.4",
     "mockery": "^1.4.0",
     "sinon": "^1.14.1"
+  },
+  "babel": {
+    "optional": "es7.classProperties"
   }
 }
