@@ -25,6 +25,7 @@
 	"one-var": [2, "never"],
 
 	"no-var": 1,
+	"space-before-function-paren": [1, "never"],
 	"strict": [1, "global"]
   },
   "globals": {
