@@ -9,13 +9,17 @@ var verifyDotenvInGitignore = require('../lib/verify-dotenv-in-gitignore');
 
 function obtVerify() {
 	return new Promise(function(resolve, reject) {
-		origamiBuildTools.verify(gulp, {
-			esLintPath: path.join(__dirname, '..', 'config', 'eslint.json')
-		})
-			.on('end', resolve)
+		gulp.start(['verify'], resolve)
 			.on('error', reject);
 	});
 }
+
+
+gulp.task('verify', function() {
+	return origamiBuildTools.verify(gulp, {
+			esLintPath: path.join(__dirname, '..', 'config', 'eslint.json')
+		});
+});
 
 module.exports = function(opts) {
 	var checks = [
