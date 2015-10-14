@@ -34,10 +34,6 @@ var UrlTest = function (url, headers, expectation, timeout) {
 };
 
 UrlTest.prototype.end = function (error, message) {
-
-	clearTimeout(this.timeout);
-	delete this.timeout;
-
 	if (error) {
 		this.reject(error);
 	} else {
@@ -46,35 +42,20 @@ UrlTest.prototype.end = function (error, message) {
 };
 
 UrlTest.prototype.run = function () {
-	console.log('polling:' + this.url);
+	console.log('polling: ' + this.url);
+
 	this.checkUrl();
-
-	this.timeout = setTimeout(function() {
-
-		var message = this.url;
-		if (Object.keys(this.headers).length) {
-			var headers = this.headers;
-			message += ' (with ' + Object.keys(headers).reduce(function (arr, key) {
-				arr.push(key + ': ' + headers[key]);
-				return arr;
-			}, []).join(', ') + ')';
-		}
-		message += ' keeps failing with: ' + this.failures.join(', ');
-		console.error(message);
-		this.reject('Test url polling failed');
-	}.bind(this), 2 * 60 * 1000);
 
 	return new Promise(function (resolve, reject) {
 		this.resolve = resolve;
 		this.reject = reject;
 	}.bind(this));
-
 };
 
 UrlTest.prototype.checkUrl = function () {
 
 	fetch(this.url, {
-		timeout: this.timeout || 2000,
+		timeout: this.timeout || 5000,
 		headers: this.headers
 	})
 		.then(function(response) {
@@ -119,10 +100,10 @@ UrlTest.prototype.checkUrl = function () {
 			this.end(null, this.url + ' responded as expected');
 		}.bind(this))
 		.catch(function(err) {
-
 			if (err.message) {
 				err = err.message;
 			}
+
 			if (err.indexOf('timeout') > -1 ) {
 				err = 'endpoint too slow';
 			}
@@ -130,6 +111,7 @@ UrlTest.prototype.checkUrl = function () {
 			if (this.failures.indexOf(err) === -1) {
 				this.failures.push(err);
 			}
+
 			this.end(this.url + ': ' + err, null);
 		}.bind(this));
 };
@@ -139,6 +121,7 @@ function testUrls (opts) {
 		var test = new UrlTest(baseUrl + url, opts.headers, opts.urls[url], opts.timeout);
 		return test.run.bind(test);
 	});
+
 	return directly(opts.throttle || 5, fetchers);
 }
 

@@ -1,118 +1,87 @@
-"use strict";
+'use strict';
 
-var packageJson = require(process.cwd() + '/package.json');
-var denodeify = require('denodeify');
-var normalizeName = require('../lib/normalize-name');
-var readFile = denodeify(require('fs').readFile);
-var writeFile = denodeify(require('fs').writeFile);
-var glob = denodeify(require('glob'));
-var crypto = require('crypto');
-var path = require('path');
-var aws = require('aws-sdk');
+const packageJson = require(process.cwd() + '/package.json');
+const denodeify = require('denodeify');
+const normalizeName = require('../lib/normalize-name');
+const readFile = denodeify(require('fs').readFile);
+const waitForOk = require('../lib/wait-for-ok');
+const path = require('path');
+const aws = require('aws-sdk');
 
-var AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process.env.aws_access_hashed_assets;
-var AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.env.aws_secret_hashed_assets;
+const AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process.env.aws_access_hashed_assets;
+const AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.env.aws_secret_hashed_assets;
+
+const bucket = 'ft-next-hashed-assets-prod';
+const usBucket = 'ft-next-hashed-assets-prod-us';
+const region = 'eu-west-1';
+const usRegion = 'us-east-1';
 
 aws.config.update({
 	accessKeyId: AWS_ACCESS_HASHED_ASSETS,
 	secretAccessKey: AWS_SECRET_HASHED_ASSETS,
-	region: 'eu-west-1'
+	region
 });
 
-function hashAndUpload(opts) {
-	var file = opts.file;
-	var app = opts.app;
-	var bucket = 'ft-next-hashed-assets-prod';
-	var key = 'hashed-assets/' + app + '/' + file.hashedName;
-	var extension = path.extname(file.name).substring(1);
+const s3bucket = new aws.S3({ params: { Bucket: bucket } });
 
-	return new Promise(function(resolve, reject) {
-		var s3bucket = new aws.S3({ params: { Bucket: bucket } });
-		var params = {
-			Key: key,
-			Body: file.content,
-			ACL: 'public-read',
-
-			// @arjun, did you think this was in milliseconds?  It's fine to set a cache header of 19.165 years but seems like an odd choice
-			CacheControl: 'public, max-age=31536000'
-		};
-		switch(extension) {
-			case 'js':
-				params.ContentType = 'text/javascript';
-				break;
-			case 'css':
-				params.ContentType = 'text/css';
-				break;
-		}
-		s3bucket.upload(params, function(err) {
-			if (err) {
-				console.log("Error uploading data: ", err);
-				reject(err);
-			} else {
-				resolve({
-					name: file.name,
-					hashedName: file.hashedName
+function upload(params) {
+	return new Promise((resolve, reject) => {
+		return s3bucket.upload(params, err => {
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
 				});
-			}
-		});
-	});
+			});
 }
 
-module.exports = function(app) {
+module.exports = app => {
+	let assetHashes;
+	try {
+		console.log(process.cwd() + '/public/assets-hashes.json');
+		assetHashes = require(process.cwd() + '/public/asset-hashes.json');
+	} catch(err) {
+		return Promise.reject('Must run `nbt build` (or `nbt hash-assets`) before running `nbt deploy-hashed-assets`');
+	}
+
 	if (!(AWS_ACCESS_HASHED_ASSETS && AWS_SECRET_HASHED_ASSETS)) {
-		return Promise.reject("Must set AWS_ACCESS_HASHED_ASSETS and AWS_SECRET_HASHED_ASSETS");
+		return Promise.reject('Must set AWS_ACCESS_HASHED_ASSETS and AWS_SECRET_HASHED_ASSETS');
 	}
 
 	app = app || normalizeName(packageJson.name, { version: false });
 
 	console.log('Deploying hashed assets to S3...');
-	return glob(process.cwd() + '/public/*.@(css|js|map)')
-		.then(function(files) {
-			return Promise.all(files.map(function(file) {
-				return readFile(file)
-					.then(function(content) {
-						return {
-							name: path.basename(file),
-							content: content
-						};
-					});
-			}));
-		})
-		.then(function(files) {
-			var mapHashName = '';
-			return files
-				.map(function(file) {
-					var hash = crypto.createHash('sha1').update(file.content.toString('utf8')).digest('hex');
-					file.hashedName = file.name.replace(/(.*)(\.[a-z0-9])/i, '$1-' + hash.substring(0, 8) + '$2');
-					if (file.name === 'main.js.map') {
-						mapHashName = file.hashedName;
+
+	return Promise.all(Object.keys(assetHashes)
+		.map(file => {
+			const hashedName = assetHashes[file];
+			const key = 'hashed-assets/' + app + '/' + hashedName;
+			const extension = path.extname(file).substring(1);
+
+			console.log(`sending ${key} to S3`);
+			
+			return readFile(path.join(process.cwd(), 'public', file))
+				.then(content => {
+					let params = {
+						Key: key,
+						Body: content,
+						ACL: 'public-read',
+						CacheControl: 'public, max-age=31536000'
+					};
+					switch(extension) {
+						case 'js':
+							params.ContentType = 'text/javascript';
+							break;
+						case 'css':
+							params.ContentType = 'text/css';
+							break;
 					}
-					return file;
-				})
-				.map(function(file) {
-					var content;
-					if (file.name === 'main.js') {
-						content = file.content.toString('utf8');
-						content = content.replace('/# sourceMappingURL=/' + app + '/' + file.name + '.map', '/# sourceMappingURL=/hashed-assets/' + app + '/' + mapHashName);
-						file.content = new Buffer(content, 'utf8');
-					}
-					return file;
+					return upload(params)
+						.then(() => Promise.all([
+							waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`),
+							waitForOk(`http://${usBucket}.s3-website-${usRegion}.amazonaws.com/${key}`)
+						]));
 				});
-		})
-		.then(function(files) {
-			var promise = files.reduce(function(promise, file) {
-					return promise.then(function(obj) {
-						return hashAndUpload({ app: app, file: file })
-							.then(function(file) {
-								obj[file.name] = file.hashedName;
-								return obj;
-							});
-						});
-				}, Promise.resolve({}));
-			return promise;
-		})
-		.then(function(hashes) {
-			console.log("Writing public/asset-hashes.json");
-			return writeFile(process.cwd() + '/public/asset-hashes.json', JSON.stringify(hashes, undefined, 2));
-		});
+		}));
 };
