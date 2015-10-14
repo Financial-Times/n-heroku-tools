@@ -59,6 +59,8 @@ module.exports = app => {
 			const key = 'hashed-assets/' + app + '/' + hashedName;
 			const extension = path.extname(file).substring(1);
 
+			console.log(`sending ${key} to S3`);
+			
 			return readFile(path.join(process.cwd(), 'public', file))
 				.then(content => {
 					let params = {
