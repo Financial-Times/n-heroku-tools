@@ -33,6 +33,7 @@ function getGlob(task) {
 }
 
 function run(tasks, opts) {
+
 	if (tasks.length === 0) {
 		return Promise.resolve();
 	}
@@ -83,21 +84,6 @@ function buildJs(jsFile) {
 	});
 }
 
-function buildMinifyJs(jsFile, sourceMapFile) {
-	var app = normalizeName(packageJson.name, { version: false });
-	return gulp.src(buildFolder + jsFile)
-		.pipe(extractSourceMap({ saveTo: buildFolder + sourceMapFile }))
-		.pipe(minify({ sourceMapIn: buildFolder + sourceMapFile, sourceMapOut: '/' + app + '/' + sourceMapFile }))
-		.pipe(gulp.dest(buildFolder))
-		.on('end', function() {
-			console.log('build-minify-js completed for ' + jsFile);
-		})
-		.on('error', function(err) {
-			console.log('build-minify-js errored' + jsFile);
-			throw err;
-		});
-}
-
 gulp.task('build-js', function() {
 	return buildJs(mainJsFile);
 });
@@ -106,13 +92,6 @@ gulp.task('build-worker', function() {
 	return buildJs(workerJsFile);
 });
 
-gulp.task('build-minify-js', ['build-js'], function() {
-	return buildMinifyJs(mainJsFile, mainJsSourceMapFile);
-});
-
-gulp.task('build-minify-worker', ['build-worker'], function() {
-	return buildMinifyJs(workerJsFile, workerJsSourceMapFile);
-});
 
 module.exports = function(opts) {
 	isDev = opts.isDev;
