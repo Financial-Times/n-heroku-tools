@@ -336,6 +336,14 @@ program
 	});
 
 program
+	.command('emergency-deploy')
+	.description('Run the deploy steps that CI would run, allowing you deploy locally')
+	.option('--i-know-what-i-am-doing', 'Use this option if you know what you are doing')
+	.action(function(options) {
+		require('../tasks/emergency-deploy')(options).catch(exit);
+	});
+
+program
 	.command('*')
 	.description('')
 	.action(function(app) {
