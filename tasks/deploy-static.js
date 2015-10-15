@@ -48,7 +48,7 @@ module.exports = function(opts) {
 				return new Promise(function(resolve, reject) {
 					s3bucket.upload({
 						Key: key,
-						ContentType: determineContentType(file),
+						ContentType: opts.contentType || determineContentType(file),
 						ACL: 'public-read',
 						Body: content,
 						CacheControl: opts.cacheControl || (opts.cache ? 'public, max-age=31536000' : undefined)
