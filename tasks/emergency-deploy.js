@@ -23,7 +23,7 @@ module.exports = function(options) {
 			}
 		})
 		.then(function(env) {
-			env.PATH = process.env.PATH;
+			env = Object.assign(process.env, env, { PATH: process.env.PATH });
 			return shellpromise('make clean install build-production deploy', { env, cwd: process.cwd(), verbose: true });
 		});
 };
