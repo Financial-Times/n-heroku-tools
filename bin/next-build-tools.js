@@ -251,6 +251,7 @@ program
 	.option('--bucket <bucket>', 'Optionally set the bucket (default to ft-next-qa)')
 	.option('--no-cache', 'Optionally don\'t set a far future cache')
 	.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
+	.option('--content-type <contentType>', 'Optionally specify a content type value')
 	.action(function(file, files, opts) {
 		files.unshift(file);
 		var region = opts.region || 'eu-west-1';
@@ -264,7 +265,8 @@ program
 			bucket: bucket,
 			strip: opts.strip,
 			cache: opts.cache,
-			cacheControl: opts.cacheControl
+			cacheControl: opts.cacheControl,
+			contentType: opts.contentType
 		}).catch(exit);
 	});
 

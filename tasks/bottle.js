@@ -40,7 +40,7 @@ module.exports = function (increment, forceNpm, isBeta) {
 	 	.then(() => shell('git remote update'))
 		.then(() => shell('git status -uno | grep up-to-date'))
 		.catch(() => {
-			throw 'Your branch is either ahead or behind origin/master. Please update before attempting a release';
+			throw 'Your branch is either ahead or behind origin/master. Please push or pull before attempting a release';
 		})
 
 	// get current version from npm, from git tag and from package.json and bower.json
