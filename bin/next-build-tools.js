@@ -4,6 +4,8 @@
 require('isomorphic-fetch');
 
 var program = require('commander');
+
+
 var deploy = require('../tasks/deploy');
 var configure = require('../tasks/configure');
 var scale = require('../tasks/scale');
@@ -22,6 +24,8 @@ var run = require('../tasks/run');
 var rebuild = require('../tasks/rebuild');
 var testUrls = require('../tasks/test-urls');
 var log = require('../tasks/log');
+var bottle = require('../tasks/bottle');
+
 
 function list(val) {
 	return val.split(',');
@@ -34,6 +38,15 @@ function exit(err) {
 }
 
 program.version(require('../package.json').version);
+
+program
+	.command('bottle [increment]')
+	.option('--npm', 'Force publishing of new component to npm')
+	.option('--beta', 'Release as a beta')
+	.description('releases a version of a next component (similar to npm version + npm publish)')
+	.action(function(increment, options) {
+		bottle(increment, options.npm);
+	});
 
 program
 	.command('deploy [app]')
