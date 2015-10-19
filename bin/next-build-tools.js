@@ -43,9 +43,9 @@ program
 	.command('bottle [increment]')
 	.option('--npm', 'Force publishing of new component to npm')
 	.option('--beta', 'Release as a beta')
-	.description('releases a version of a next component (similar to npm version + npm publish)')
+	.description('releases a major, minor or patch version of a next component (similar to npm version + npm publish)')
 	.action(function(increment, options) {
-		bottle(increment, options.npm);
+		bottle(increment, options.npm, options.beta);
 	});
 
 program

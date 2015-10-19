@@ -7,7 +7,7 @@
 
   Commands:
 
-    bottle [options] [increment]                        releases a version of a next component (similar to npm version + npm publish)
+    bottle [options] [increment]                        releases a major, minor or patch version of a next component (similar to npm version + npm publish)
     deploy [options] [app]                              runs haikro deployment scripts with sensible defaults for Next projects
     test-urls [options] [app]                           Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
     configure [options] [source] [target]               downloads environment variables from next-config-vars and uploads them to the current app
