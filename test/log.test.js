@@ -19,9 +19,10 @@ fetchMock.registerRoute([
 	{
 		name: 'devsJson',
 		matcher: 'http://bertha.ig.ft.com/republish/publish/gss/1mbJQYJOgXAH2KfgKUM1Vgxq8FUIrahumb39wzsgStu0/devs',
-		response: {
-			githubname: 'leggsimon'
-		}
+		response: [{
+			githubname: 'leggsimon',
+			email: 'simon.legg@ft.com'
+		}]
 	}
 ]);
 
