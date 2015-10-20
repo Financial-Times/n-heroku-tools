@@ -1,6 +1,6 @@
 {
   "name": "next-build-tools",
-  "version": "5.3.3",
+  "version": "5.3.4",
   "bin": {
     "next-build-tools": "./bin/next-build-tools.js",
     "nbt": "./bin/next-build-tools.js"
