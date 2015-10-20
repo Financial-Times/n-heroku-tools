@@ -5,7 +5,7 @@ const semver = require('semver');
 const path = require('path');
 
 const getLatestTag = () => {
-	return shell('git tags')
+	return shell('git tag')
 		.then(tagList => {
 			const latest = tagList.split('\n')
 				.filter(semver.valid)
