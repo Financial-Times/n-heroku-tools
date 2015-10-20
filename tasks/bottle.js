@@ -4,6 +4,18 @@ const shell = require('shellpromise');
 const semver = require('semver');
 const path = require('path');
 
+const getLatestTag = () => {
+	return shell('git tags')
+		.then(tagList => {
+			const latest = tagList.split('\n')
+				.filter(semver.valid)
+				.sort(semver.gt)
+				.pop()
+
+			return latest ? latest.replace(/^v/, '') : null;
+		})
+}
+
 function npmBottle (increment) {//, isBeta, newModule) {
 	return shell('npm whoami')
 		.then(user => {
@@ -18,11 +30,15 @@ Ask somebody about getting access to the account`;
 		.then(() => shell(`npm version ${increment}`))
 		.then(() => shell('npm publish'))
 		.then(() => shell('git push --tags origin HEAD'))
+		.then(getLatestTag)
+		.then(tag => console.log(`${tag} published to npm and tagged in git`))
 }
 
 function bowerBottle (increment, currentVersion) {//, isBeta) {
 	return shell(`git tag ${semver.inc(currentVersion, increment)}`)
-		.then(() => shell('git push --tags origin HEAD'));
+		.then(() => shell('git push --tags origin HEAD'))
+		.then(getLatestTag)
+		.then(tag => console.log(`${tag} tagged in git (no requirement for npm release detected)`))
 }
 
 module.exports = function (increment, forceNpm, isBeta) {
@@ -48,7 +64,7 @@ module.exports = function (increment, forceNpm, isBeta) {
 			}
 		})
 
-	// get current version from npm, from git tag and from package.json and bower.json
+		// get current version from npm, from git tag and from package.json and bower.json
 		.then(() => Promise.all([
 			// get version from npm registry
 			shell('npm view --json')
@@ -58,15 +74,7 @@ module.exports = function (increment, forceNpm, isBeta) {
 				.catch(() => null),
 			// get version from github tags (aka bower version)
 			shell('git fetch --tags')
-				.then(() => shell('git tags'))
-				.then(tagList => {
-					const latest = tagList.split('\n')
-						.filter(semver.valid)
-						.sort(semver.gt)
-						.pop()
-
-					return latest ? latest.replace(/^v/, '') : null;
-				}),
+				.then(getLatestTag),
 			// get version from bower.json
 			new Promise((resolve, reject) => {
 
