@@ -5,9 +5,6 @@
     "next-build-tools": "./bin/next-build-tools.js",
     "nbt": "./bin/next-build-tools.js"
   },
-  "scripts": {
-    "prepublish": "curl -s http://bertha.ig.ft.com/view/publish/gss/1mbJQYJOgXAH2KfgKUM1Vgxq8FUIrahumb39wzsgStu0/devs > devs.json"
-  },
   "main": "main.js",
   "dependencies": {
     "array.prototype.find": "^1.0.0",
