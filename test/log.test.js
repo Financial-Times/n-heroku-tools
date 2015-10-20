@@ -56,7 +56,7 @@ describe('Logs', function() {
 			name: "ft-next-test-app",
 			gateway: 'mashery'
 		})
-			.then(function(id) {
+			.then(function() {
 				expect(fetchMock.calls('makeKonstructorCall')[1][1].body).to.contain('simon.legg%40ft.com');
 			})
 	});
