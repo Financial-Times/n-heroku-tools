@@ -2,14 +2,18 @@
 
 const shell = require('shellpromise');
 const semver = require('semver');
+const path = require('path');
 
 function npmBottle (increment) {//, isBeta, newModule) {
 	return shell('npm whoami')
 		.then(user => {
 			if (user.trim() !== 'financial-times') {
-				throw `Sign in to npm as financial-times before releasing anything.
-							Ask somebody about getting access to the account`;
+				throw 'Wrong user';
 			}
+		})
+		.catch(() => {
+			throw `Sign in to npm as financial-times before releasing anything.
+Ask somebody about getting access to the account`;
 		})
 		.then(() => shell(`npm version ${increment}`))
 		.then(() => shell('npm publish'))
@@ -22,31 +26,32 @@ function bowerBottle (increment, currentVersion) {//, isBeta) {
 }
 
 module.exports = function (increment, forceNpm, isBeta) {
-	if (!['major', 'minor', 'patch'].indexOf(increment) > -1) {
-		throw `Incorrect version identifier. Accepted values: major, minor, patch`;
+	if (['major', 'minor', 'patch'].indexOf(increment) === -1) {
+		return Promise.reject(`Incorrect version identifier. Accepted values: major, minor, patch`);
 	}
 
 	if (isBeta) {
-		throw 'Beta releases not yet supported using nbt bottle. Coming soon if there\'s demand for it';
+		return Promise.reject('Beta releases not yet supported using nbt bottle. Coming soon if there\'s demand for it');
 	}
 
 	// make sure on master and up to date with origin
-	shell('git rev-parse --abbrev-ref HEAD')
+	return shell('git rev-parse --abbrev-ref HEAD')
 		.then(branchName => {
 			if (branchName.trim() !== 'master' && !isBeta) {
 				throw 'Components should only be published from the master branch, unless releasing a beta version';
+			} else {
+				return shell('git remote update')
+								.then(() => shell('git status -uno | grep up-to-date'))
+								.catch(() => {
+									throw 'Your branch is either ahead or behind origin/master. Please push or pull before attempting a release';
+								})
 			}
-		})
-	 	.then(() => shell('git remote update'))
-		.then(() => shell('git status -uno | grep up-to-date'))
-		.catch(() => {
-			throw 'Your branch is either ahead or behind origin/master. Please push or pull before attempting a release';
 		})
 
 	// get current version from npm, from git tag and from package.json and bower.json
 		.then(() => Promise.all([
-			// get verion from npm registry
-			shell('npm view')
+			// get version from npm registry
+			shell('npm view --json')
 				.then(info => {
 					return JSON.parse(info).versions.pop();
 				})
@@ -68,7 +73,7 @@ module.exports = function (increment, forceNpm, isBeta) {
 				let bowerVersion;
 				try {
 
-					bowerVersion = require('./bower.json').version;
+					bowerVersion = require(path.join(process.cwd(), 'bower.json')).version;
 					// if bower.json version exists throw (or maybe launch interactive dialog asking to correct)
 					if (bowerVersion) {
 						// TODO: interactive cli to do correct this for the user
@@ -85,7 +90,7 @@ module.exports = function (increment, forceNpm, isBeta) {
 
 				let packageVersion;
 				try {
-					packageVersion = require('./package.json').version;
+					packageVersion = require(path.join(process.cwd(), 'package.json')).version;
 					if (packageVersion) {
 						resolve(packageVersion);
 					} else {
@@ -106,13 +111,14 @@ module.exports = function (increment, forceNpm, isBeta) {
 			if (npmVersion) {
 				if (semver.neq(npmVersion, packageVersion)) {
 					throw `Version last published on npm is different to version in package.json.
-								Please set version to ${npmVersion} in package.json`;
+Please set version to ${npmVersion} in package.json`;
 				}
 
 				if (semver.lt(npmVersion, tagVersion)) {
 					throw `It looks like your tags have got ahead of your npm releases.
-								Please set version to ${tagVersion} in package.json or check out the
-								relevant tag in git and manually release to npm if absolutely necessary`;
+Please set version to ${tagVersion} in package.json or check out the
+relevant tag in git and manually release to npm if there's a definite
+need to correct previous releases`;
 				}
 			}
 

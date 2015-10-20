@@ -45,7 +45,8 @@ program
 	.option('--beta', 'Release as a beta')
 	.description('releases a major, minor or patch version of a next component (similar to npm version + npm publish)')
 	.action(function(increment, options) {
-		bottle(increment, options.npm, options.beta);
+		bottle(increment, options.npm, options.beta)
+			.catch(exit);
 	});
 
 program
