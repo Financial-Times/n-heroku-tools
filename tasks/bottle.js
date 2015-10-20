@@ -118,8 +118,12 @@ module.exports = function (increment, forceNpm, isBeta) {
 			// if npm version exists use as canonical version as it's the hardest to alter
 			if (npmVersion) {
 				if (semver.neq(npmVersion, packageVersion)) {
-					throw `Version last published on npm is different to version in package.json.
+					// If the user has corrected package.json to match a newer git tag then this condition
+					// wil probably be satisfied, so we ignore
+					if (!(semver.lt(npmVersion, tagVersion) && semver.eq(tagVersion, packageVersion))) {
+						throw `Version last published on npm is different to version in package.json.
 Please set version to ${npmVersion} in package.json`;
+					}
 				}
 
 				if (semver.lt(npmVersion, tagVersion)) {
