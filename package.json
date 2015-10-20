@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "chai": "^3.3.0",
+    "fetch-mock": "^2.1.0",
     "mocha": "^2.2.4",
     "mockery": "^1.4.0",
     "sinon": "^1.14.1"
