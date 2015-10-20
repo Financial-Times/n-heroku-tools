@@ -6,6 +6,8 @@ clean:
 	git clean -fxd
 
 verify:
+	echo $(SHOULD_BE);
+	echo $(IS);
 ifeq ($(SHOULD_BE),$(IS))
 	@echo "README.md up-to-date"
 else
