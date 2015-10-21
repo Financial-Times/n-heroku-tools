@@ -4,11 +4,7 @@ var gulp = require('gulp');
 require('gulp-watch');
 
 var obt = require('origami-build-tools');
-var normalizeName = require('../lib/normalize-name');
-var extractSourceMap = require('next-gulp-tasks').extractSourceMap;
-var minify = require('next-gulp-tasks').minify;
 var build = require('haikro/lib/build');
-var packageJson = require(process.cwd() + '/package.json');
 var about = require('../lib/about');
 
 var mainJsFile = 'main.js';
@@ -16,8 +12,6 @@ var workerJsFile = 'worker.js';
 var mainScssFile = 'main.scss';
 var sourceFolder = './client/';
 var buildFolder = './public/';
-var mainJsSourceMapFile = 'main.js.map';
-var workerJsSourceMapFile = 'worker.js.map';
 var isDev = false;
 const hashAssets = require('../lib/hash-assets');
 
@@ -103,7 +97,7 @@ module.exports = function(opts) {
 		tasks.push('build-js');
 	}
 	if (opts.worker) {
-		tasks.push(opts.isDev ? 'build-worker' : 'build-minify-worker');
+		tasks.push('build-worker');
 	}
 	return Promise.all([
 			run(tasks, opts),
