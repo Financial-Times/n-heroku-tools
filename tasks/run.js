@@ -96,6 +96,7 @@ function runProcfile() {
 function runRouter(opts) {
 	var envVars = {
 		DEBUG: 'proxy',
+		REGION: 'us',
 		PORT: opts.PORT
 	};
 

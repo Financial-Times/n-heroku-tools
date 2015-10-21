@@ -4,6 +4,8 @@
 require('isomorphic-fetch');
 
 var program = require('commander');
+
+
 var deploy = require('../tasks/deploy');
 var configure = require('../tasks/configure');
 var scale = require('../tasks/scale');
@@ -22,6 +24,8 @@ var run = require('../tasks/run');
 var rebuild = require('../tasks/rebuild');
 var testUrls = require('../tasks/test-urls');
 var log = require('../tasks/log');
+var bottle = require('../tasks/bottle');
+
 
 function list(val) {
 	return val.split(',');
@@ -34,6 +38,16 @@ function exit(err) {
 }
 
 program.version(require('../package.json').version);
+
+program
+	.command('bottle [increment]')
+	.option('--npm', 'Force publishing of new component to npm')
+	.option('--beta', 'Release as a beta')
+	.description('releases a major, minor or patch version of a next component (similar to npm version + npm publish)')
+	.action(function(increment, options) {
+		bottle(increment, options.npm, options.beta)
+			.catch(exit);
+	});
 
 program
 	.command('deploy [app]')
@@ -238,6 +252,7 @@ program
 	.option('--bucket <bucket>', 'Optionally set the bucket (default to ft-next-qa)')
 	.option('--no-cache', 'Optionally don\'t set a far future cache')
 	.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
+	.option('--content-type <contentType>', 'Optionally specify a content type value')
 	.action(function(file, files, opts) {
 		files.unshift(file);
 		var region = opts.region || 'eu-west-1';
@@ -251,7 +266,8 @@ program
 			bucket: bucket,
 			strip: opts.strip,
 			cache: opts.cache,
-			cacheControl: opts.cacheControl
+			cacheControl: opts.cacheControl,
+			contentType: opts.contentType
 		}).catch(exit);
 	});
 
@@ -333,6 +349,14 @@ program
 			throw new Error('Please specifiy a name for the pipeline');
 		}
 		require('../tasks/drydock')(name, options).catch(exit);
+	});
+
+program
+	.command('emergency-deploy')
+	.description('Run the deploy steps that CI would run, allowing you deploy locally')
+	.option('--i-know-what-i-am-doing', 'Use this option if you know what you are doing')
+	.action(function(options) {
+		require('../tasks/emergency-deploy')(options).catch(exit);
 	});
 
 program

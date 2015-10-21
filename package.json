@@ -1,12 +1,9 @@
 {
   "name": "next-build-tools",
-  "version": "5.0.2",
+  "version": "5.5.0",
   "bin": {
     "next-build-tools": "./bin/next-build-tools.js",
     "nbt": "./bin/next-build-tools.js"
-  },
-  "scripts": {
-    "prepublish": "curl -s http://bertha.ig.ft.com/view/publish/gss/1mbJQYJOgXAH2KfgKUM1Vgxq8FUIrahumb39wzsgStu0/devs > devs.json"
   },
   "main": "main.js",
   "dependencies": {
@@ -27,12 +24,13 @@
     "haikro": "^2.2.0",
     "isomorphic-fetch": "^2.0.0",
     "next-gulp-tasks": "Financial-Times/next-gulp-tasks#v1",
-    "origami-build-tools": "^4.0.0",
+    "origami-build-tools": "^4.1.1",
     "semver": "^5.0.3",
     "shellpromise": "^1.0.0"
   },
   "devDependencies": {
     "chai": "^3.3.0",
+    "fetch-mock": "^2.1.0",
     "mocha": "^2.2.4",
     "mockery": "^1.4.0",
     "sinon": "^1.14.1"

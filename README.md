@@ -7,6 +7,7 @@
 
   Commands:
 
+    bottle [options] [increment]                        releases a major, minor or patch version of a next component (similar to npm version + npm publish)
     deploy [options] [app]                              runs haikro deployment scripts with sensible defaults for Next projects
     test-urls [options] [app]                           Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
     configure [options] [source] [target]               downloads environment variables from next-config-vars and uploads them to the current app
@@ -29,6 +30,7 @@
     ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
     float [options]                                     Deploys code to a test app and checks it doesn't die
     drydock [options] [name]                            Creates a new pipeline with a staging and EU production app
+    emergency-deploy [options]                          Run the deploy steps that CI would run, allowing you deploy locally
     *                                                   
 
   Options:
