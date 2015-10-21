@@ -24,11 +24,13 @@ var getExpectation = function (expected) {
 };
 
 
-var UrlTest = function (url, headers, expectation, timeout) {
-	this.url = url;
-	this.timeout = timeout;
-	this.headers = headers || {};
-	this.expected = getExpectation(expectation);
+var UrlTest = function (opts) {
+	this.url = opts.url;
+	this.timeout = opts.timeout;
+	this.headers = opts.headers || {};
+	this.method = opts.method || 'GET';
+	this.body = opts.body;
+	this.expected = getExpectation(opts.expectation);
 	this.failures = [];
 	this.checkUrl = this.checkUrl.bind(this);
 };
@@ -53,10 +55,11 @@ UrlTest.prototype.run = function () {
 };
 
 UrlTest.prototype.checkUrl = function () {
-
 	fetch(this.url, {
 		timeout: this.timeout || 5000,
-		headers: this.headers
+		headers: this.headers,
+		method: this.method,
+		body: this.body
 	})
 		.then(function(response) {
 			if (this.expected.status) {
@@ -118,7 +121,14 @@ UrlTest.prototype.checkUrl = function () {
 
 function testUrls (opts) {
 	var fetchers = Object.keys(opts.urls).map(function (url) {
-		var test = new UrlTest(baseUrl + url, opts.headers, opts.urls[url], opts.timeout);
+		var test = new UrlTest({
+			url: baseUrl + url,
+			headers: opts.headers,
+			expectation: opts.urls[url],
+			timeout:  opts.timeout,
+			method: opts.method,
+			body: opts.body
+		});
 		return test.run.bind(test);
 	});
 
