@@ -17,6 +17,8 @@ const getLatestTag = () => {
 }
 
 function npmBottle (increment) {//, isBeta, newModule) {
+	console.log('Publishing as npm module');
+	let dots = setInterval(() => process.stdout.write('.'), 700)
 	return shell('npm whoami')
 		.then(user => {
 			if (user.trim() !== 'financial-times') {
@@ -30,11 +32,13 @@ Ask somebody about getting access to the account`;
 		.then(() => shell(`npm version ${increment}`))
 		.then(() => shell('npm publish'))
 		.then(() => shell('git push --tags origin HEAD'))
+		.then(() => clearInterval(dots))
 		.then(getLatestTag)
 		.then(tag => console.log(`${tag} published to npm and tagged in git`))
 }
 
 function bowerBottle (increment, currentVersion) {//, isBeta) {
+	console.log('Publishing as bower component');
 	return shell(`git tag ${semver.inc(currentVersion, increment)}`)
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(getLatestTag)
@@ -50,6 +54,7 @@ module.exports = function (increment, forceNpm, isBeta) {
 		return Promise.reject('Beta releases not yet supported using nbt bottle. Coming soon if there\'s demand for it');
 	}
 
+	console.log('Verifying git branch');
 	// make sure on master and up to date with origin
 	return shell('git rev-parse --abbrev-ref HEAD')
 		.then(branchName => {
@@ -64,6 +69,7 @@ module.exports = function (increment, forceNpm, isBeta) {
 			}
 		})
 
+		.then(() => console.log('Fetching existing versions'))
 		// get current version from npm, from git tag and from package.json and bower.json
 		.then(() => Promise.all([
 			// get version from npm registry
@@ -110,6 +116,7 @@ module.exports = function (increment, forceNpm, isBeta) {
 			})
 		]))
 		.then(versions => {
+			console.log('Verifying version consistency');
 			const npmVersion = versions[0];
 			const tagVersion = versions[1];
 			const bowerVersion = versions[2];
