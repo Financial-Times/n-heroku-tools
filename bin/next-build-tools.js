@@ -137,12 +137,14 @@ program
 	.option('--skip-layout-checks', 'run verify checks when the application doesn\'t have customer facing html pages')
 	.option('--skip-npm-checks', 'skip npm dependency checks')
 	.option('--skip-dotenv-check', 'skip checking `.gitignore` has `.env` in it')
+	.option('--fix', 'eslint will fix any errors it finds. Will also skip all non linty checks')
 	.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS. Front End components should continue to use origami-build-tools verify)')
 	.action(function(opts) {
 		verify({
 			skipLayoutChecks: opts.skipLayoutChecks,
 			skipNpmChecks: opts.skipNpmChecks,
-			skipDotenvCheck: opts.skipDotenvCheck
+			skipDotenvCheck: opts.skipDotenvCheck,
+			fix: opts.fix
 		}).catch(exit);
 	});
 
