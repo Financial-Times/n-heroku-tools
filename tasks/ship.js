@@ -21,7 +21,6 @@ module.exports = function ship(opts){
 		let pipelineName = opts.pipeline || packageJson.name;
 		log.info('Deploy to ' + pipelineName);
 		let apps = yield pipelines.getApps(pipelineName);
-		let splunkDrain = 'splunk' in opts ? opts.splunk : true;
 		if(!apps.staging){
 			log.error('No staging app found');
 			return;
@@ -41,15 +40,15 @@ module.exports = function ship(opts){
 
 		log.info('Found apps %j', apps);
 
-		if(opts.configure){
+		if (opts.configure) {
 			log.log('Configure enabled');
 			let source = pipelineName;
 			let configureTasks = [
-				configure({source:source, target:apps.staging, splunk:splunkDrain}),
-				configure({source:source, target:apps.production.eu, overrides:['REGION=EU'], splunk:splunkDrain})
+				configure({ source: source, target: apps.staging }),
+				configure({ source: source, target: apps.production.eu, overrides: ['REGION=EU'] })
 			];
-			if(opts.multiregion){
-				configureTasks.push(configure({source:source, target:apps.production.us, overrides:['REGION=US'], splunk:splunkDrain}))
+			if (opts.multiregion) {
+				configureTasks.push(configure({ source: source, target: apps.production.us, overrides: ['REGION=US'] }))
 			}
 
 			log.log('Configure all apps');
