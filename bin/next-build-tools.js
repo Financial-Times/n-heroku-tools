@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 
+console.log("NBT 3.x.x should no longer be used.  Please upgrade!");
+process.exit(1);
+
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
