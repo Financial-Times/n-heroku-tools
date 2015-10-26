@@ -43,9 +43,9 @@ describe('tasks/ship', function(){
 		return co(function* (){
 			yield ship({pipeline:pipelineName, configure:true, multiregion:true});
 
-			sinon.assert.calledWith(mockConfigure, {source:pipelineName, target:mockApps.staging, splunk:true});
-			sinon.assert.calledWith(mockConfigure, {source:pipelineName, target:mockApps.production.eu, overrides: ["REGION=EU"], splunk:true});
-			sinon.assert.calledWith(mockConfigure, {source:pipelineName, target:mockApps.production.us, overrides: ["REGION=US"], splunk:true});
+			sinon.assert.calledWith(mockConfigure, { source: pipelineName, target: mockApps.staging });
+			sinon.assert.calledWith(mockConfigure, { source: pipelineName, target: mockApps.production.eu, overrides: ["REGION=EU"] });
+			sinon.assert.calledWith(mockConfigure, { source: pipelineName, target: mockApps.production.us, overrides: ["REGION=US"] });
 		});
 	});
 

@@ -91,6 +91,9 @@ program
 	.option('-o, --overrides <abc>', 'override these values', list)
 	.option('-n, --no-splunk', 'configure not to drain logs to splunk')
 	.action(function(source, target, options) {
+		if (!options.splunk) {
+			console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
+		}
 		configure({
 			source: source,
 			target: target,
@@ -315,6 +318,9 @@ program
 	.option('-l --no-logging', "Don't log to Salesforce™®©")
 	.option('-n, --no-splunk', 'configure not to drain logs to splunk')
 	.action(function(options){
+		if (!options.splunk) {
+			console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
+		}
 		options.log = !options.skipLogging;
 		require('../tasks/ship')(options).catch(exit);
 	});
