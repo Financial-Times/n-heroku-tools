@@ -9,16 +9,21 @@ const shell = require('shellpromise');
 let baseUrl;
 
 function getExpectation (expected) {
-
 	if (typeof expected === 'string') {
 		expected = {
 			redirect: expected
 		};
 	} else {
 		if (typeof expected === 'number') {
-			expected = {
-				status: expected
-			};
+			if (String(expected).charAt(0) === '3') {
+				expected = {
+					redirect: expected
+				};
+			} else {
+				expected = {
+					status: expected
+				};
+			}
 		}
 		expected.status = expected.status || 200;
 	}
@@ -42,12 +47,12 @@ class UrlTest {
 		if (error) {
 			this.reject(error);
 		} else {
+			console.log(message);
 			this.resolve(message);
 		}
 	}
 
 	run () {
-		console.log('polling: ' + this.url);
 
 		this.checkUrl();
 
@@ -61,12 +66,9 @@ class UrlTest {
 		let promise;
 		if (this.expected.redirect) {
 			promise = this.getRedirect()
-				.then(location => {
-					if (this.expected.redirect) {
-						var arrivedAt = location.replace(baseUrl, '');
-						if (arrivedAt !== this.expected.redirect) {
-							throw 'bad redirect: ' + arrivedAt;
-						}
+				.then(redirect => {
+					if (redirect !== this.expected.redirect) {
+						throw 'bad redirect: ' + redirect;
 					}
 				});
 		} else {
@@ -133,7 +135,7 @@ class UrlTest {
 
 
 	getRedirect () {
-		let curl = `curl -s ${this.url} -I`;
+		let curl = `curl -s '${this.url}' -I`;
 
 		if (this.method) {
 			curl += ` -X ${this.method}`;
@@ -148,7 +150,15 @@ class UrlTest {
 				curl += ` -H '${h}: ${this.headers[h]}'`
 			}
 		}
-		return shell(`${curl} | grep ^Location | sed s/'Location\: '/''/`)
+
+		if (typeof this.expected.redirect === 'number') {
+			return shell(`${curl} -o /dev/null -w "%{http_code}"`)
+				.then(status => Number(status))
+		} else {
+			return shell(`${curl} | grep ^Location | sed s/'Location\: '/''/`)
+				.then(location => location.replace(baseUrl, '').trim());
+		}
+
 	}
 }
 
@@ -172,7 +182,9 @@ function testUrls (opts) {
 module.exports = function(opts) {
 	const appName = (opts.app) ? opts.app : 'ft-next-' + normalizeName(packageJson.name);
 	const urlConfig = require(path.join(process.cwd(), 'test/smoke.js'));
-
-	baseUrl = 'http://' + appName + '.herokuapp.com';
+	baseUrl = 'http://' + appName;
+	if (!/:|\./.test(appName)) {
+		baseUrl += '.herokuapp.com';
+	}
 	return Promise.all(urlConfig.map(testUrls));
 };
