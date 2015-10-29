@@ -79,6 +79,10 @@ class UrlTest {
 				body: this.body
 			})
 				.then(response => {
+					if (response.url !== this.url) {
+						throw 'bad redirect: ' + response.url;
+					}
+					
 					if (this.expected.status) {
 						if (response.status !== this.expected.status) {
 							throw 'bad status: ' + response.status;
