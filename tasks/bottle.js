@@ -34,12 +34,12 @@ Ask somebody about getting access to the account`;
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(() => clearInterval(dots))
 		.then(getLatestTag)
-		.then(tag => console.log(`${tag} published to npm and tagged in git`))
+		.then(tag => console.log(`\n${tag} published to npm and tagged in git`))
 }
 
 function bowerBottle (increment, currentVersion) {//, isBeta) {
 	console.log('Publishing as bower component');
-	return shell(`git tag ${semver.inc(currentVersion, increment)}`)
+	return shell(`git tag v${semver.inc(currentVersion, increment)}`)
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(getLatestTag)
 		.then(tag => console.log(`${tag} tagged in git (no requirement for npm release detected)`))
