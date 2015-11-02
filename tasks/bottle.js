@@ -36,7 +36,7 @@ Ask somebody about getting access to the account`;
 		.then(() => clearInterval(dots))
 		.then(getLatestTag)
 		.then(tag => {
-			logger.bottle();
+			logger.art.bottle();
 			console.log(`\n${tag} published to npm and tagged in git`);
 		});
 }
@@ -47,7 +47,7 @@ function bowerBottle (increment, currentVersion) {//, isBeta) {
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(getLatestTag)
 		.then(tag => {
-			logger.bottle();
+			logger.art.bottle();
 			console.log(`${tag} tagged in git (no requirement for npm release detected)`);
 		});
 }
