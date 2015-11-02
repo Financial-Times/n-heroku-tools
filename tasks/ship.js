@@ -96,6 +96,6 @@ module.exports = function ship(opts){
 		yield scale({target:apps.staging, scale:'web=0'});
 
 		log.success('Shipped!');
-		log.art.ship();
+		log.art.ship(appName);
 	});
 };
