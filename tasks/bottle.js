@@ -47,7 +47,8 @@ function bowerBottle (increment, currentVersion) {//, isBeta) {
 
 module.exports = function (increment, forceNpm, isBeta) {
 	if (['major', 'minor', 'patch'].indexOf(increment) === -1) {
-		return Promise.reject(`Incorrect version identifier. Accepted values: major, minor, patch`);
+		return Promise.reject(`Incorrect version identifier. Accepted values: major, minor, patch
+			e.g. nbt bottle minor`);
 	}
 
 	if (isBeta) {
