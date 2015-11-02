@@ -3,6 +3,7 @@
 const shell = require('shellpromise');
 const semver = require('semver');
 const path = require('path');
+const logger = require('../lib/logger');
 
 const getLatestTag = () => {
 	return shell('git tag')
@@ -34,7 +35,10 @@ Ask somebody about getting access to the account`;
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(() => clearInterval(dots))
 		.then(getLatestTag)
-		.then(tag => console.log(`\n${tag} published to npm and tagged in git`))
+		.then(tag => {
+			logger.bottle();
+			console.log(`\n${tag} published to npm and tagged in git`);
+		});
 }
 
 function bowerBottle (increment, currentVersion) {//, isBeta) {
@@ -42,7 +46,10 @@ function bowerBottle (increment, currentVersion) {//, isBeta) {
 	return shell(`git tag v${semver.inc(currentVersion, increment)}`)
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(getLatestTag)
-		.then(tag => console.log(`${tag} tagged in git (no requirement for npm release detected)`))
+		.then(tag => {
+			logger.bottle();
+			console.log(`${tag} tagged in git (no requirement for npm release detected)`);
+		});
 }
 
 module.exports = function (increment, forceNpm, isBeta) {
