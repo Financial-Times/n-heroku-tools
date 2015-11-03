@@ -45,7 +45,7 @@ Ask somebody about getting access to the account`;
 			// next-build-tools => n-dev-tools + n-ci-tools?
 			// splunk-logger => kill
 			// ft-api-client => permanently ignore
-			if (!['ft-api-client', 'ft-next-splunk-logger', 'ft-poller', 'next-build-tools'].contains(packageName) &&
+			if (['ft-api-client', 'ft-next-splunk-logger', 'ft-poller', 'next-build-tools'].indexOf(packageName) === -1 &&
 						/^((ft-)?(next|n))-/i.test(packageName) &&
 				!packageName.includes('@financial-times/n-')) {
 				packageJson.name = '@financial-times/' + packageName.replace(/^((ft-)?(next|n))-/i, 'n-');
