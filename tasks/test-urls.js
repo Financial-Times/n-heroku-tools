@@ -139,14 +139,14 @@ class UrlTest {
 
 
 	getRedirect () {
-		let curl = `curl -s '${this.url}' -I`;
+		let curl = `curl -s '${this.url}' -D-`;
 
 		if (this.method) {
 			curl += ` -X ${this.method}`;
 		}
 
 		if (this.body) {
-			curl += ` -d '${this.body}'`;
+			curl += ` -d '${JSON.stringify(this.body)}'`;
 		}
 
 		if (this.headers) {
