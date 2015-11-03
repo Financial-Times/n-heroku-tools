@@ -38,7 +38,8 @@ Ask somebody about getting access to the account`;
 		.then(() => shell(`npm version ${increment}`))
 		.then(() => shell('npm publish'))
 		.then(() => {
-			const packageJson = require(path.join(process.cwd(), 'package.json'));
+			// can't jsut use require as it won't have the incremented version number
+			const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
 			const packageName = packageJson.name;
 			// TODO: properly kill off/decide what to do with these
 			// ft-poller => o-poller? poller?
@@ -50,7 +51,7 @@ Ask somebody about getting access to the account`;
 				!packageName.includes('@financial-times/n-')) {
 				packageJson.name = '@financial-times/' + packageName.replace(/^((ft-)?(next|n))-/i, 'n-');
 				console.log(`Publishing copy to ${packageJson.name}`);
-				return writeFile(path.join(process.cwd(), 'package.json'), packageJson)
+				return writeFile(path.join(process.cwd(), 'package.json'), JSON.stringify(packageJson, null, '\t'))
 					.then(() => shell('npm publish --access public'))
 					.then(() => shell('git reset --hard HEAD'))
 			}
