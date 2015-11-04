@@ -4,9 +4,9 @@ const shell = require('shellpromise');
 const semver = require('semver');
 const path = require('path');
 const logger = require('../lib/logger');
-const denodeify = require('denodeify');
-const fs = require('fs');
-const writeFile = denodeify(fs.writeFile);
+// const denodeify = require('denodeify');
+// const fs = require('fs');
+// const writeFile = denodeify(fs.writeFile);
 
 const getLatestTag = () => {
 	return shell('git tag')
@@ -37,25 +37,25 @@ Ask somebody about getting access to the account`;
 		})
 		.then(() => shell(`npm version ${increment}`))
 		.then(() => shell('npm publish'))
-		.then(() => {
-			// can't jsut use require as it won't have the incremented version number
-			const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
-			const packageName = packageJson.name;
-			// TODO: properly kill off/decide what to do with these
-			// ft-poller => o-poller? poller?
-			// next-build-tools => n-dev-tools + n-ci-tools?
-			// splunk-logger => kill
-			// ft-api-client => permanently ignore
-			if (['ft-api-client', 'ft-next-splunk-logger', 'ft-poller', 'next-build-tools'].indexOf(packageName) === -1 &&
-						/^((ft-)?(next|n))-/i.test(packageName) &&
-				!packageName.includes('@financial-times/n-')) {
-				packageJson.name = '@financial-times/' + packageName.replace(/^((ft-)?(next|n))-/i, 'n-');
-				console.log(`Publishing copy to ${packageJson.name}`);
-				return writeFile(path.join(process.cwd(), 'package.json'), JSON.stringify(packageJson, null, '\t'))
-					.then(() => shell('npm publish --access public'))
-					.then(() => shell('git reset --hard HEAD'))
-			}
-		})
+		// .then(() => {
+		// 	// can't jsut use require as it won't have the incremented version number
+		// 	const packageJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8'));
+		// 	const packageName = packageJson.name;
+		// 	// TODO: properly kill off/decide what to do with these
+		// 	// ft-poller => o-poller? poller?
+		// 	// next-build-tools => n-dev-tools + n-ci-tools?
+		// 	// splunk-logger => kill
+		// 	// ft-api-client => permanently ignore
+		// 	if (['ft-api-client', 'ft-next-splunk-logger', 'ft-poller', 'next-build-tools'].indexOf(packageName) === -1 &&
+		// 				/^((ft-)?(next|n))-/i.test(packageName) &&
+		// 		!packageName.includes('@financial-times/n-')) {
+		// 		packageJson.name = '@financial-times/' + packageName.replace(/^((ft-)?(next|n))-/i, 'n-');
+		// 		console.log(`Publishing copy to ${packageJson.name}`);
+		// 		return writeFile(path.join(process.cwd(), 'package.json'), JSON.stringify(packageJson, null, '\t'))
+		// 			.then(() => shell('npm publish --access public'))
+		// 			.then(() => shell('git reset --hard HEAD'))
+		// 	}
+		// })
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(() => clearInterval(dots))
 		.then(getLatestTag)
