@@ -6,7 +6,7 @@ const path = require('path');
 const logger = require('../lib/logger');
 const denodeify = require('denodeify');
 const fs = require('fs');
-const writeFile = denodeify(fs.writeFile);
+// const writeFile = denodeify(fs.writeFile);
 
 const getLatestTag = () => {
 	return shell('git tag')
