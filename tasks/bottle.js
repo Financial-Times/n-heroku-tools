@@ -71,7 +71,7 @@ function bowerBottle (increment, currentVersion) {//, isBeta) {
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(getLatestTag)
 		.then(tag => {
-			logger.art.bottle();
+			logger.art.bottle(tag);
 			console.log(`${tag} tagged in git (no requirement for npm release detected)`);
 		});
 }
