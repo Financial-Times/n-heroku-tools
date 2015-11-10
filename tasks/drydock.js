@@ -12,7 +12,7 @@ module.exports = function(pipelineName, opts){
 	return co(function* (){
 		let support = yield pipelines.supported();
 		if(!support){
-			throw new Error('Pipelines not installed on this system - run "heroku plugins:install git://github.com/heroku/heroku-pipelines.git"');
+			throw new Error('Pipelines not installed on this system - run "heroku plugins:install heroku-pipelines"');
 		}
 
 		let stagingApp = pipelineName + '-staging';
