@@ -7,7 +7,7 @@ var normalizeName = require('../lib/normalize-name');
 var fetchres = require('fetchres');
 var shellpromise = require('shellpromise');
 
-module.exports = function(opts) {
+function task (opts) {
 
 	var source = opts.source || normalizeName(packageJson.name, { version: false });
 	var target = opts.target || packageJson.name;
@@ -70,5 +70,19 @@ module.exports = function(opts) {
 			console.log('Error scaling processes - ' + err);
 			console.log('Pro tip: Check that your process names haven\'t changed');
 			throw err;
+		});
+};
+
+module.exports = function (program, utils) {
+	program
+		.command('scale [source] [target]')
+		.description('downloads process information from next-service-registry and scales/sizes the application servers')
+		.option('-m, --minimal', 'scales each dyno to a single instance (useful for provisioning a test app)')
+		.action(function(source, target, options) {
+			task({
+				source: source,
+				target: target,
+				minimal: options.minimal
+			}).catch(utils.exit);
 		});
 };

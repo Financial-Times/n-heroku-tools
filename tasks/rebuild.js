@@ -41,7 +41,7 @@ function lastMasterBuild(project) {
 	return circleFetch('/project/Financial-Times/' + project + '/tree/master');
 }
 
-module.exports = function(options) {
+function task (options) {
 	var apps = options.apps;
 	var serves = options.serves;
 
@@ -92,5 +92,18 @@ module.exports = function(options) {
 						console.log("Skipped rebuild of " + app + " probably because Circle CI not set up for this repo");
 					});
 			}));
+		});
+};
+
+module.exports = function (program, utils) {
+	program
+		.command('rebuild [apps...]')
+		.option('--serves <type>', 'Trigger rebuilds of apps where type is served.')
+		.description('Trigger a rebuild of the latest master on Circle')
+		.action(function(apps, opts) {
+			return task({
+				apps: apps,
+				serves: opts.serves
+			}).catch(utils.exit);
 		});
 };

@@ -87,7 +87,7 @@ gulp.task('build-worker', function() {
 });
 
 
-module.exports = function(opts) {
+function task (opts) {
 	isDev = opts.isDev;
 	let tasks = [];
 	if (!opts.skipSass) {
@@ -115,3 +115,24 @@ module.exports = function(opts) {
 			}
 		});
 };
+
+module.exports = function (program, utils) {
+	program
+		.command('build')
+		.option('--dev', 'Skip minification')
+		.option('--watch', 'Watches files')
+		.option('--skip-js', 'skips compilation of JavaScript')
+		.option('--skip-sass', 'skips compilation of Sass')
+		.option('--worker', 'additionally builds Service Worker JavaScript')
+		.description('build javascript and css')
+		.action(function(options) {
+			task({
+				isDev: options.dev,
+				watch: options.watch,
+				skipJs: options.skipJs,
+				skipSass: options.skipSass,
+				worker: options.worker
+			}).catch(utils.exit);
+		});
+};
+

@@ -9,7 +9,7 @@ const packageJson = require(process.cwd() + '/package.json');
 const log = require('../lib/logger');
 
 
-module.exports = function(opts){
+function task (opts) {
 	var testAppName;
 	return co(function* (){
 		let isMaster = host.isMasterBranch();
@@ -58,4 +58,17 @@ module.exports = function(opts){
 		}
 
 	});
+};
+
+module.exports = function (program, utils) {
+	program
+		.command('float')
+		.description('Deploys code to a test app and checks it doesn\'t die')
+		.option('-a --app', 'Name of the app')
+		.option('-t --testapp [value]', 'Name of the app to be created')
+		.option('-m --master', "Run even if on master branch (not required if using nbt ship).")
+		.option('-d, --no-destroy', 'Don\'t automatically destroy new apps')
+		.action(function(options){
+			task(options).catch(utils.exit);
+		});
 };

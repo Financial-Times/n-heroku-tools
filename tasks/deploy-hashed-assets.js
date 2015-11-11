@@ -36,7 +36,7 @@ function upload(params) {
 			});
 }
 
-module.exports = app => {
+function task (app) {
 	let assetHashes;
 	try {
 		console.log(process.cwd() + '/public/assets-hashes.json');
@@ -60,7 +60,7 @@ module.exports = app => {
 			const extension = path.extname(file).substring(1);
 
 			console.log(`sending ${key} to S3`);
-			
+
 			return readFile(path.join(process.cwd(), 'public', file))
 				.then(content => {
 					let params = {
@@ -84,4 +84,13 @@ module.exports = app => {
 						]));
 				});
 		}));
+};
+
+module.exports = function (program, utils) {
+	program
+		.command('deploy-hashed-assets')
+		.description('deploys hashed asset files to S3 (if AWS keys set correctly)')
+		.action(function() {
+			task().catch(utils.exit);
+		});
 };

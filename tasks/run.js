@@ -111,7 +111,7 @@ function ensureRouterInstall() {
 		.catch(function() { throw new Error('You need to install the next router first!  See docs here: http://git.svc.ft.com/projects/NEXT/repos/router/browse'); });
 }
 
-module.exports = function (opts) {
+function task (opts) {
 	return (existsSync(developmentKeysPath) ? Promise.resolve() : downloadDevelopmentKeys())
 		.then(function() {
 
@@ -135,5 +135,21 @@ module.exports = function (opts) {
 						]);
 					});
 			}
+		});
+};
+
+module.exports = function (program, utils) {
+	program
+		.command('run')
+		.description('Runs the local app through the router')
+		.option('-l, --local', 'Run the app but don\'t start the router')
+		.option('--harmony', 'Runs the local app with harmony')
+		.option('--debug', 'Runs the local app with debug flag')
+		.option('--procfile', 'Runs all processes specified in the Procfile')
+		.option('-s, --script <file>', 'Runs a single javascript file')
+		.option('--subargs [subargs]', 'Sub arguments to pass to a single script', /^\[.+]$/)
+		.option('--no-nodemon', 'Do not run through nodemon')
+		.action(function(opts){
+			task(opts).catch(utils.exit);
 		});
 };

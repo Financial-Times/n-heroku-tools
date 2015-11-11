@@ -11,7 +11,7 @@ var path = require('path');
 var AWS_ACCESS = process.env.AWS_ACCESS;
 var AWS_SECRET = process.env.AWS_SECRET;
 
-module.exports = function(opts) {
+function task (opts) {
 	if (!(AWS_ACCESS && AWS_SECRET)) {
 		Promise.reject("Must set AWS_ACCESS and AWS_SECRET");
 	}
@@ -65,4 +65,34 @@ module.exports = function(opts) {
 					});
 			});
 	}));
+};
+
+module.exports = function (program, utils) {
+	program
+		.command('deploy-static <source> [otherSources...]')
+		.description('Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars')
+		.option('--strip <strip>', 'Optionally strip off the <strip> leading components off of the source file name')
+		.option('--destination <destination>', 'Optionally add a prefix to the upload path')
+		.option('--region <region>', 'Optionally set the region (default to eu-west-1)')
+		.option('--bucket <bucket>', 'Optionally set the bucket (default to ft-next-qa)')
+		.option('--no-cache', 'Optionally don\'t set a far future cache')
+		.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
+		.option('--content-type <contentType>', 'Optionally specify a content type value')
+		.action(function(file, files, opts) {
+			files.unshift(file);
+			var region = opts.region || 'eu-west-1';
+			var bucket = opts.bucket || 'ft-next-qa';
+			var destination = opts.destination || "";
+
+			return task({
+				files: files,
+				destination: destination,
+				region: region,
+				bucket: bucket,
+				strip: opts.strip,
+				cache: opts.cache,
+				cacheControl: opts.cacheControl,
+				contentType: opts.contentType
+			}).catch(utils.exit);
+		});
 };

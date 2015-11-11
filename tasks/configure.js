@@ -6,7 +6,7 @@ var configVarsKey = require('../lib/config-vars-key');
 var normalizeName = require('../lib/normalize-name');
 var fetchres = require('fetchres');
 
-module.exports = function(opts) {
+function task (opts) {
 
 	var source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
 	var target = opts.target || source;
@@ -93,3 +93,22 @@ module.exports = function(opts) {
 		});
 
 };
+
+module.exports = function (program, utils) {
+	program
+		.command('configure [source] [target]')
+		.description('downloads environment variables from next-config-vars and uploads them to the current app')
+		.option('-o, --overrides <abc>', 'override these values', utils.list)
+		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
+		.action(function(source, target, options) {
+			if (!options.splunk) {
+				console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
+			}
+			task({
+				source: source,
+				target: target,
+				overrides: options.overrides,
+				splunk: options.splunk
+			}).catch(utils.exit);
+		});
+}

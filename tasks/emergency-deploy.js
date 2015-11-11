@@ -5,7 +5,7 @@ const packageJson = require(process.cwd() + '/package.json');
 const configVarsKey = require('../lib/config-vars-key');
 const shellpromise = require('shellpromise');
 
-module.exports = function(options) {
+function task (options) {
 	if (!options.iKnowWhatIAmDoing) {
 		return Promise.reject(new Error('This command may only be used if `--i-know-what-i-am-doing`'));
 	}
@@ -25,5 +25,15 @@ module.exports = function(options) {
 		.then(function(env) {
 			env = Object.assign(process.env, env, { PATH: process.env.PATH });
 			return shellpromise('make clean install build-production deploy', { env, cwd: process.cwd(), verbose: true });
+		});
+};
+
+module.exports = function (program, utils) {
+	program
+		.command('emergency-deploy')
+		.description('Run the deploy steps that CI would run, allowing you deploy locally')
+		.option('--i-know-what-i-am-doing', 'Use this option if you know what you are doing')
+		.action(function(options) {
+			task(options).catch(utils.exit);
 		});
 };

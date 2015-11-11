@@ -21,7 +21,7 @@ gulp.task('verify', function() {
 		});
 });
 
-module.exports = function(opts) {
+function task (opts) {
 	var checks = [
 		obtVerify()
 	];
@@ -37,4 +37,20 @@ module.exports = function(opts) {
 		checks.push(verifyDotenvInGitignore());
 	}
 	return Promise.all(checks);
+};
+
+module.exports = function (program, utils) {
+	program
+		.command('verify')
+		.option('--skip-layout-checks', 'run verify checks when the application doesn\'t have customer facing html pages')
+		.option('--skip-npm-checks', 'skip npm dependency checks')
+		.option('--skip-dotenv-check', 'skip checking `.gitignore` has `.env` in it')
+		.description('internally calls origami-build-tools verify with some Next specific configuration (use only for APPLICATIONS. Front End components should continue to use origami-build-tools verify)')
+		.action(function(opts) {
+			task({
+				skipLayoutChecks: opts.skipLayoutChecks,
+				skipNpmChecks: opts.skipNpmChecks,
+				skipDotenvCheck: opts.skipDotenvCheck
+			}).catch(utils.exit);
+		});
 };

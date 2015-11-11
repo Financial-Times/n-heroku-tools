@@ -76,7 +76,7 @@ function bowerBottle (increment, currentVersion) {//, isBeta) {
 		});
 }
 
-module.exports = function (increment, forceNpm, isBeta) {
+function task (increment, forceNpm, isBeta) {
 	if (['major', 'minor', 'patch'].indexOf(increment) === -1) {
 		return Promise.reject(`Incorrect version identifier. Accepted values: major, minor, patch
 			e.g. nbt bottle minor`);
@@ -188,3 +188,15 @@ need to correct previous releases`;
 		});
 
 };
+
+module.exports = function (program, utils) {
+	program
+		.command('bottle [increment]')
+		.option('--npm', 'Force publishing of new component to npm')
+		.option('--beta', 'Release as a beta')
+		.description('releases a major, minor or patch version of a next component (similar to npm version + npm publish)')
+		.action(function(increment, options) {
+			task(increment, options.npm, options.beta)
+				.catch(utils.exit);
+		});
+}
