@@ -139,7 +139,10 @@ class UrlTest {
 
 
 	getRedirect () {
-		let curl = `curl -s '${this.url}' -D-`;
+		let curl = `curl -s '${this.url}' `;
+
+		curl += this.method === 'POST' ? '-D-' : '-I';
+
 
 		if (this.method) {
 			curl += ` -X ${this.method}`;
