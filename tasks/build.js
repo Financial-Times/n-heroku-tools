@@ -50,7 +50,7 @@ gulp.task('build-sass', function() {
 			sass: sourceFolder + mainScssFile,
 			buildFolder: buildFolder,
 			env: isDev ? 'development' : 'production',
-			sourcemaps: isDev
+			sourcemaps: true
 		})
 		.on('end', function() {
 			console.log('build-sass completed');
