@@ -3,9 +3,6 @@
 const mockery = require('mockery');
 const sinon = require('sinon');
 const co = require('co');
-const configureTask = require('../tasks/configure');
-const deployTask = require('../tasks/deploy');
-const scaleTask = require('../tasks/scale');
 
 describe('tasks/ship', function(){
 
