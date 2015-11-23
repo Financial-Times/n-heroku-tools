@@ -1,3 +1,4 @@
+
 'use strict';
 
 var packageJson = require(process.cwd() + '/package.json');
@@ -95,6 +96,7 @@ function task (opts) {
 };
 
 module.exports = function (program, utils) {
+
 	program
 		.command('configure [source] [target]')
 		.description('downloads environment variables from next-config-vars and uploads them to the current app')
@@ -112,3 +114,5 @@ module.exports = function (program, utils) {
 			}).catch(utils.exit);
 		});
 }
+
+module.exports.task = task;

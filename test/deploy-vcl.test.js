@@ -1,5 +1,7 @@
 /* global describe, it, before, after */
+
 'use strict';
+require('isomorphic-fetch');
 var sinon = require('sinon');
 var expect = require('chai').expect;
 process.env.FASTLY_APIKEY ='12345';
@@ -15,7 +17,7 @@ describe('Deploy VCL', function(){
 
 	before(function(){
 		mockery.enable({warnOnUnregistered:false});
-		deployVcl = require('../tasks/deploy-vcl');
+		deployVcl = require('../tasks/deploy-vcl').task;
 	});
 
 	after(function(){

@@ -1,3 +1,4 @@
+
 'use strict';
 require('array.prototype.find');
 const path = require('path');
@@ -213,3 +214,5 @@ module.exports = function (program, utils) {
 			}).catch(utils.exit);
 		});
 };
+
+module.exports.task = task;

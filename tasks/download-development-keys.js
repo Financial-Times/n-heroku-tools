@@ -1,3 +1,4 @@
+
 'use strict';
 
 var developmentKeysPath = require('../lib/development-keys-path');
@@ -28,3 +29,5 @@ module.exports = function (program, utils) {
 		});
 
 };
+
+module.exports.task = task;

@@ -1,14 +1,16 @@
+
 'use strict';
 const co = require('co');
-const scale = require('./scale');
-const configure = require('./configure');
+const scale = require('./scale').task;
+const configure = require('./configure').task;
 const packageJson = require(process.cwd() + '/package.json');
 const pipelines = require('../lib/pipelines');
-const deploy = require('./deploy');
+const deploy = require('./deploy').task;
 const log = require('../lib/logger');
 const enablePreboot = require('../lib/enable-preboot');
 
 function task (opts) {
+
 	return co(function* (){
 		let support = yield pipelines.supported();
 		if(!support){
@@ -75,7 +77,6 @@ function task (opts) {
 		log.info('Promote slug to production');
 		yield pipelines.promote(apps.staging);
 		log.success('Slug promoted');
-
 		if(opts.scale){
 			log.log('scale enabled');
 			let source = appName;
@@ -118,3 +119,5 @@ module.exports = function (program, utils) {
 			task(options).catch(utils.exit);
 		});
 };
+
+module.exports.task = task;

@@ -1,9 +1,10 @@
+
 'use strict';
 const co = require('co');
-const provision = require('./provision');
-const configure = require('./configure');
-const deploy = require('./deploy');
-const destroy = require('./destroy');
+const provision = require('./provision').task;
+const configure = require('./configure').task;
+const deploy = require('./deploy').task;
+const destroy = require('./destroy').task;
 const host = require('../lib/host');
 const packageJson = require(process.cwd() + '/package.json');
 const log = require('../lib/logger');
@@ -72,3 +73,5 @@ module.exports = function (program, utils) {
 			task(options).catch(utils.exit);
 		});
 };
+
+module.exports.task = task;

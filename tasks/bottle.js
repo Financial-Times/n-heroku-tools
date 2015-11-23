@@ -1,3 +1,4 @@
+
 'use strict';
 
 const shell = require('shellpromise');
@@ -199,4 +200,6 @@ module.exports = function (program, utils) {
 			task(increment, options.npm, options.beta)
 				.catch(utils.exit);
 		});
-}
+};
+
+module.exports.task = task;

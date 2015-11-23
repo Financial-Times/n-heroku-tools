@@ -1,9 +1,10 @@
+
 'use strict';
 const co = require('co');
-const provision = require('./provision');
+const provision = require('./provision').task;
 const log = require('../lib/logger');
 const pipelines = require('../lib/pipelines');
-const destroy = require('./destroy');
+const destroy = require('./destroy').task;
 
 function task (pipelineName, opts){
 	var apps = [];
@@ -71,3 +72,5 @@ module.exports = function (program, utils) {
 			task(name, options).catch(utils.exit);
 		});
 };
+
+module.exports.task = task;

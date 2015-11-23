@@ -35,3 +35,5 @@ module.exports = function (program, utils) {
 			}
 		});
 };
+
+module.exports.task = task;

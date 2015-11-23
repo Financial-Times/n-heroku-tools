@@ -1,3 +1,4 @@
+
 'use strict';
 
 var gulp = require('gulp');
@@ -136,3 +137,4 @@ module.exports = function (program, utils) {
 		});
 };
 
+module.exports.task = task;

@@ -1,3 +1,4 @@
+
 'use strict';
 
 var log = require('../lib/log');
@@ -31,3 +32,5 @@ module.exports = function (program, utils) {
 			}).catch(utils.exit);
 		});
 };
+
+module.exports.task = task;

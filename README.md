@@ -30,7 +30,7 @@
     drydock [options] [name]                            Creates a new pipeline with a staging and EU production app
     emergency-deploy [options]                          Run the deploy steps that CI would run, allowing you deploy locally
     hash-assets                                         Generates an asset-hashes.json file
-    *                                                   
+    *                                                 
 
   Options:
 

@@ -1,3 +1,4 @@
+
 'use strict';
 
 var spawn = require('shellpromise');
@@ -21,3 +22,5 @@ module.exports = function (program, utils) {
 			}
 		});
 };
+
+module.exports.task = task;

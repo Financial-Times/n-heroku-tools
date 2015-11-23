@@ -1,3 +1,4 @@
+
 'use strict';
 var fs = require('fs');
 var activeVersion;
@@ -135,3 +136,5 @@ module.exports = function (program, utils) {
 			}
 		});
 };
+
+module.exports.task = task;

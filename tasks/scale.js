@@ -1,3 +1,4 @@
+
 'use strict';
 
 require('array.prototype.find');
@@ -86,3 +87,5 @@ module.exports = function (program, utils) {
 			}).catch(utils.exit);
 		});
 };
+
+module.exports.task = task;

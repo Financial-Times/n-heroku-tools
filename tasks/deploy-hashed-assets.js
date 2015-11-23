@@ -1,3 +1,4 @@
+
 'use strict';
 
 const packageJson = require(process.cwd() + '/package.json');
@@ -94,3 +95,5 @@ module.exports = function (program, utils) {
 			task().catch(utils.exit);
 		});
 };
+
+module.exports.task = task;

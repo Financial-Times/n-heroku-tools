@@ -1,3 +1,4 @@
+
 'use strict';
 
 var fetchres = require('fetchres');
@@ -107,3 +108,5 @@ module.exports = function (program, utils) {
 			}).catch(utils.exit);
 		});
 };
+
+module.exports.task = task;

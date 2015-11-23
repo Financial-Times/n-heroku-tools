@@ -1,3 +1,4 @@
+
 'use strict';
 
 var exec = require('../lib/exec');
@@ -153,3 +154,5 @@ module.exports = function (program, utils) {
 			task(opts).catch(utils.exit);
 		});
 };
+
+module.exports.task = task;

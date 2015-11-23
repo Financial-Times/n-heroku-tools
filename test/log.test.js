@@ -1,6 +1,7 @@
 'use strict';
+require('isomorphic-fetch');
 const expect = require('chai').expect;
-var fetchMock = require('fetch-mock');
+var fetchMock = require('fetch-mock/src/server');
 
 const file = require('../lib/log');
 

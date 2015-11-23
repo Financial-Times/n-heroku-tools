@@ -1,9 +1,9 @@
 'use strict';
+require('isomorphic-fetch');
 const expect = require('chai').expect;
 const co = require('co');
 const mockery = require('mockery');
 const sinon = require('sinon');
-require('isomorphic-fetch');
 
 describe('lib/pipelines', function(){
 
