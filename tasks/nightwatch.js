@@ -1,3 +1,4 @@
+
 'use strict';
 
 var path = require('path');
@@ -11,7 +12,7 @@ function toStdErr(data) {
 	process.stderr.write(data.toString());
 }
 
-module.exports = function(opts) {
+function task (opts) {
 	var test = opts.test;
 	var env = opts.env || 'ie9,ie10,ie11,firefox38,firefox39,chrome42,chrome43,iphone6_plus,Android_Nexus7HD';
 	var config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
@@ -31,3 +32,22 @@ module.exports = function(opts) {
 		});
 	});
 };
+
+module.exports = function (program, utils) {
+	program
+		.command('nightwatch [test]')
+		.option('-c, --config <config>', 'The location of the nightwatch.json, defaults to Next Build Tools nightwatch.json')
+		.option('-e, --env <env>', 'The location of the nightwatch.json, defaults to Next Build Tools defined environments')
+		.description('runs nightwatch with some sensible defaults')
+		.action(function(test, options) {
+			task({
+				test: test,
+				env: options.env,
+				config: options.config
+
+			})
+				.catch(utils.exit);
+		});
+};
+
+module.exports.task = task;

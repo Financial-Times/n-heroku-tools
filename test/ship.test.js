@@ -1,12 +1,20 @@
 'use strict';
+
 const mockery = require('mockery');
 const sinon = require('sinon');
 const co = require('co');
 
 describe('tasks/ship', function(){
 
-	function stubbedPromise(value){
-		return sinon.stub().returns(Promise.resolve(value));
+	function stubbedPromise(value, property){
+		const stub = sinon.stub().returns(Promise.resolve(value));
+		if (property) {
+			const obj = {};
+			obj[property] = stub;
+			return obj;
+		} else {
+			return stub;
+		}
 	}
 
 	var mockApps = {
@@ -18,9 +26,9 @@ describe('tasks/ship', function(){
 	};
 
 	var ship;
-	var mockScale = stubbedPromise(null);
-	var mockConfigure = stubbedPromise(null);
-	var mockDeploy = stubbedPromise(null);
+	var mockScale = stubbedPromise(null, 'task');
+	var mockConfigure = stubbedPromise(null, 'task');
+	var mockDeploy = stubbedPromise(null, 'task');
 	var mockPipelines = {getApps: stubbedPromise(mockApps), supported:stubbedPromise(true), promote:stubbedPromise(null)};
 	var mockEnablePrebook = stubbedPromise(null);
 
@@ -31,7 +39,7 @@ describe('tasks/ship', function(){
 		mockery.registerMock('../lib/pipelines', mockPipelines);
 		mockery.registerMock('../lib/enable-preboot', mockEnablePrebook);
 		mockery.enable({warnOnUnregistered:false,useCleanCache:true});
-		ship = require('../tasks/ship');
+		ship = require('../tasks/ship').task;
 	});
 
 	after(function(){
@@ -43,9 +51,9 @@ describe('tasks/ship', function(){
 		return co(function* (){
 			yield ship({pipeline:pipelineName, configure:true, multiregion:true});
 
-			sinon.assert.calledWith(mockConfigure, { source: pipelineName, target: mockApps.staging });
-			sinon.assert.calledWith(mockConfigure, { source: pipelineName, target: mockApps.production.eu, overrides: ["REGION=EU"] });
-			sinon.assert.calledWith(mockConfigure, { source: pipelineName, target: mockApps.production.us, overrides: ["REGION=US"] });
+			sinon.assert.calledWith(mockConfigure.task, { source: pipelineName, target: mockApps.staging });
+			sinon.assert.calledWith(mockConfigure.task, { source: pipelineName, target: mockApps.production.eu, overrides: ["REGION=EU"] });
+			sinon.assert.calledWith(mockConfigure.task, { source: pipelineName, target: mockApps.production.us, overrides: ["REGION=US"] });
 		});
 	});
 
@@ -54,7 +62,7 @@ describe('tasks/ship', function(){
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
 
-			sinon.assert.calledWith(mockScale, {target:mockApps.staging, scale:'web=1'});
+			sinon.assert.calledWith(mockScale.task, {target:mockApps.staging, scale:'web=1'});
 		});
 	});
 
@@ -63,7 +71,7 @@ describe('tasks/ship', function(){
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
 
-			sinon.assert.calledWith(mockDeploy, {app:mockApps.staging, skipEnablePreboot:true, log:true, logGateway: "konstructor"});
+			sinon.assert.calledWith(mockDeploy.task, {app:mockApps.staging, skipEnablePreboot:true, log:true, logGateway: "konstructor"});
 		});
 	});
 
@@ -82,9 +90,9 @@ describe('tasks/ship', function(){
 		return co(function* (){
 			yield ship({pipeline:pipelineName,scale:true,multiregion:true});
 
-			sinon.assert.calledWith(mockScale, {source:appName, target:mockApps.staging});
-			sinon.assert.calledWith(mockScale, {source:appName, target:mockApps.production.eu});
-			sinon.assert.calledWith(mockScale, {source:appName, target:mockApps.production.us});
+			sinon.assert.calledWith(mockScale.task, {source:appName, target:mockApps.staging});
+			sinon.assert.calledWith(mockScale.task, {source:appName, target:mockApps.production.eu});
+			sinon.assert.calledWith(mockScale.task, {source:appName, target:mockApps.production.us});
 
 		});
 	});
@@ -94,7 +102,7 @@ describe('tasks/ship', function(){
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
 
-			sinon.assert.calledWith(mockScale, {target:mockApps.staging, scale:'web=0'});
+			sinon.assert.calledWith(mockScale.task, {target:mockApps.staging, scale:'web=0'});
 		});
 	});
 

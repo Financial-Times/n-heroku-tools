@@ -1,12 +1,12 @@
+
 'use strict';
 const co = require('co');
-const provision = require('./provision');
+const provision = require('./provision').task;
 const log = require('../lib/logger');
 const pipelines = require('../lib/pipelines');
-const destroy = require('./destroy');
+const destroy = require('./destroy').task;
 
-
-module.exports = function(pipelineName, opts){
+function task (pipelineName, opts){
 	var apps = [];
 
 	return co(function* (){
@@ -59,3 +59,18 @@ module.exports = function(pipelineName, opts){
 		});
 	});
 };
+
+module.exports = function (program, utils) {
+	program
+		.command('drydock [name]')
+		.description('Creates a new pipeline with a staging and EU production app')
+		.option('-m --multiregion', 'Will create an additional app in the US')
+		.action(function(name, options){
+			if(!name){
+				throw new Error('Please specifiy a name for the pipeline');
+			}
+			task(name, options).catch(utils.exit);
+		});
+};
+
+module.exports.task = task;

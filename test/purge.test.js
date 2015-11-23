@@ -1,5 +1,6 @@
 /* global describe, it */
 'use strict';
+require('isomorphic-fetch');
 var expect = require('chai').expect;
 
 var purge = require('../tasks/purge');

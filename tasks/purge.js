@@ -1,3 +1,4 @@
+
 'use strict';
 
 var denodeify = require('denodeify');
@@ -9,7 +10,7 @@ var exec = denodeify(require('child_process').exec, function(err, stdout, stderr
 
 var FASTLY_KEY = process.env.FASTLY_APIKEY;
 
-module.exports = function(url, opts){
+function task (url, opts) {
 	if(!FASTLY_KEY){
 		throw new Error('Missing FASTLY_APIKEY!');
 	}
@@ -26,3 +27,19 @@ module.exports = function(url, opts){
 		url;
 	return exec(command);
 };
+
+module.exports = function (program, utils) {
+	program
+		.command('purge [url]')
+		.option('-s, --soft <soft>', 'Perform a "Soft Purge (will invalidate the content rather than remove it"')
+		.description('purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key')
+		.action(function(url, options){
+			if (url) {
+				task(url, options).catch(utils.exit);
+			} else {
+				utils.exit('Please provide a url');
+			}
+		});
+};
+
+module.exports.task = task;

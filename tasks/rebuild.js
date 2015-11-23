@@ -1,3 +1,4 @@
+
 'use strict';
 
 var fetchres = require('fetchres');
@@ -41,7 +42,7 @@ function lastMasterBuild(project) {
 	return circleFetch('/project/Financial-Times/' + project + '/tree/master');
 }
 
-module.exports = function(options) {
+function task (options) {
 	var apps = options.apps;
 	var serves = options.serves;
 
@@ -94,3 +95,18 @@ module.exports = function(options) {
 			}));
 		});
 };
+
+module.exports = function (program, utils) {
+	program
+		.command('rebuild [apps...]')
+		.option('--serves <type>', 'Trigger rebuilds of apps where type is served.')
+		.description('Trigger a rebuild of the latest master on Circle')
+		.action(function(apps, opts) {
+			return task({
+				apps: apps,
+				serves: opts.serves
+			}).catch(utils.exit);
+		});
+};
+
+module.exports.task = task;

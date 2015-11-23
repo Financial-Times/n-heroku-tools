@@ -12,7 +12,7 @@ var exists = denodeify(fs.exists, function(exists) { return [undefined, exists];
 var commit = require('../lib/commit');
 var log = require('../lib/log');
 
-module.exports = function(opts) {
+function task (opts) {
 	var token;
 	var hash;
 	var name = (opts.app) ? opts.app : 'ft-next-' + normalizeName(packageJson.name);
@@ -92,3 +92,30 @@ module.exports = function(opts) {
 			throw err;
 		});
 };
+
+module.exports = function (program, utils) {
+	program
+		.command('deploy [app]')
+		.description('runs haikro deployment scripts with sensible defaults for Next projects')
+		.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
+		.option('--skip-enable-preboot', 'skip the preboot')
+		.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', utils.list)
+		.option('--skip-logging', 'Skips trying to log to SalesForce')
+		.option('--log-gateway [log-gateway]', 'Which log gateway to use: mashery, internal or konstructor')
+		.action(function(app, options) {
+
+			if (options.gtgUrls) {
+				throw 'Configuring gtg urls is now supported in a separate task: nbt test-urls';
+			}
+
+			task({
+				app: app,
+				skipGtg: options.skipGtg,
+				skipEnablePreboot: options.skipEnablePreboot,
+				log: !options.skipLogging,
+				logGateway: options.logGateway || 'konstructor'
+			}).catch(utils.exit);
+		});
+}
+
+module.exports.task = task;

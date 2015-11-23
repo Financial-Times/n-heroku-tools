@@ -1,3 +1,4 @@
+
 'use strict';
 require('array.prototype.find');
 const path = require('path');
@@ -82,7 +83,7 @@ class UrlTest {
 					if (response.url !== this.url) {
 						throw 'bad redirect: ' + response.url;
 					}
-					
+
 					if (this.expected.status) {
 						if (response.status !== this.expected.status) {
 							throw 'bad status: ' + response.status;
@@ -186,7 +187,7 @@ function testUrls (opts) {
 }
 
 
-module.exports = function(opts) {
+function task(opts) {
 	const appName = (opts.app) ? opts.app : 'ft-next-' + normalizeName(packageJson.name);
 	const urlConfig = require(path.join(process.cwd(), 'test/smoke.js'));
 	baseUrl = 'http://' + appName;
@@ -195,3 +196,23 @@ module.exports = function(opts) {
 	}
 	return Promise.all(urlConfig.map(testUrls));
 };
+
+
+
+module.exports = function (program, utils) {
+	program
+		.command('test-urls [app]')
+		.description('Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist')
+		.option('-t, --throttle <n>', 'The maximum number of tests to run concurrently. default: 5')
+		.action(function(app, options) {
+			task({
+				app: app,
+				urls: options.urls,
+				headers: options.headers,
+				timeout: options.timeout,
+				throttle: options.throttle
+			}).catch(utils.exit);
+		});
+};
+
+module.exports.task = task;

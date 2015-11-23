@@ -1,14 +1,16 @@
+
 'use strict';
 const co = require('co');
-const scale = require('./scale');
-const configure = require('./configure');
+const scale = require('./scale').task;
+const configure = require('./configure').task;
 const packageJson = require(process.cwd() + '/package.json');
 const pipelines = require('../lib/pipelines');
-const deploy = require('./deploy');
+const deploy = require('./deploy').task;
 const log = require('../lib/logger');
 const enablePreboot = require('../lib/enable-preboot');
 
-module.exports = function ship(opts){
+function task (opts) {
+
 	return co(function* (){
 		let support = yield pipelines.supported();
 		if(!support){
@@ -75,7 +77,6 @@ module.exports = function ship(opts){
 		log.info('Promote slug to production');
 		yield pipelines.promote(apps.staging);
 		log.success('Slug promoted');
-
 		if(opts.scale){
 			log.log('scale enabled');
 			let source = appName;
@@ -99,3 +100,24 @@ module.exports = function ship(opts){
 		log.art.ship(appName);
 	});
 };
+
+module.exports = function (program, utils) {
+	program
+		.command('ship')
+		.description('Ships code.  Deploys using pipelines, also running the configure and scale steps automatically')
+		.option('-c --no-configure', 'Skip the configure step')
+		.option('-s --no-scale', 'Skip the scale step')
+		.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
+		.option('-m --multiregion', 'Will expect a US app as well as an EU one')
+		.option('-l --no-logging', "Don't log to Salesforce™®©")
+		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
+		.action(function(options){
+			if (!options.splunk) {
+				console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
+			}
+			options.log = !options.skipLogging;
+			task(options).catch(utils.exit);
+		});
+};
+
+module.exports.task = task;
