@@ -48,6 +48,7 @@ function task (opts) {
 	return Promise.all(checks)
 		.then(() => {
 			process.env.NODE_PATH = previousNodePath;
+			modules._initPaths();
 		});
 };
 
