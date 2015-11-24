@@ -15,6 +15,7 @@
     "denodeify": "^1.2.0",
     "directly": "^1.0.1",
     "dotenv": "^1.2.0",
+    "eslint-plugin-react": "^3.10.0",
     "fastly": "Financial-Times/fastly#v2.5.0",
     "fetchres": "^1.0.4",
     "foreman": "^1.4.1",
