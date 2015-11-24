@@ -7,6 +7,7 @@ var path = require('path');
 var verifyLayoutDeps = require('../lib/verify-layout-deps');
 var verifyNpmDeps = require('../lib/verify-npm-deps');
 var verifyDotenvInGitignore = require('../lib/verify-dotenv-in-gitignore');
+const modules = require('module');
 
 function obtVerify() {
 	return new Promise(function(resolve, reject) {
@@ -23,6 +24,13 @@ gulp.task('verify', function() {
 });
 
 function task (opts) {
+
+	// HACK: Make eslint plugins work
+	const previousNodePath = process.env.NODE_PATH || '';
+	process.env.NODE_PATH = path.join(__dirname, '..', 'node_modules') + ':' + previousNodePath;
+	modules._initPaths();
+	// End HACK
+
 	var checks = [
 		obtVerify()
 	];
@@ -37,7 +45,10 @@ function task (opts) {
 	if (!opts.skipDotenvCheck) {
 		checks.push(verifyDotenvInGitignore());
 	}
-	return Promise.all(checks);
+	return Promise.all(checks)
+		.then(() => {
+			process.env.NODE_PATH = previousNodePath;
+		});
 };
 
 module.exports = function (program, utils) {
