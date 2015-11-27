@@ -122,7 +122,7 @@ function task (opts) {
 			var localPort = process.env.PORT || 3002;
 
 			if (opts.local) {
-				return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script });
+				return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon });
 			} else if (opts.procfile) {
 				return runProcfile();
 			} else if (opts.script) {
