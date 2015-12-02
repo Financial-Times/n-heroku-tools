@@ -16,14 +16,22 @@ var buildFolder = './public/';
 var isDev = false;
 const hashAssets = require('../lib/hash-assets');
 
-function getGlob(task) {
+// comma separated globs
+const watchFiles = {
+	js: './client/**/*.js',
+	sass: './client/**/*.scss'
+}
+
+const capitalise = string => string[0].toUpperCase() + string.slice(1);
+
+function getAssetType(task) {
 	switch(task) {
 		case 'build-sass':
-			return './client/**/*.scss';
+			return 'sass';
 		case 'build-js':
 		case 'build-worker':
 		case 'build-minify-js':
-			return './client/**/*.js';
+			return 'js';
 	}
 }
 
@@ -35,8 +43,9 @@ function run(tasks, opts) {
 	return new Promise(function(resolve, reject) {
 		if (opts.watch) {
 			tasks.forEach(task => {
-				console.log(`Watching ${getGlob(task)} and will trigger ${task}`);
-				gulp.watch(getGlob(task), [task]);
+				const watchFiles = opts[`watchFiles${capitalise(getAssetType(task))}`];
+				console.log(`Watching ${watchFiles} and will trigger ${task}`);
+				gulp.watch(watchFiles.split(','), [task]);
 			});
 		} else {
 			console.log(`Starting to run ${tasks.join(', ')}`);
@@ -122,6 +131,8 @@ module.exports = function (program, utils) {
 		.command('build')
 		.option('--dev', 'Skip minification')
 		.option('--watch', 'Watches files')
+		.option('--watch-files-js <globs>', `Comma separated globs of js files to watch [${watchFiles.js}]`, watchFiles.js)
+		.option('--watch-files-sass <globs>', `Comma separated globs of sass files to watch [${watchFiles.sass}]`, watchFiles.sass)
 		.option('--skip-js', 'skips compilation of JavaScript')
 		.option('--skip-sass', 'skips compilation of Sass')
 		.option('--worker', 'additionally builds Service Worker JavaScript')
@@ -130,6 +141,8 @@ module.exports = function (program, utils) {
 			task({
 				isDev: options.dev,
 				watch: options.watch,
+				watchFilesJs: options.watchFilesJs,
+				watchFilesSass: options.watchFilesSass,
 				skipJs: options.skipJs,
 				skipSass: options.skipSass,
 				worker: options.worker
