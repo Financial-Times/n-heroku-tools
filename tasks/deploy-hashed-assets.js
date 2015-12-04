@@ -68,7 +68,10 @@ function task (app) {
 						Key: key,
 						Body: content,
 						ACL: 'public-read',
-						CacheControl: 'public, max-age=31536000'
+						CacheControl: 'public, max-age=31536000',
+						Metadata: {
+							'outbound-cache-control': 'public, max-age=31536000'
+						}
 					};
 					switch(extension) {
 						case 'js':

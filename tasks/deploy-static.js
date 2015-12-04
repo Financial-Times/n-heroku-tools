@@ -46,12 +46,16 @@ function task (opts) {
 
 				console.log("About to upload " + file + " to " + key);
 				return new Promise(function(resolve, reject) {
+					const cacheControl = opts.cacheControl || (opts.cache ? 'public, max-age=31536000' : undefined);
 					s3bucket.upload({
 						Key: key,
 						ContentType: opts.contentType || determineContentType(file),
 						ACL: 'public-read',
 						Body: content,
-						CacheControl: opts.cacheControl || (opts.cache ? 'public, max-age=31536000' : undefined)
+						CacheControl: cacheControl,
+						Metadata: {
+							'outbound-cache-control': cacheControl
+						}
 					}, function(err, data) {
 						if (err) {
 							reject(err);
