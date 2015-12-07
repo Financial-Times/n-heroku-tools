@@ -163,7 +163,7 @@ class UrlTest {
 			return shell(`${curl} -o /dev/null -w "%{http_code}"`)
 				.then(status => Number(status))
 		} else {
-			return shell(`${curl} | grep -i ^Location | sed s/'Location\: '/''/`)
+			return shell(`${curl} | grep -i ^Location | sed s/'Location\: '/''/ | sed s/'location\: '/''/`)
 				.then(location => location.replace(baseUrl, '').trim());
 		}
 
