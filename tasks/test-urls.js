@@ -1,5 +1,6 @@
 
 'use strict';
+
 require('array.prototype.find');
 const path = require('path');
 const normalizeName = require('../lib/normalize-name');
@@ -54,7 +55,6 @@ class UrlTest {
 	}
 
 	run () {
-
 		this.checkUrl();
 
 		return new Promise(function (resolve, reject) {
@@ -68,6 +68,7 @@ class UrlTest {
 		if (this.expected.redirect) {
 			promise = this.getRedirect()
 				.then(redirect => {
+					console.log('cat', redirect, this.expected.redirect)
 					if (redirect !== this.expected.redirect) {
 						throw 'bad redirect: ' + redirect;
 					}
@@ -144,13 +145,12 @@ class UrlTest {
 
 		curl += this.method === 'POST' ? '-D-' : '-I';
 
-
 		if (this.method) {
 			curl += ` -X ${this.method}`;
 		}
 
 		if (this.body) {
-			curl += ` -d '${JSON.stringify(this.body)}'`;
+			curl += ` -d '${typeof this.body === 'object' ? JSON.stringify(this.body) : this.body	}'`;
 		}
 
 		if (this.headers) {
@@ -158,10 +158,16 @@ class UrlTest {
 				curl += ` -H '${h}: ${this.headers[h]}'`
 			}
 		}
-
 		if (typeof this.expected.redirect === 'number') {
-			return shell(`${curl} -o /dev/null -w "%{http_code}"`)
-				.then(status => Number(status))
+			if (this.method === 'POST') {
+				// When posting the entire headers are dumped into a file (see the '-D- flag above)'
+				// so we take the last line rather than the entire result
+				return shell(`${curl} -o /dev/null -w "%{http_code}"`)
+					.then(res => Number(res.split('\n').pop()))
+			} else {
+				return shell(`${curl} -o /dev/null -w "%{http_code}"`)
+					.then(status => Number(status))
+			}
 		} else {
 			return shell(`${curl} | grep -i ^Location | sed s/'Location\: '/''/ | sed s/'location\: '/''/`)
 				.then(location => location.replace(baseUrl, '').trim());
