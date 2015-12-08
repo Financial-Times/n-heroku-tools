@@ -38,8 +38,8 @@ class UrlTest {
 		this.url = opts.url;
 		this.timeout = opts.timeout;
 		this.headers = opts.headers || {};
-		this.method = opts.method || 'GET';
-		this.body = opts.body;
+		this.method = (opts.method || 'GET').toUpperCase();
+		this.body = typeof opts.body === 'object' ? JSON.stringify(opts.body) : opts.body;
 		this.expected = getExpectation(opts.expectation);
 		this.failures = [];
 		this.checkUrl = this.checkUrl.bind(this);
@@ -149,7 +149,7 @@ class UrlTest {
 		}
 
 		if (this.body) {
-			curl += ` -d '${typeof this.body === 'object' ? JSON.stringify(this.body) : this.body	}'`;
+			curl += ` -d '${this.body}'`;
 		}
 
 		if (this.headers) {
@@ -194,7 +194,7 @@ function testUrls (opts) {
 
 function task(opts) {
 	const appName = (opts.app) ? opts.app : 'ft-next-' + normalizeName(packageJson.name);
-	const urlConfig = require(path.join(process.cwd(), 'test/smoke.js'));
+	const urlConfig = require(path.join(process.cwd(), opts.configPath));
 	baseUrl = 'http://' + appName;
 	if (!/:|\./.test(appName)) {
 		baseUrl += '.herokuapp.com';
@@ -209,12 +209,14 @@ module.exports = function (program, utils) {
 		.command('test-urls [app]')
 		.description('Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist')
 		.option('-t, --throttle <n>', 'The maximum number of tests to run concurrently. default: 5')
+		.option('-c, --config', 'Path to config file, relative to cwd [default test/smoke]')
 		.action(function(app, options) {
 			task({
 				app: app,
 				urls: options.urls,
 				headers: options.headers,
 				timeout: options.timeout,
+				configPath: options.configPath || 'test/smoke',
 				throttle: options.throttle
 			}).catch(utils.exit);
 		});

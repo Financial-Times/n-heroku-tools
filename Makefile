@@ -5,8 +5,6 @@ IS = $(shell cat README.md)
 clean:
 	git clean -fxd
 
-
-
 verify:
 ifeq ($(SHOULD_BE),$(IS))
 	@echo "README.md up-to-date"
@@ -18,7 +16,7 @@ endif
 	./bin/next-build-tools.js verify --skip-layout-checks --skip-dotenv-check
 
 unit-test:
-	mocha -r loadvars.js
+	export PORT=5134; mocha -r loadvars.js
 
 test: verify unit-test
 
