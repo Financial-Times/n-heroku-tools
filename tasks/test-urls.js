@@ -68,7 +68,6 @@ class UrlTest {
 		if (this.expected.redirect) {
 			promise = this.getRedirect()
 				.then(redirect => {
-					console.log('cat', redirect, this.expected.redirect)
 					if (redirect !== this.expected.redirect) {
 						throw 'bad redirect: ' + redirect;
 					}
