@@ -14,7 +14,7 @@ const getLatestTag = () => {
 		.then(tagList => {
 			const latest = tagList.split('\n')
 				.filter(semver.valid)
-				.sort(semver.gt)
+				.sort(semver.compare)
 				.pop()
 
 			return latest ? latest.replace(/^v/, '') : null;
