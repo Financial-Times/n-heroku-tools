@@ -25,6 +25,13 @@
         "platform": "WINDOWS"
       }
     },
+    "chrome": {
+      "desiredCapabilities": {
+        "browserName": "chrome",
+        "version": "47.0",
+        "platform": "Windows 10"
+      }
+    },
     "chrome45": {
       "desiredCapabilities": {
         "browserName": "chrome",
@@ -65,6 +72,13 @@
         "browserName": "chrome",
         "version": "40.0",
         "platform": "Windows 7"
+      }
+    },
+    "firefox": {
+      "desiredCapabilities": {
+        "browserName": "firefox",
+        "version": "42.0",
+        "platform": "Windows 10"
       }
     },
     "firefox40": {
