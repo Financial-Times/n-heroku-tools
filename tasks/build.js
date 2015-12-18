@@ -97,7 +97,7 @@ gulp.task('build-worker', function() {
 });
 
 
-function task (opts) {
+function task(opts) {
 	isDev = opts.isDev;
 	let tasks = [];
 	if (!opts.skipSass) {
@@ -111,15 +111,15 @@ function task (opts) {
 	}
 	return Promise.all([
 			run(tasks, opts),
-			about()
+			opts.skipAbout || about()
 		])
 		.then(() => {
-			if (!opts.isDev) {
+			if (!opts.isDev && !opts.skipHash) {
 				return hashAssets();
 			}
 		})
 		.then(() => {
-			if (!opts.isDev) {
+			if (!opts.isDev && !opts.skipHaikro) {
 				console.log("Building the Heroku tarball");
 				return build({ project: process.cwd() });
 			}
@@ -135,9 +135,20 @@ module.exports = function (program, utils) {
 		.option('--watch-files-sass <globs>', `Comma separated globs of sass files to watch [${watchFiles.sass}]`, watchFiles.sass)
 		.option('--skip-js', 'skips compilation of JavaScript')
 		.option('--skip-sass', 'skips compilation of Sass')
+		.option('--skip-about', 'skips generation of about json')
+		.option('--skip-haikro', 'skips Haikro build')
+		.option('--skip-hash', 'skips asset hashing json file compilation')
+		.option('--main-js [filename]', 'overrides the main js file')
+		.option('--main-sass [filename]', 'overrides the main sass file')
 		.option('--worker', 'additionally builds Service Worker JavaScript')
 		.description('build javascript and css')
 		.action(function(options) {
+			if (options.mainScss) {
+				mainScssFile = options.mainScss;
+			}
+			if (options.mainJs) {
+				mainJsFile = options.mainJs;
+			}
 			task({
 				isDev: options.dev,
 				watch: options.watch,
@@ -145,6 +156,9 @@ module.exports = function (program, utils) {
 				watchFilesSass: options.watchFilesSass,
 				skipJs: options.skipJs,
 				skipSass: options.skipSass,
+				skipAbout: options.skipAbout,
+				skipHaikro: options.skipHaikro,
+				skipHash: options.skipHash,
 				worker: options.worker
 			}).catch(utils.exit);
 		});
