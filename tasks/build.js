@@ -114,7 +114,7 @@ function task(opts) {
 			opts.skipAbout || about()
 		])
 		.then(() => {
-			if (!opts.isDev) {
+			if (!opts.isDev && !opts.skipHash) {
 				return hashAssets();
 			}
 		})
@@ -137,6 +137,7 @@ module.exports = function (program, utils) {
 		.option('--skip-sass', 'skips compilation of Sass')
 		.option('--skip-about', 'skips generation of about json')
 		.option('--skip-haikro', 'skips Haikro build')
+		.option('--skip-hash', 'skips asset hashing json file compilation')
 		.option('--main-js [filename]', 'overrides the main js file')
 		.option('--main-sass [filename]', 'overrides the main sass file')
 		.option('--worker', 'additionally builds Service Worker JavaScript')
@@ -157,6 +158,7 @@ module.exports = function (program, utils) {
 				skipSass: options.skipSass,
 				skipAbout: options.skipAbout,
 				skipHaikro: options.skipHaikro,
+				skipHash: options.skipHash,
 				worker: options.worker
 			}).catch(utils.exit);
 		});
