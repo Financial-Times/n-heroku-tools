@@ -48,14 +48,15 @@ function task (opts) {
 
 		log.art.canoe();
 		log.success('IT FLOATS!');
-	}).catch(function(err){
+	}).catch(function(err) {
 		log.error('Man overboard', err);
-		if(opts.destroy){
-			return destroy({app:testAppName, verbose:true}).then(function(){
-				throw err;
-			});
-		}else{
-			return Promise.resolve(null);
+		if (opts.destroy) {
+			return destroy({ app: testAppName, verbose: true })
+				.then(function() {
+					throw err;
+				});
+		} else {
+			throw err;
 		}
 
 	});
