@@ -58,6 +58,7 @@ function run(tasks, opts) {
 gulp.task('build-sass', function() {
 	return obt.build.sass(gulp, {
 			sass: sourceFolder + mainScssFile,
+			buildCss: mainScssFile.replace('.scss', '.css'),
 			buildFolder: buildFolder,
 			env: isDev ? 'development' : 'production',
 			sourcemaps: true
@@ -143,8 +144,8 @@ module.exports = function (program, utils) {
 		.option('--worker', 'additionally builds Service Worker JavaScript')
 		.description('build javascript and css')
 		.action(function(options) {
-			if (options.mainScss) {
-				mainScssFile = options.mainScss;
+			if (options.mainSass) {
+				mainScssFile = options.mainSass;
 			}
 			if (options.mainJs) {
 				mainJsFile = options.mainJs;
