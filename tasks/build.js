@@ -58,7 +58,7 @@ function run(tasks, opts) {
 gulp.task('build-sass', function() {
 	return obt.build.sass(gulp, {
 			sass: sourceFolder + mainScssFile,
-			buildCss: mainScssFile.replace('.scss', '.css'),
+			buildCss: mainScssFile.replace(/\.scss$/, '.css'),
 			buildFolder: buildFolder,
 			env: isDev ? 'development' : 'production',
 			sourcemaps: true
