@@ -4,6 +4,7 @@
 var gulp = require('gulp');
 require('gulp-watch');
 
+var fs = require('fs');
 var obt = require('origami-build-tools');
 var build = require('haikro/lib/build');
 var about = require('../lib/about');
@@ -82,6 +83,12 @@ function buildJs(jsFile) {
 	})
 	.on('end', function() {
 		console.log('build-js completed for ' + jsFile);
+
+		const bytes = fs.statSync(`${buildFolder}/${jsFile}`).size;
+		// EE roaming charge, Jan 2016
+		const costPerMb = 1.25
+		console.log(`Bundle size is ${Math.ceil(bytes / 1000)}kb`)
+		console.log(`(that could cost £${(costPerMb * bytes / 1000000).toFixed(2)} to download while roaming)`);
 	})
 	.on('error', function(err) {
 		console.warn('build-js errored for ' + jsFile);
