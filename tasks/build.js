@@ -17,6 +17,9 @@ var buildFolder = './public/';
 var isDev = false;
 const hashAssets = require('../lib/hash-assets');
 
+// EE roaming charge, Jan 2016
+const costPerMb = 1.25
+
 // comma separated globs
 const watchFiles = {
 	js: './client/**/*.js',
@@ -57,15 +60,22 @@ function run(tasks, opts) {
 }
 
 gulp.task('build-sass', function() {
+	const cssFile = mainScssFile.replace(/\.scss$/, '.css');
+
 	return obt.build.sass(gulp, {
 			sass: sourceFolder + mainScssFile,
-			buildCss: mainScssFile.replace(/\.scss$/, '.css'),
+			buildCss: cssFile,
 			buildFolder: buildFolder,
 			env: isDev ? 'development' : 'production',
 			sourcemaps: true
 		})
 		.on('end', function() {
 			console.log('build-sass completed');
+
+			const bytes = fs.statSync(`${buildFolder}/${cssFile}`).size;
+
+			console.log(`Bundle size is ${Math.ceil(bytes / 1000)}kb`)
+			console.log(`(that could cost £${(costPerMb * bytes / 1000000).toFixed(2)} to download while roaming)`);
 		})
 		.on('error', function(err) {
 			console.warn('build-sass errored');
@@ -85,8 +95,7 @@ function buildJs(jsFile) {
 		console.log('build-js completed for ' + jsFile);
 
 		const bytes = fs.statSync(`${buildFolder}/${jsFile}`).size;
-		// EE roaming charge, Jan 2016
-		const costPerMb = 1.25
+
 		console.log(`Bundle size is ${Math.ceil(bytes / 1000)}kb`)
 		console.log(`(that could cost £${(costPerMb * bytes / 1000000).toFixed(2)} to download while roaming)`);
 	})
