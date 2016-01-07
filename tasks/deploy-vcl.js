@@ -66,7 +66,7 @@ function task (folder, opts) {
 			var service = services.filter(function(svc) {
 				return svc.id === serviceId ? true : false;
 			})[0];
-			activeVersion = service.active_version;
+			activeVersion = service.version;
 			debug('Cloning active version %s of %s', activeVersion, service.name);
 			return fastly.cloneVersion(activeVersion);
 		})
