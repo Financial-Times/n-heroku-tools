@@ -1,0 +1,25 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/wheresrhys/.nvm/versions/node/v4.1.0/bin/node',
+1 verbose cli   '/Users/wheresrhys/.nvm/versions/node/v4.1.0/bin/npm',
+1 verbose cli   'view',
+1 verbose cli   '--json' ]
+2 info using npm@2.14.3
+3 info using node@v4.1.0
+4 verbose stack Error: Invalid version: "minor"
+4 verbose stack     at Object.module.exports.fixVersionField (/Users/wheresrhys/.nvm/versions/node/v4.1.0/lib/node_modules/npm/node_modules/normalize-package-data/lib/fixer.js:186:13)
+4 verbose stack     at /Users/wheresrhys/.nvm/versions/node/v4.1.0/lib/node_modules/npm/node_modules/normalize-package-data/lib/normalize.js:32:38
+4 verbose stack     at Array.forEach (native)
+4 verbose stack     at normalize (/Users/wheresrhys/.nvm/versions/node/v4.1.0/lib/node_modules/npm/node_modules/normalize-package-data/lib/normalize.js:31:15)
+4 verbose stack     at final (/Users/wheresrhys/.nvm/versions/node/v4.1.0/lib/node_modules/npm/node_modules/read-package-json/read-json.js:338:5)
+4 verbose stack     at then (/Users/wheresrhys/.nvm/versions/node/v4.1.0/lib/node_modules/npm/node_modules/read-package-json/read-json.js:113:5)
+4 verbose stack     at /Users/wheresrhys/.nvm/versions/node/v4.1.0/lib/node_modules/npm/node_modules/read-package-json/read-json.js:300:12
+4 verbose stack     at FSReqWrap.readFileAfterClose [as oncomplete] (evalmachine.<anonymous>:380:3)
+5 verbose cwd /Users/wheresrhys/Projects/next/build-tools
+6 error Darwin 14.5.0
+7 error argv "/Users/wheresrhys/.nvm/versions/node/v4.1.0/bin/node" "/Users/wheresrhys/.nvm/versions/node/v4.1.0/bin/npm" "view" "--json"
+8 error node v4.1.0
+9 error npm  v2.14.3
+10 error Invalid version: "minor"
+11 error If you need help, you may report this error at:
+11 error     <https://github.com/npm/npm/issues>
+12 verbose exit [ 1, true ]
