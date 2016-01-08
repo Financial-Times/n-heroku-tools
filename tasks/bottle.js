@@ -90,7 +90,12 @@ function fetchVersions () {
 		// get version from npm registry
 		shell('npm view --json')
 			.then(info => {
-				return JSON.parse(info).versions.pop();
+				const versions = JSON.parse(info).versions
+				if (Array.isArray(versions)) {
+					return versions.pop();
+				} else if (typeof versions === 'string') {
+					return versions;
+				}
 			})
 			.catch(() => null),
 		// get version from github tags (aka bower version)
@@ -135,6 +140,9 @@ function fetchVersions () {
 
 function getFixedVersion (currentVersion, proposedVersion) {
 	if (proposedVersion) {
+		if (['major', 'minor', 'patch'].indexOf(proposedVersion) > -1) {
+			return;
+		}
 		if (currentVersion) {
 			if (proposedVersion === 'v1') {
 				if (semver.gt(currentVersion, '1.0.0')) {
@@ -178,6 +186,7 @@ function getFixedVersion (currentVersion, proposedVersion) {
 }
 
 function bottle(versions, increment, forceNpm) {
+	console.log(versions)
 	console.log('Verifying version consistency');
 	const npmVersion = versions[0];
 	const tagVersion = versions[1];
