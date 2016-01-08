@@ -11,8 +11,10 @@ const utils = {
 	},
 
 	exit: err => {
-		console.log(err);
-		console.log(err.stack);
+		console.error(`\u001b[31m${err}\u001b[91m`);
+		if (err.stack) {
+			console.error(err.stack);
+		}
 		process.exit(1);
 	}
 };
