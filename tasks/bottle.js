@@ -186,7 +186,6 @@ function getFixedVersion (currentVersion, proposedVersion) {
 }
 
 function bottle(versions, increment, forceNpm) {
-	console.log(versions)
 	console.log('Verifying version consistency');
 	const npmVersion = versions[0];
 	const tagVersion = versions[1];
