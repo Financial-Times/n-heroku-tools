@@ -259,7 +259,6 @@ function bowerBottle (increment, currentVersion, fixedVersion) {
 
 	console.log('Publishing as bower component');
 	const tag = fixedVersion || semver.inc(currentVersion, increment);
-	return;
 	return shell(`git tag v${tag}`)
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(getLatestTag)
