@@ -45,11 +45,12 @@ function lastMasterBuild(project) {
 function task (options) {
 	var apps = options.apps;
 	var serves = options.serves;
+	var allApps = options.all;
 
 	return keys()
 		.then(function(env) {
 			circleToken = env.CIRCLECI_REBUILD_KEY;
-			if (apps.length === 0) {
+			if (apps.length === 0 && allApps) {
 				return fetch('http://next-registry.ft.com/services')
 					.then(fetchres.json)
 					.then(function(data) {
@@ -72,6 +73,9 @@ function task (options) {
 							})
 							.filter(function(repo) { return repo; });
 					});
+			} else {
+				console.log('Use the --all flag to rebuild all apps or supply a specific app name.')
+				process.exit(1);
 			}
 		})
 		.then(function() {
@@ -99,12 +103,14 @@ function task (options) {
 module.exports = function (program, utils) {
 	program
 		.command('rebuild [apps...]')
+		.option('--all', 'Trigger rebuilds of all apps.')
 		.option('--serves <type>', 'Trigger rebuilds of apps where type is served.')
 		.description('Trigger a rebuild of the latest master on Circle')
 		.action(function(apps, opts) {
 			return task({
 				apps: apps,
-				serves: opts.serves
+				serves: opts.serves,
+				all: opts.all
 			}).catch(utils.exit);
 		});
 };
