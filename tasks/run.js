@@ -101,9 +101,33 @@ function runRouter(opts) {
 		PORT: opts.PORT
 	};
 
+	var https = false;
+
+	// for HTTPS we expect subargs as [--https,path/to/cert.pem,path/to/key.pem]
+	if (opts.subargs) {
+		
+		var args = opts.subargs.replace(/^\[/, '').replace(/]$/, '').split(',');
+
+		var https = args.length && args[0].indexOf('https') !== -1 ? args[0] : false;
+
+		// If https, check if the user provided a certificate and key
+		if (https) {
+			envVars.HTTPS = https;
+
+			// Only use the cert/key in the arguments if both provided
+			// Fallback to defaults if not
+			if (args.length > 2) {
+				envVars.CERT = args[1];
+				envVars.CERT_KEY = args[2];
+			}
+		}
+	}
+
 	envVars[normalizeName(packageJson.name, { version: false })] = opts.localPort;
 	return configureAndSpawn(envVars, function (env) {
-		return ['next-router', { env: env }];
+
+		var bin = https ? 'next-router-https' : 'next-router';
+		return [bin, { env: env }];
 	});
 }
 
@@ -132,7 +156,7 @@ function task (opts) {
 					.then(function() {
 						return Promise.all([
 							runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
-							runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony })
+							runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony, subargs: opts.subargs })
 						]);
 					});
 			}
