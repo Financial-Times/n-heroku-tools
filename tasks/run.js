@@ -101,9 +101,18 @@ function runRouter(opts) {
 		PORT: opts.PORT
 	};
 
+	// Only use the cert/key in the arguments if both provided
+	// Fallback to defaults if not
+	if (opts.https && opts.cert && opts.key) {
+		envVars.CERT = opts.cert;
+		envVars.CERT_KEY = opts.key;
+	}
+
 	envVars[normalizeName(packageJson.name, { version: false })] = opts.localPort;
 	return configureAndSpawn(envVars, function (env) {
-		return ['next-router', { env: env }];
+
+		var bin = opts.https ? 'next-router-https' : 'next-router';
+		return [bin, { env: env }];
 	});
 }
 
@@ -132,7 +141,7 @@ function task (opts) {
 					.then(function() {
 						return Promise.all([
 							runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
-							runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony })
+							runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key })
 						]);
 					});
 			}
@@ -150,6 +159,9 @@ module.exports = function (program, utils) {
 		.option('-s, --script <file>', 'Runs a single javascript file')
 		.option('--subargs [subargs]', 'Sub arguments to pass to a single script', /^\[.+]$/)
 		.option('--no-nodemon', 'Do not run through nodemon')
+		.option('--https', 'Run with HTTPS')
+		.option('--cert <file>', 'Specify a certificate to use with HTTPS. Use with --https.')
+		.option('--key <file>', 'Specify a certificate key to use with HTTPS. Use with --https.')
 		.action(function(opts){
 			task(opts).catch(utils.exit);
 		});
