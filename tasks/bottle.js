@@ -257,7 +257,7 @@ Credentials are stored in lastpass. Ask somebody about getting access if you don
 function bowerBottle (increment, currentVersion, fixedVersion) {
 
 	console.log('Publishing as bower component');
-	const tag = fixedVersion || semver.inc(currentVersion, increment);
+	const tag = fixedVersion || semver.inc(currentVersion, increment) || '1.0.0';
 	return shell(`git tag v${tag}`)
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(getLatestTag)
