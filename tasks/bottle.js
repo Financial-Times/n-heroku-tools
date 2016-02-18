@@ -178,6 +178,8 @@ function getFixedVersion (currentVersion, proposedVersion) {
 				return /^v/.test(proposedVersion) ? proposedVersion : ('v' + proposedVersion);
 
 			}
+		} else if (proposedVersion === 'v1') {
+			return 'v1.0.0';
 		}
 
 
@@ -257,7 +259,11 @@ Credentials are stored in lastpass. Ask somebody about getting access if you don
 function bowerBottle (increment, currentVersion, fixedVersion) {
 
 	console.log('Publishing as bower component');
-	const tag = fixedVersion || semver.inc(currentVersion, increment) || '1.0.0';
+	const tag = fixedVersion || semver.inc(currentVersion, increment);
+	if (!tag) {
+		throw `Looks like it's trying to publish an invalid tag: ${tag}.
+You might want to check how you've set up this bower component.`;
+	}
 	return shell(`git tag v${tag}`)
 		.then(() => shell('git push --tags origin HEAD'))
 		.then(getLatestTag)
