@@ -51,7 +51,7 @@ function runLocal(opts) {
 		if(opts.script) {
 			args.push(opts.script);
 		} else {
-			args.push('server/app.js');
+			args.push(packageJson.main || 'server/app.js');
 		}
 
 		if (opts.harmony) {
