@@ -30,7 +30,7 @@ function task (opts) {
 		.then(() => fetch('https://next-registry.ft.com/v2/'))
 		.then(fetchres.json)
 		.then(data => {
-			const serviceData = data.filter(service => service.name === source);
+			const serviceData = data.find(service => service.name === source);
 			const processInfo = serviceData.processes;
 
 			if (!processInfo) {
@@ -38,8 +38,8 @@ function task (opts) {
 			}
 
 			const processProfiles = Object.keys(processInfo).map(process => {
-					return '=' + (opts.minimal ? 1 : process.scale)
-						+ ':' + (opts.minimal ? 'standard-1X' : process.size);
+					return '=' + (opts.minimal ? 1 : processInfo[process].scale)
+						+ ':' + (opts.minimal ? 'standard-1X' : processInfo[process].size);
 				});
 
 			return shellpromise('heroku ps:scale ' + processProfiles.join(' ') + ' --app ' + target, { verbose: true });
