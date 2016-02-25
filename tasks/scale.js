@@ -39,7 +39,7 @@ function task (opts) {
 
 			const processProfiles = Object.keys(processInfo).map(process => {
 					return '=' + (opts.minimal ? 1 : process.scale)
-						+ ':' + (opts.minimal ? 'standard-1X' : process.size));
+						+ ':' + (opts.minimal ? 'standard-1X' : process.size);
 				});
 
 			return shellpromise('heroku ps:scale ' + processProfiles.join(' ') + ' --app ' + target, { verbose: true });
