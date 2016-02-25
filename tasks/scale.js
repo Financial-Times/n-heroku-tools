@@ -25,41 +25,22 @@ function task (opts) {
 		});
 	}
 
-	function getProcessInfo(serviceData) {
-		if (serviceData && serviceData.versions) {
-			return serviceData.versions[Object.keys(serviceData.versions).find(function (versionNumber) {
-				return serviceData.versions[versionNumber].isPrimary;
-			})].processes;
-		}
-	}
-
 	console.log('Scaling ' + target + ' using service registry information for ' + source);
 	return herokuAuthToken()
-		.then(function() {
-			return fetch('https://next-registry.ft.com/');
-		})
+		.then(() => fetch('https://next-registry.ft.com/v2/'))
 		.then(fetchres.json)
-		.then(function(data) {
-			var serviceData = data.filter(function(service) {
-				return service.name === source;
-			});
-			serviceData = serviceData.length ? serviceData[0] : null;
-
-			var processInfo = getProcessInfo(serviceData);
+		.then(data => {
+			const serviceData = data.find(service => service.name === source);
+			const processInfo = serviceData.processes;
 
 			if (!processInfo) {
 				throw new Error('Could not get process info for ' + serviceData.name + '. Please check the service registry.');
 			}
 
-			var processProfiles = [];
-
-			for (var process in processInfo) {
-				if (processInfo.hasOwnProperty(process)) {
-					processProfiles.push(process
-						+ '=' + (opts.minimal ? 1 : processInfo[process].scale)
-						+ ':' + (opts.minimal ? 'standard-1X' : processInfo[process].size));
-				}
-			}
+			const processProfiles = Object.keys(processInfo).map(process => {
+					return '=' + (opts.minimal ? 1 : processInfo[process].scale)
+						+ ':' + (opts.minimal ? 'standard-1X' : processInfo[process].size);
+				});
 
 			return shellpromise('heroku ps:scale ' + processProfiles.join(' ') + ' --app ' + target, { verbose: true });
 
