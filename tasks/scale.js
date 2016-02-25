@@ -27,7 +27,7 @@ function task (opts) {
 
 	console.log('Scaling ' + target + ' using service registry information for ' + source);
 	return herokuAuthToken()
-		.then(() => fetch('https://next-registry.ft.com/v2'))
+		.then(() => fetch('https://next-registry.ft.com/v2/'))
 		.then(fetchres.json)
 		.then(data => {
 			const serviceData = data.filter(service => service.name === source);
