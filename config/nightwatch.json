@@ -123,6 +123,13 @@
         "platform": "Windows 7"
       }
     },
+    "edge": {
+      "desiredCapabilities": {
+        "browserName": "MicrosoftEdge",
+        "version": "20.10240",
+        "platform": "Windows 10"
+      }
+    },
     "ie11": {
       "desiredCapabilities": {
         "browserName": "internet explorer",
