@@ -20,11 +20,11 @@ const getLatestTag = () => {
 				.pop()
 
 			return latest ? latest.replace(/^v/, '') : null;
-		})
+		});
 }
 
 function npmSetVersion (version) {
-	console.log('Setting package.json version')
+	console.log('Setting package.json version');
 	const packageJson = require(path.join(process.cwd(), 'package.json'));
 	packageJson.version = version.substr(1);
 
@@ -32,7 +32,7 @@ function npmSetVersion (version) {
 		.then(() => shell(`git add package.json`))
 		.then(() => shell(`git commit -m 'version ${version}'`))
 		.then(() => shell(`git tag ${version}`))
-		.then(() => shell(`git push origin HEAD`))
+		.then(() => shell(`git push origin HEAD`));
 }
 
 function checkIncrement(increment, forceNpm) {
@@ -75,12 +75,16 @@ function verifyBranch () {
 				throw 'Components should only be published from the master branch, unless releasing a beta version';
 			} else {
 				return shell('git remote update')
-					.then(() => shell('git status -uno | grep up-to-date'))
-					.catch(() => {
-						throw 'Your branch is either ahead or behind origin/master. Please push or pull before attempting a release';
+					.catch(error => {
+						console.log(error);
+						throw error;
 					})
+					.then(() => shell('git status -uno | grep up-to-date'))
+						.catch(() => {
+							throw 'Your branch is either ahead or behind origin/master. Please push or pull before attempting a release';
+						});
 			}
-		})
+		});
 }
 
 function fetchVersions () {
