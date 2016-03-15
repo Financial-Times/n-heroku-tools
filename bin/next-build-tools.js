@@ -4,6 +4,7 @@
 require('isomorphic-fetch');
 
 var program = require('commander');
+var logger = require('../lib/logger');
 
 const utils = {
 	list: val => {
@@ -11,9 +12,9 @@ const utils = {
 	},
 
 	exit: err => {
-		console.error(`\u001b[31m${err}\u001b[91m`);
+		logger.error(err);
 		if (err.stack) {
-			console.error(err.stack);
+			logger.error(err.stack);
 		}
 		process.exit(1);
 	}
