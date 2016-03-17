@@ -24,13 +24,13 @@
     rebuild [options] [apps...]                         Trigger a rebuild of the latest master on Circle
     test-urls [options] [app]                           Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
     log [options]                                       Logs to SalesForce™®©
-    bottle [options] [increment]                        releases a major, minor or patch version of a next component (similar to npm version + npm publish)
+    bottle [options] [increment]                        releases a major, minor, patch or prerelease of a next component (similar to npm version + npm publish)
     ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
     float [options]                                     Deploys code to a test app and checks it doesn't die
     drydock [options] [name]                            Creates a new pipeline with a staging and EU production app
     emergency-deploy [options]                          Run the deploy steps that CI would run, allowing you deploy locally
     hash-assets                                         Generates an asset-hashes.json file
-    *                                                 
+    *                                                   
 
   Options:
 

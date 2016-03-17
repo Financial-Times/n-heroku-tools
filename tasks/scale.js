@@ -38,7 +38,7 @@ function task (opts) {
 			}
 
 			const processProfiles = Object.keys(processInfo).map(process => {
-					return '=' + (opts.minimal ? 1 : processInfo[process].scale)
+					return process + '=' + (opts.minimal ? 1 : processInfo[process].scale)
 						+ ':' + (opts.minimal ? 'standard-1X' : processInfo[process].size);
 				});
 
