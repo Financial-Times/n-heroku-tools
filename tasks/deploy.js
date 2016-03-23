@@ -4,6 +4,7 @@ var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
 var deploy = require('haikro/lib/deploy');
 var normalizeName = require('../lib/normalize-name');
+var enablePreboot = require('../lib/enable-preboot');
 var waitForOk = require('../lib/wait-for-ok');
 var denodeify = require('denodeify');
 var fs = require('fs');
@@ -53,7 +54,7 @@ function task (opts) {
 			if (opts.skipEnablePreboot) {
 				console.log("Skipping enable preboot step");
 			} else {
-				console.warn('Enabling of preboot is deprecated because Heroku have changed the API and we had already decided to change the approach');
+				return enablePreboot({ app: name });
 			}
 		})
 		.then(function() {
