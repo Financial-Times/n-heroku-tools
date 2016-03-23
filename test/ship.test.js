@@ -30,14 +30,12 @@ describe('tasks/ship', function(){
 	var mockConfigure = stubbedPromise(null, 'task');
 	var mockDeploy = stubbedPromise(null, 'task');
 	var mockPipelines = {getApps: stubbedPromise(mockApps), supported:stubbedPromise(true), promote:stubbedPromise(null)};
-	var mockEnablePrebook = stubbedPromise(null);
 
 	before(function(){
 		mockery.registerMock('./configure', mockConfigure);
 		mockery.registerMock('./deploy', mockDeploy);
 		mockery.registerMock('./scale', mockScale);
 		mockery.registerMock('../lib/pipelines', mockPipelines);
-		mockery.registerMock('../lib/enable-preboot', mockEnablePrebook);
 		mockery.enable({warnOnUnregistered:false,useCleanCache:true});
 		ship = require('../tasks/ship').task;
 	});
