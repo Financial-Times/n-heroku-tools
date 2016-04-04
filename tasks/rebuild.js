@@ -85,7 +85,7 @@ function task (options) {
 					.then(function(data) {
 						var lastBuild = data[0];
 						if (lastBuild.status !== 'running' && lastBuild.status !== 'not_running') {
-							console.log("Clearing cache and triggering rebuild of last master build of " + app + " (" + lastBuild.committer_name + ": " + lastBuild.subject.replace(/\n/g, " ") + ")");
+							console.log(`Clearing cache and triggering rebuild of last master build of ${app} ( ${lastBuild.committer_name}: ${lastBuild.subject ? lastBuild.subject.replace(/\n/g, " ") : 'No subject'})`);
 							return clearCache(app).then(function() {
 									rebuildMasterBuild(app);
 								});
