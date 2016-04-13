@@ -233,7 +233,7 @@ need to correct previous releases`;
 function npmBottle (increment, fixedVersion, newModule) {
 	console.log('Publishing as npm module');
 	let dots = setInterval(() => process.stdout.write('.'), 700)
-	return shell('npm whoami')
+	return shell('npm whoami --registry http://registry.npmjs.org')
 		.then(user => {
 			if (user.trim() !== 'financial-times') {
 				throw 'Wrong user';
@@ -251,7 +251,7 @@ Credentials are stored in lastpass. Ask somebody about getting access if you don
 					.then(() => shell('git push --tags origin HEAD'))
 			}
 		})
-		.then(() => shell('npm publish'))
+		.then(() => shell('npm publish --registry http://registry.npmjs.org'))
 		.then(() => clearInterval(dots))
 		.then(getLatestTag)
 		.then(tag => {
