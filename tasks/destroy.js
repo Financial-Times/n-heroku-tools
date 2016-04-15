@@ -7,13 +7,13 @@ function task (options) {
 	var verbose = options.verbose;
 	var promise = Promise.resolve();
 	if (verbose) {
-		promise = promise.then(function() {
+		promise = promise.then(function () {
 
 				// `|| echo` to stop this failing failing builds
 				return spawn('heroku logs -a ' + app + ' || echo', { verbose: true });
 			});
 	}
-	promise = promise.then(function() {
+	promise = promise.then(function () {
 			return spawn('heroku destroy -a ' + app + ' --confirm ' + app, { verbose: true });
 		});
 	return promise;
@@ -24,7 +24,7 @@ module.exports = function (program, utils) {
 		.command('destroy [app]')
 		.option('--skip-logs', 'skips trying to output the logs before destroying the app')
 		.description('deletes the app from heroku')
-		.action(function(app, options) {
+		.action(function (app, options) {
 			if (app) {
 				task({
 					app: app,

@@ -58,7 +58,7 @@ function task (opts) {
 		}
 
 		log.info('Scale staging app to 1 dyno');
-		yield scale({target:apps.staging, scale:'web=1'}).catch(function(){
+		yield scale({target:apps.staging, scale:'web=1'}).catch(function (){
 			log.info('Failed to scale up staging app - is this the first run?')
 		});
 
@@ -105,7 +105,7 @@ module.exports = function (program, utils) {
 		.option('-m --multiregion', 'Will expect a US app as well as an EU one')
 		.option('-l --no-logging', "Don't log to Salesforce™®©")
 		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
-		.action(function(options){
+		.action(function (options){
 			if (!options.splunk) {
 				console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
 			}

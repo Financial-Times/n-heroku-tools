@@ -2,7 +2,7 @@
 'use strict';
 
 var denodeify = require('denodeify');
-var exec = denodeify(require('child_process').exec, function(err, stdout, stderr) {
+var exec = denodeify(require('child_process').exec, function (err, stdout, stderr) {
 	console.log(stdout);
 	console.log(stderr);
 	return [err, stdout];
@@ -33,7 +33,7 @@ module.exports = function (program, utils) {
 		.command('purge [url]')
 		.option('-s, --soft <soft>', 'Perform a "Soft Purge (will invalidate the content rather than remove it"')
 		.description('purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key')
-		.action(function(url, options){
+		.action(function (url, options){
 			if (url) {
 				task(url, options).catch(utils.exit);
 			} else {

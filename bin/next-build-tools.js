@@ -45,7 +45,7 @@ require('../tasks/emergency-deploy')(program, utils);
 program
 	.command('*')
 	.description('')
-	.action(function(app) {
+	.action(function (app) {
 		utils.exit("The command ‘" + app + "’ is not known");
 	});
 

@@ -290,7 +290,7 @@ module.exports = function (program, utils) {
 		.command('bottle [increment]')
 		.option('--npm', 'Force publishing of new component to npm')
 		.description('releases a major, minor, patch or prerelease of a next component (similar to npm version + npm publish)')
-		.action(function(increment, options) {
+		.action(function (increment, options) {
 			task(increment, options.npm)
 				.catch(utils.exit);
 		});

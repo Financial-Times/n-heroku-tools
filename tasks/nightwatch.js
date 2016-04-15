@@ -18,12 +18,12 @@ function task (opts) {
 	var config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
 	var args = [ '--env', env, '--test', test, '--config', config ];
 
-	return new Promise(function(resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		var nightwatch = spawn('nightwatch', args, { cwd: process.cwd() });
 		nightwatch.stdout.on('data', toStdOut);
 		nightwatch.stderr.on('data', toStdErr);
 		nightwatch.on('error', reject);
-		nightwatch.on('close', function(code, signal) {
+		nightwatch.on('close', function (code, signal) {
 			if (code === 0) {
 				resolve(0);
 			} else {
@@ -39,7 +39,7 @@ module.exports = function (program, utils) {
 		.option('-c, --config <config>', 'The location of the nightwatch.json, defaults to Next Build Tools nightwatch.json')
 		.option('-e, --env <env>', 'The location of the nightwatch.json, defaults to Next Build Tools defined environments')
 		.description('runs nightwatch with some sensible defaults')
-		.action(function(test, options) {
+		.action(function (test, options) {
 			task({
 				test: test,
 				env: options.env,

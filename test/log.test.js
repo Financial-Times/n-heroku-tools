@@ -27,29 +27,29 @@ fetchMock.registerRoute([
 	}
 ]);
 
-describe('Logs', function() {
+describe('Logs', function () {
 
-	before(function() {
+	before(function () {
 		fetchMock.mock();
 	});
 
-	after(function() {
+	after(function () {
 		fetchMock.restore();
 	});
 
-	it('Should make a call to the API', function() {
+	it('Should make a call to the API', function () {
 		return file.open({
 			summary: "test summary",
 			environment: "Production",
 			name: "ft-next-test-app",
 			gateway: 'mashery'
 		})
-			.then(function(id) {
+			.then(function (id) {
 				expect(id).to.equal('my-salesforce-id');
 			})
 	});
 
-	it('Should be able get the email of the dev', function() {
+	it('Should be able get the email of the dev', function () {
 		process.env.CIRCLE_USERNAME = 'leggsimon'
 		return file.open({
 			summary: "test summary",
@@ -57,7 +57,7 @@ describe('Logs', function() {
 			name: "ft-next-test-app",
 			gateway: 'mashery'
 		})
-			.then(function() {
+			.then(function () {
 				expect(fetchMock.calls('makeKonstructorCall')[1][1].body).to.contain('simon.legg%40ft.com');
 			})
 	});

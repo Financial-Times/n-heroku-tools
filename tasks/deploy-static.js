@@ -17,7 +17,7 @@ function task (opts) {
 	}
 
 	var files = opts.files
-		.filter(function(file) {
+		.filter(function (file) {
 			return !lstatSync(file).isDirectory();
 		});
 
@@ -32,9 +32,9 @@ function task (opts) {
 
 	var s3bucket = new aws.S3({ params: { Bucket: bucket } });
 
-	return Promise.all(files.map(function(file) {
+	return Promise.all(files.map(function (file) {
 		return readFile(file)
-			.then(function(content) {
+			.then(function (content) {
 				file = path.relative(process.cwd(), file);
 				var key = file;
 
@@ -45,14 +45,14 @@ function task (opts) {
 				key = path.join(destination, key);
 
 				console.log("About to upload " + file + " to " + key);
-				return new Promise(function(resolve, reject) {
+				return new Promise(function (resolve, reject) {
 					s3bucket.upload({
 						Key: key,
 						ContentType: opts.contentType || determineContentType(file),
 						ACL: 'public-read',
 						Body: content,
 						CacheControl: opts.cacheControl || (opts.cache ? 'public, max-age=31536000' : undefined)
-					}, function(err, data) {
+					}, function (err, data) {
 						if (err) {
 							reject(err);
 						} else {
@@ -60,7 +60,7 @@ function task (opts) {
 						}
 					});
 				})
-					.then(function() {
+					.then(function () {
 						console.log("Successfully uploaded: " + key);
 					});
 			});
@@ -78,7 +78,7 @@ module.exports = function (program, utils) {
 		.option('--no-cache', 'Optionally don\'t set a far future cache')
 		.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
 		.option('--content-type <contentType>', 'Optionally specify a content type value')
-		.action(function(file, files, opts) {
+		.action(function (file, files, opts) {
 			files.unshift(file);
 			var region = opts.region || 'eu-west-1';
 			var bucket = opts.bucket || 'ft-next-qa';

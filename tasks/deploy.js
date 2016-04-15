@@ -7,7 +7,7 @@ var normalizeName = require('../lib/normalize-name');
 var waitForOk = require('../lib/wait-for-ok');
 var denodeify = require('denodeify');
 var fs = require('fs');
-var exists = denodeify(fs.exists, function(exists) { return [undefined, exists]; });
+var exists = denodeify(fs.exists, function (exists) { return [undefined, exists]; });
 var commit = require('../lib/commit');
 var log = require('../lib/log');
 
@@ -22,7 +22,7 @@ function task (opts) {
 		commit(),
 		exists(process.cwd() + '/.haikro-cache/slug.tgz')
 	])
-		.then(function(results) {
+		.then(function (results) {
 			token = results[0];
 			hash = results[1].trim();
 			var hasAbout = results[2];
@@ -30,7 +30,7 @@ function task (opts) {
 				throw new Error("/.haikro-cache/slug.tgz must be generated during the build step.  Make sure your app implements `make build-production` that contains all the build steps including `nbt build`");
 			}
 		})
-		.then(function() {
+		.then(function () {
 			if (opts.log) {
 				var environment = name.indexOf('branch') > -1 ? 'Test': 'Production';
 				console.log("Logging this deploy to CMDB");
@@ -40,23 +40,23 @@ function task (opts) {
 					name: packageJson.name,
 					gateway: opts.logGateway
 				})
-					.then(function(sfId) {
+					.then(function (sfId) {
 						salesForceReleaseId = sfId;
 					})
-					.catch(function(err) {
+					.catch(function (err) {
 						console.log("Logging to SalesForce failed!  Check `" + packageJson.name + "` exists in CMDB.  If you've only just created an app try adding `--skip-logging` to `nbt deploy`");
 						throw err;
 					});
 			}
 		})
-		.then(function() {
+		.then(function () {
 			if (opts.skipEnablePreboot) {
 				console.log("Skipping enable preboot step");
 			} else {
 				console.warn('Enabling of preboot is deprecated because Heroku have changed the API and we had already decided to change the approach');
 			}
 		})
-		.then(function() {
+		.then(function () {
 			console.log('Next Build Tools going to deploy to ' + name);
 			return deploy({
 				app: name,
@@ -76,14 +76,14 @@ function task (opts) {
 				console.log("Skipping gtg check. (Note: gtg is always skipped if preboot is turned on to avoid false positives)");
 			}
 		})
-		.then(function() {
+		.then(function () {
 			if (opts.log) {
 				return log.close(salesForceReleaseId, { gateway: opts.logGateway });
 			}
-		}, function(err) {
+		}, function (err) {
 			if (opts.log) {
 				return log.close(salesForceReleaseId, { gateway: opts.logGateway, closeCategory: 'Rejected' })
-					.then(function() {
+					.then(function () {
 						console.log("An error has occurred", err);
 						throw err;
 					});
@@ -101,7 +101,7 @@ module.exports = function (program, utils) {
 		.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', utils.list)
 		.option('--skip-logging', 'Skips trying to log to SalesForce')
 		.option('--log-gateway [log-gateway]', 'Which log gateway to use: mashery, internal or konstructor')
-		.action(function(app, options) {
+		.action(function (app, options) {
 
 			if (options.gtgUrls) {
 				throw 'Configuring gtg urls is now supported in a separate task: nbt test-urls';

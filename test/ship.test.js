@@ -4,7 +4,7 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const co = require('co');
 
-describe('tasks/ship', function(){
+describe('tasks/ship', function (){
 
 	function stubbedPromise(value, property){
 		const stub = sinon.stub().returns(Promise.resolve(value));
@@ -31,7 +31,7 @@ describe('tasks/ship', function(){
 	var mockDeploy = stubbedPromise(null, 'task');
 	var mockPipelines = {getApps: stubbedPromise(mockApps), supported:stubbedPromise(true), promote:stubbedPromise(null)};
 
-	before(function(){
+	before(function (){
 		mockery.registerMock('./configure', mockConfigure);
 		mockery.registerMock('./deploy', mockDeploy);
 		mockery.registerMock('./scale', mockScale);
@@ -40,11 +40,11 @@ describe('tasks/ship', function(){
 		ship = require('../tasks/ship').task;
 	});
 
-	after(function(){
+	after(function (){
 		mockery.disable();
 	});
 
-	it('Should be able to run the configure task on all apps, using the pipeline name as the source', function(){
+	it('Should be able to run the configure task on all apps, using the pipeline name as the source', function (){
 		let pipelineName = 'test';
 		return co(function* (){
 			yield ship({pipeline:pipelineName, configure:true, multiregion:true});
@@ -55,7 +55,7 @@ describe('tasks/ship', function(){
 		});
 	});
 
-	it('Should scale to staging app up to 1 web dyno before deploying', function(){
+	it('Should scale to staging app up to 1 web dyno before deploying', function (){
 		let pipelineName = 'test';
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
@@ -64,7 +64,7 @@ describe('tasks/ship', function(){
 		});
 	});
 
-	it('Should be able to deploy to the staging app', function(){
+	it('Should be able to deploy to the staging app', function (){
 		let pipelineName = 'test';
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
@@ -73,7 +73,7 @@ describe('tasks/ship', function(){
 		});
 	});
 
-	it('Should be able to promote the slug to production', function(){
+	it('Should be able to promote the slug to production', function (){
 		let pipelineName = 'test';
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
@@ -82,7 +82,7 @@ describe('tasks/ship', function(){
 		});
 	});
 
-	it('Should be able to run the scale task on the production apps', function(){
+	it('Should be able to run the scale task on the production apps', function (){
 		let pipelineName = 'test';
 		let appName = 'next-build-tools';
 		return co(function* (){
@@ -95,7 +95,7 @@ describe('tasks/ship', function(){
 		});
 	});
 
-	it('Should scale the staging app down to 0 when complete', function(){
+	it('Should scale the staging app down to 0 when complete', function (){
 		let pipelineName = 'test';
 		return co(function* (){
 			yield ship({pipeline:pipelineName});

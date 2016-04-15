@@ -14,7 +14,7 @@ module.exports = function (program, utils) {
 	program
 		.command('provision [app]')
 		.description('provisions a new instance of an application server')
-		.action(function(app) {
+		.action(function (app) {
 			if (app) {
 				task(app).catch(utils.exit);
 			} else {

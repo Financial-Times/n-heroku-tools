@@ -91,7 +91,7 @@ module.exports = function (program, utils) {
 	program
 		.command('deploy-hashed-assets')
 		.description('deploys hashed asset files to S3 (if AWS keys set correctly)')
-		.action(function() {
+		.action(function () {
 			task().catch(utils.exit);
 		});
 };

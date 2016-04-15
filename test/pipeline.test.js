@@ -5,16 +5,16 @@ const co = require('co');
 const mockery = require('mockery');
 const sinon = require('sinon');
 
-describe('lib/pipelines', function(){
+describe('lib/pipelines', function (){
 
 	var pipelines;
 	var shellPromiseMock;
 
-	after(function(){
+	after(function (){
 		mockery.disable();
 	});
 
-	afterEach(function(){
+	afterEach(function (){
 		mockery.deregisterMock('shellpromise');
 		mockery.resetCache();
 		shellPromiseMock = null;
@@ -30,7 +30,7 @@ describe('lib/pipelines', function(){
 		pipelines = require('../lib/pipelines');
 	}
 
-	it('Should be able to test if pipielines are supported on the host system', function(){
+	it('Should be able to test if pipielines are supported on the host system', function (){
 		setup({mockShellPromise:true,shellPromiseReturns:Promise.reject(new Error('blah'))});
 		return co(function* (){
 			let result = yield pipelines.supported();
@@ -39,7 +39,7 @@ describe('lib/pipelines', function(){
 		});
 	});
 
-	it('Should be able to get the apps associated with a given pipeline', function(){
+	it('Should be able to get the apps associated with a given pipeline', function (){
 		this.timeout(10000);
 		setup({mockShellPromise:false});
 		return co(function* (){
@@ -48,7 +48,7 @@ describe('lib/pipelines', function(){
 		});
 	});
 
-	it('Should be able to promote a slug on a given pipeline', function(){
+	it('Should be able to promote a slug on a given pipeline', function (){
 		setup({mockShellPromise:true, shellPromiseReturns:Promise.resolve(null)});
 		let appName = 'ft-next-health-staging';
 		return co(function* (){
