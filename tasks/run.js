@@ -1,14 +1,10 @@
-
 'use strict';
 
 var exec = require('../lib/exec');
 var spawn = require('child_process').spawn;
 var packageJson = require(process.cwd() + '/package.json');
 var normalizeName = require('../lib/normalize-name');
-var downloadDevelopmentKeys = require('../lib/download-development-keys');
 var keys = require('../lib/keys');
-var developmentKeysPath = require('../lib/development-keys-path');
-var existsSync = require('fs').existsSync;
 var path = require('path');
 
 function toStdOut(data) {
@@ -122,30 +118,23 @@ function ensureRouterInstall() {
 }
 
 function task (opts) {
-	return (existsSync(developmentKeysPath) ? Promise.resolve() : downloadDevelopmentKeys())
-		.then(function() {
+	var localPort = process.env.PORT || 3002;
 
-			// Silent update — throw away any errors
-			downloadDevelopmentKeys();
-
-			var localPort = process.env.PORT || 3002;
-
-			if (opts.local) {
-				return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon });
-			} else if (opts.procfile) {
-				return runProcfile();
-			} else if (opts.script) {
-				return runScript({script: opts.script, harmony: opts.harmony, debug: opts.debug, subargs: opts.subargs});
-			} else {
-				return ensureRouterInstall()
-					.then(function() {
-						return Promise.all([
-							runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
-							runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key })
-						]);
-					});
-			}
-		});
+	if (opts.local) {
+		return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon });
+	} else if (opts.procfile) {
+		return runProcfile();
+	} else if (opts.script) {
+		return runScript({script: opts.script, harmony: opts.harmony, debug: opts.debug, subargs: opts.subargs});
+	} else {
+		return ensureRouterInstall()
+			.then(function() {
+				return Promise.all([
+					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
+					runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key })
+				]);
+			});
+	}
 };
 
 module.exports = function (program, utils) {

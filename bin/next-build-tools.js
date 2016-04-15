@@ -26,15 +26,12 @@ require('../tasks/deploy')(program, utils);
 require('../tasks/configure')(program, utils);
 require('../tasks/scale')(program, utils);
 require('../tasks/provision')(program, utils);
-require('../tasks/verify')(program, utils);
-require('../tasks/build')(program, utils);
 require('../tasks/destroy')(program, utils);
 require('../tasks/purge')(program, utils);
 require('../tasks/deploy-vcl')(program, utils);
 require('../tasks/nightwatch')(program, utils);
 require('../tasks/deploy-hashed-assets')(program, utils);
 require('../tasks/deploy-static')(program, utils);
-require('../tasks/download-development-keys')(program, utils);
 require('../tasks/run')(program, utils);
 require('../tasks/rebuild')(program, utils);
 require('../tasks/test-urls')(program, utils);
@@ -44,7 +41,6 @@ require('../tasks/ship')(program, utils);
 require('../tasks/float')(program, utils);
 require('../tasks/drydock')(program, utils);
 require('../tasks/emergency-deploy')(program, utils);
-require('../tasks/hash-assets')(program, utils);
 
 program
 	.command('*')

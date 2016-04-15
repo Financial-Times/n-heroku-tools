@@ -1,7 +1,5 @@
-
 'use strict';
 
-require('array.prototype.find');
 const path = require('path');
 const normalizeName = require('../lib/normalize-name');
 const directly = require('directly');
