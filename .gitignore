@@ -1,6 +1,5 @@
 /node_modules/
 .idea/
-.env
 devs.json
 npm-debug.log
 .eslintrc.js
