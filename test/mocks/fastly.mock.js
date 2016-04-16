@@ -21,14 +21,14 @@ var methods = {
 var mock = {};
 var called = false;
 
-module.exports = function(){
+module.exports = function (){
 	if(called){
 		return mock;
 	}
 
 	mock = {};
 	var func = mockPromiseMethod.bind(null, mock);
-	Object.keys(methods).forEach(function(key){
+	Object.keys(methods).forEach(function (key){
 		func(key, methods[key]);
 	});
 

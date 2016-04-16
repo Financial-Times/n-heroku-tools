@@ -1,5 +1,5 @@
-
 'use strict';
+
 const co = require('co');
 const scale = require('./scale').task;
 const configure = require('./configure').task;
@@ -26,8 +26,6 @@ function task (opts) {
 			log.error('No staging app found');
 			return;
 		}
-
-		let doLogging = opts.log || true;
 
 		if(!apps.production.eu){
 			log.error('No EU production app found');
@@ -58,12 +56,12 @@ function task (opts) {
 		}
 
 		log.info('Scale staging app to 1 dyno');
-		yield scale({target:apps.staging, scale:'web=1'}).catch(function(){
+		yield scale({target:apps.staging, scale:'web=1'}).catch(function (){
 			log.info('Failed to scale up staging app - is this the first run?')
 		});
 
 		log.info('Deploy to staging app and run gtg checks');
-		yield deploy({app:apps.staging, skipEnablePreboot:true, log:doLogging, logGateway:'konstructor'});
+		yield deploy({ app: apps.staging });
 		log.success('Deploy successful');
 
 		log.warn('Enabling of preboot is deprecated because Heroku have changed the API and we had already decided to change the approach');
@@ -103,13 +101,7 @@ module.exports = function (program, utils) {
 		.option('-s --no-scale', 'Skip the scale step')
 		.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
 		.option('-m --multiregion', 'Will expect a US app as well as an EU one')
-		.option('-l --no-logging', "Don't log to Salesforce™®©")
-		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
-		.action(function(options){
-			if (!options.splunk) {
-				console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
-			}
-			options.log = !options.skipLogging;
+		.action(function (options){
 			task(options).catch(utils.exit);
 		});
 };
