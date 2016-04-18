@@ -32,7 +32,7 @@ module.exports = function (program, utils) {
 	program
 		.command('purge [url]')
 		.option('-s, --soft <soft>', 'Perform a "Soft Purge (will invalidate the content rather than remove it"')
-		.description('purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key')
+		.description('DEPRECATED.  Please switch to ‘fastly-tools’.  Purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key')
 		.action(function (url, options){
 			if (url) {
 				task(url, options).catch(utils.exit);

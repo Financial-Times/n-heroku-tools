@@ -24,7 +24,6 @@
     ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
     float [options]                                     Deploys code to a test app and checks it doesn't die
     drydock [options] [name]                            Creates a new pipeline with a staging and EU production app
-    emergency-deploy [options]                          Run the deploy steps that CI would run, allowing you deploy locally
     *                                                 
 
   Options:

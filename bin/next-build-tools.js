@@ -39,7 +39,6 @@ require('../tasks/bottle')(program, utils);
 require('../tasks/ship')(program, utils);
 require('../tasks/float')(program, utils);
 require('../tasks/drydock')(program, utils);
-require('../tasks/emergency-deploy')(program, utils);
 
 program
 	.command('*')
