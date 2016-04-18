@@ -27,8 +27,6 @@ require('../tasks/configure')(program, utils);
 require('../tasks/scale')(program, utils);
 require('../tasks/provision')(program, utils);
 require('../tasks/destroy')(program, utils);
-require('../tasks/purge')(program, utils);
-require('../tasks/deploy-vcl')(program, utils);
 require('../tasks/nightwatch')(program, utils);
 require('../tasks/deploy-hashed-assets')(program, utils);
 require('../tasks/deploy-static')(program, utils);
