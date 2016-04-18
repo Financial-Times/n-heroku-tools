@@ -1,14 +1,10 @@
-
 'use strict';
 
 var exec = require('../lib/exec');
 var spawn = require('child_process').spawn;
 var packageJson = require(process.cwd() + '/package.json');
 var normalizeName = require('../lib/normalize-name');
-var downloadDevelopmentKeys = require('../lib/download-development-keys');
 var keys = require('../lib/keys');
-var developmentKeysPath = require('../lib/development-keys-path');
-var existsSync = require('fs').existsSync;
 var path = require('path');
 
 function toStdOut(data) {
@@ -21,19 +17,19 @@ function toStdErr(data) {
 
 function configureAndSpawn(opts, func) {
 	return keys()
-		.then(function(env) {
+		.then(function (env) {
 			// Overwrite any key specified locally
-			Object.keys(process.env).forEach(function(key) {
+			Object.keys(process.env).forEach(function (key) {
 				env[key] = process.env[key];
 			});
 
-			Object.keys(opts).forEach(function(key) {
+			Object.keys(opts).forEach(function (key) {
 				env[key] = opts[key];
 			});
 
 			var processToRun = func(env);
 
-			return new Promise(function(resolve, reject) {
+			return new Promise(function (resolve, reject) {
 				var local = spawn.apply(null, processToRun);
 
 				local.stdout.on('data', toStdOut);
@@ -45,7 +41,7 @@ function configureAndSpawn(opts, func) {
 }
 
 function runLocal(opts) {
-	return configureAndSpawn(opts, function(env) {
+	return configureAndSpawn(opts, function (env) {
 		var args = [];
 
 		if(opts.script) {
@@ -75,7 +71,7 @@ function runLocal(opts) {
 
 function runScript(opts) {
 
-	return configureAndSpawn({}, function(env) {
+	return configureAndSpawn({}, function (env) {
 		var args = [path.join(process.cwd(), opts.script)];
 		if (opts.debug) {
 			args.push('--debug');
@@ -89,7 +85,7 @@ function runScript(opts) {
 
 
 function runProcfile() {
-	return configureAndSpawn({}, function(env) {
+	return configureAndSpawn({}, function (env) {
 		return ['foreman', ['start'], { cwd: process.cwd(), env: env }];
 	});
 }
@@ -118,34 +114,27 @@ function runRouter(opts) {
 
 function ensureRouterInstall() {
 	return exec('which next-router')
-		.catch(function() { throw new Error('You need to install the next router first!  See docs here: http://git.svc.ft.com/projects/NEXT/repos/router/browse'); });
+		.catch(function () { throw new Error('You need to install the next router first!  See docs here: http://git.svc.ft.com/projects/NEXT/repos/router/browse'); });
 }
 
 function task (opts) {
-	return (existsSync(developmentKeysPath) ? Promise.resolve() : downloadDevelopmentKeys())
-		.then(function() {
+	var localPort = process.env.PORT || 3002;
 
-			// Silent update — throw away any errors
-			downloadDevelopmentKeys();
-
-			var localPort = process.env.PORT || 3002;
-
-			if (opts.local) {
-				return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon });
-			} else if (opts.procfile) {
-				return runProcfile();
-			} else if (opts.script) {
-				return runScript({script: opts.script, harmony: opts.harmony, debug: opts.debug, subargs: opts.subargs});
-			} else {
-				return ensureRouterInstall()
-					.then(function() {
-						return Promise.all([
-							runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
-							runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key })
-						]);
-					});
-			}
-		});
+	if (opts.local) {
+		return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon });
+	} else if (opts.procfile) {
+		return runProcfile();
+	} else if (opts.script) {
+		return runScript({script: opts.script, harmony: opts.harmony, debug: opts.debug, subargs: opts.subargs});
+	} else {
+		return ensureRouterInstall()
+			.then(function () {
+				return Promise.all([
+					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
+					runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key })
+				]);
+			});
+	}
 };
 
 module.exports = function (program, utils) {
@@ -162,7 +151,7 @@ module.exports = function (program, utils) {
 		.option('--https', 'Run with HTTPS')
 		.option('--cert <file>', 'Specify a certificate to use with HTTPS. Use with --https.')
 		.option('--key <file>', 'Specify a certificate key to use with HTTPS. Use with --https.')
-		.action(function(opts){
+		.action(function (opts){
 			task(opts).catch(utils.exit);
 		});
 };

@@ -1,7 +1,5 @@
-
 'use strict';
 
-require('array.prototype.find');
 var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
 var normalizeName = require('../lib/normalize-name');
@@ -45,10 +43,10 @@ function task (opts) {
 			return shellpromise('heroku ps:scale ' + processProfiles.join(' ') + ' --app ' + target, { verbose: true });
 
 		})
-		.then(function(processProfiles) {
+		.then(function (processProfiles) {
 			console.log(target + ' config vars are set to', processProfiles);
 		})
-		.catch(function(err) {
+		.catch(function (err) {
 			console.log('Error scaling processes - ' + err);
 			console.log('Pro tip: Check that your process names haven\'t changed');
 			throw err;
@@ -60,7 +58,7 @@ module.exports = function (program, utils) {
 		.command('scale [source] [target]')
 		.description('downloads process information from next-service-registry and scales/sizes the application servers')
 		.option('-m, --minimal', 'scales each dyno to a single instance (useful for provisioning a test app)')
-		.action(function(source, target, options) {
+		.action(function (source, target, options) {
 			task({
 				source: source,
 				target: target,

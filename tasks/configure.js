@@ -29,12 +29,12 @@ function task (opts) {
 			herokuAuthToken(),
 			configVarsKey()
 		])
-		.then(function(keys) {
+		.then(function (keys) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
 			return Promise.all([
 				fetch('https://ft-next-config-vars.herokuapp.com/production/' + source, { headers: { Authorization: keys[1] } })
 					.then(fetchres.json)
-					.catch(function(err) {
+					.catch(function (err) {
 						if (err instanceof fetchres.BadServerResponseError) {
 							if (err.message === 404) {
 								throw new Error("Could not download config vars for " + source + ", check it's set up in ft-next-config-vars");
@@ -46,7 +46,7 @@ function task (opts) {
 					}),
 				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
 					.then(fetchres.json)
-					.catch(function(err) {
+					.catch(function (err) {
 						if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
 							throw new Error(source + " app needs to be manually added to heroku before it, or any branches, can be deployed");
 						} else {
@@ -55,25 +55,25 @@ function task (opts) {
 					})
 			]);
 		})
-		.then(function(data) {
+		.then(function (data) {
 			var desired = data[0];
 			var current = data[1];
 			desired["___WARNING___"] = "Don't edit config vars manually. Make PR to git.svc.ft.com/projects/NEXTPRIVATE/repos/config-vars/browse";
 			var patch = {};
 
-			Object.keys(current).forEach(function(key) {
+			Object.keys(current).forEach(function (key) {
 				patch[key] = null;
 			});
 
-			Object.keys(desired).forEach(function(key) {
+			Object.keys(desired).forEach(function (key) {
 				patch[key] = desired[key];
 			});
 
-			Object.keys(overrides).forEach(function(key) {
+			Object.keys(overrides).forEach(function (key) {
 				patch[key] = overrides[key];
 			});
 
-			Object.keys(patch).forEach(function(key) {
+			Object.keys(patch).forEach(function (key) {
 				if (patch[key] === null) {
 					console.log("Deleting config var: " + key);
 				} else if (patch[key] !== current[key]) {
@@ -89,7 +89,7 @@ function task (opts) {
 				body: JSON.stringify(patch)
 			});
 		})
-		.then(function() {
+		.then(function () {
 			console.log(target + " config vars are set");
 		});
 
@@ -102,7 +102,7 @@ module.exports = function (program, utils) {
 		.description('downloads environment variables from next-config-vars and uploads them to the current app')
 		.option('-o, --overrides <abc>', 'override these values', utils.list)
 		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
-		.action(function(source, target, options) {
+		.action(function (source, target, options) {
 			if (!options.splunk) {
 				console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
 			}

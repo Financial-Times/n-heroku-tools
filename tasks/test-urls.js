@@ -1,7 +1,5 @@
-
 'use strict';
 
-require('array.prototype.find');
 const path = require('path');
 const normalizeName = require('../lib/normalize-name');
 const directly = require('directly');
@@ -210,7 +208,7 @@ module.exports = function (program, utils) {
 		.description('Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist')
 		.option('-t, --throttle <n>', 'The maximum number of tests to run concurrently. default: 5')
 		.option('-c, --config', 'Path to config file, relative to cwd [default test/smoke]')
-		.action(function(app, options) {
+		.action(function (app, options) {
 			task({
 				app: app,
 				urls: options.urls,

@@ -48,11 +48,11 @@ function task (opts) {
 
 		log.art.canoe();
 		log.success('IT FLOATS!');
-	}).catch(function(err) {
+	}).catch(function (err) {
 		log.error('Man overboard', err);
 		if (opts.destroy) {
 			return destroy({ app: testAppName, verbose: true })
-				.then(function() {
+				.then(function () {
 					throw err;
 				});
 		} else {
@@ -70,7 +70,7 @@ module.exports = function (program, utils) {
 		.option('-t --testapp [value]', 'Name of the app to be created')
 		.option('-m --master', "Run even if on master branch (not required if using nbt ship).")
 		.option('-d, --no-destroy', 'Don\'t automatically destroy new apps')
-		.action(function(options){
+		.action(function (options){
 			task(options).catch(utils.exit);
 		});
 };
