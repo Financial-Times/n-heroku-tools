@@ -1,6 +1,6 @@
 {
   "name": "@financial-times/n-heroku-tools",
-  "version": "5.18.8",
+  "version": "6.0.0",
   "bin": {
     "next-build-tools": "./bin/next-build-tools.js",
     "nbt": "./bin/next-build-tools.js"
