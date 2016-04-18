@@ -16,9 +16,9 @@
     deploy-hashed-assets                                deploys hashed asset files to S3 (if AWS keys set correctly)
     deploy-static [options] <source> [otherSources...]  Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars
     run [options]                                       Runs the local app through the router
-    rebuild [options] [apps...]                         Trigger a rebuild of the latest master on Circle
+    rebuild [options] [apps...]                         DEPRECATED.  Will be moved a new home soon.  Trigger a rebuild of the latest master on Circle
     test-urls [options] [app]                           Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
-    bottle [options] [increment]                        releases a major, minor, patch or prerelease of a next component (similar to npm version + npm publish)
+    bottle [options] [increment]                        DEPRECATED.  Will be moved a new home soon.  Releases a major, minor, patch or prerelease of a next component (similar to npm version + npm publish)
     ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
     float [options]                                     Deploys code to a test app and checks it doesn't die
     drydock [options] [name]                            Creates a new pipeline with a staging and EU production app

@@ -105,7 +105,7 @@ module.exports = function (program, utils) {
 		.command('rebuild [apps...]')
 		.option('--all', 'Trigger rebuilds of all apps.')
 		.option('--serves <type>', 'Trigger rebuilds of apps where type is served.')
-		.description('Trigger a rebuild of the latest master on Circle')
+		.description('DEPRECATED.  Will be moved a new home soon.  Trigger a rebuild of the latest master on Circle')
 		.action(function (apps, opts) {
 			return task({
 				apps: apps,
