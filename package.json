@@ -2,8 +2,9 @@
   "name": "@financial-times/n-heroku-tools",
   "version": "6.0.0",
   "bin": {
-    "next-build-tools": "./bin/next-build-tools.js",
-    "nbt": "./bin/next-build-tools.js"
+    "next-build-tools": "./bin/n-heroku-tools.js",
+    "nbt": "./bin/n-heroku-tools.js",
+    "nht": "./bin/n-heroku-tools.js"
   },
   "main": "main.js",
   "dependencies": {

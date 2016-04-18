@@ -84,7 +84,7 @@ describe('tasks/ship', function (){
 
 	it('Should be able to run the scale task on the production apps', function (){
 		let pipelineName = 'test';
-		let appName = 'next-build-tools';
+		let appName = 'n-heroku-tools';
 		return co(function* (){
 			yield ship({pipeline:pipelineName,scale:true,multiregion:true});
 
