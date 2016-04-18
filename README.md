@@ -1,6 +1,8 @@
 # n-heroku-tools
 **WARNING:** n-heroku-tools should **never** be globally installed.  Always install as a devDependency of your application.
 
+For patches to NBT 5 please make PRs to the ‘nbt-five’ branch and release from there.
+
 
   Usage: n-heroku-tools [options] [command]
 
