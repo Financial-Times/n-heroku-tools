@@ -12,8 +12,8 @@
     scale [options] [source] [target]                   downloads process information from next-service-registry and scales/sizes the application servers
     provision [app]                                     provisions a new instance of an application server
     destroy [options] [app]                             deletes the app from heroku
-    purge [options] [url]                               purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
-    deploy-vcl [options] [folder]                       Deploys VCL in [folder] to the specified fastly service.  Requires FASTLY_KEY env var
+    purge [options] [url]                               DEPRECATED.  Please switch to ‘fastly-tools’.  Purges the given url from the Fastly cache.  Requires a FASTLY_KEY environment variable set to your fastly api key
+    deploy-vcl [options] [folder]                       DEPRECATED.  Please switch to ‘fastly-tools’.  Deploys VCL in [folder] to the specified fastly service.  Requires FASTLY_KEY env var
     nightwatch [options] [test]                         runs nightwatch with some sensible defaults
     deploy-hashed-assets                                deploys hashed asset files to S3 (if AWS keys set correctly)
     deploy-static [options] <source> [otherSources...]  Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars
