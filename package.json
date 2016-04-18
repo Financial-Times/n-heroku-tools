@@ -4,6 +4,7 @@
   "bin": {
     "next-build-tools": "./bin/n-heroku-tools.js",
     "nbt": "./bin/n-heroku-tools.js",
+    "n-heroku-tools": "./bin/n-heroku-tools.js",
     "nht": "./bin/n-heroku-tools.js"
   },
   "main": "main.js",
