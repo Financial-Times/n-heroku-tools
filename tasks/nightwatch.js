@@ -54,8 +54,9 @@ module.exports = function (program, utils) {
 			task({
 				test: test,
 				env: options.env,
-				config: options.config
-
+				config: options.config,
+				retries: options.retries,
+				suiteRetries: options.suiteRetries
 			})
 				.catch(utils.exit);
 		});
