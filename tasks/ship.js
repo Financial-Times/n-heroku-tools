@@ -71,7 +71,7 @@ function task (opts) {
 		log.success('Slug promoted');
 		if(opts.scale){
 			log.log('scale enabled');
-			let source = appName;
+			let source = appName.replace('@financial-times/', '');
 			let scaleTasks = [
 				scale({source:source, target:apps.staging}),
 				scale({source:source, target:apps.production.eu})
