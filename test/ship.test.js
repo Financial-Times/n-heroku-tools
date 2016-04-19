@@ -36,6 +36,7 @@ describe('tasks/ship', function (){
 		mockery.registerMock('./deploy', mockDeploy);
 		mockery.registerMock('./scale', mockScale);
 		mockery.registerMock('../lib/pipelines', mockPipelines);
+		mockery.registerMock(process.cwd() + '/package.json', { name: 'ft-next-sample-app' });
 		mockery.enable({warnOnUnregistered:false,useCleanCache:true});
 		ship = require('../tasks/ship').task;
 	});
@@ -84,7 +85,7 @@ describe('tasks/ship', function (){
 
 	it('Should be able to run the scale task on the production apps', function (){
 		let pipelineName = 'test';
-		let appName = 'n-heroku-tools';
+		let appName = 'sample-app';
 		return co(function* (){
 			yield ship({pipeline:pipelineName,scale:true,multiregion:true});
 
