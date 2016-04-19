@@ -16,7 +16,6 @@ function task (opts) {
 	var test = opts.test;
 	var env = opts.env || 'ie9,ie10,ie11,firefox38,firefox39,chrome42,chrome43,iphone6_plus,Android_Nexus7HD';
 	var config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
-
 	var args = [ '--env', env, '--test', test, '--config', config ];
 
 	if (opts.retries) {
