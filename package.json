@@ -16,7 +16,6 @@
     "denodeify": "^1.2.0",
     "directly": "^1.0.1",
     "dotenv": "^1.2.0",
-    "fastly": "Financial-Times/fastly#v2.5.0",
     "fetchres": "^1.0.4",
     "foreman": "^1.4.1",
     "haikro": "^2.2.0",
