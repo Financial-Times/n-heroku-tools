@@ -44,7 +44,7 @@ describe('lib/pipelines', function (){
 		setup({mockShellPromise:false});
 		return co(function* (){
 			let apps = yield pipelines.getApps('ft-next-health');
-			expect(apps.production.eu).to.equal('ft-next-health-eu');
+			expect(apps.production.eu).to.equal('112136c5-59cb-4806-aa6b-9a439450140f');
 		});
 	});
 
