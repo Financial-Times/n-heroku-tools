@@ -61,7 +61,7 @@ function task (opts) {
 		});
 
 		log.info('Deploy to staging app and run gtg checks');
-		yield deploy({ app: apps.staging });
+		yield deploy({ app: apps.staging, authenticatedSmokeTests: true});
 		log.success('Deploy successful');
 
 		log.warn('Enabling of preboot is deprecated because Heroku have changed the API and we had already decided to change the approach');
