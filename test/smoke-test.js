@@ -2,7 +2,7 @@
 
 const app = require('express')();
 const bodyParser = require('body-parser');
-const smokeTest = require('../lib/test-urls').run;
+const smokeTest = require('../lib/smoke-test').run;
 const expect = require('chai').expect;
 
 app.get('/get-200', (req, res) => {

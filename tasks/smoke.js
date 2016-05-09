@@ -6,10 +6,10 @@ module.exports = function (program, utils) {
 	program
 		.command('smoke [app]')
 		.description('Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist')
-		.action(function (app, options) {
+		.action(function (app) {
 			task({
 				app: app
-			})
+			}).catch(utils.exit);
 		});
 };
 

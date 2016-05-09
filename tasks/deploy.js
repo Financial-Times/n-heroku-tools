@@ -44,8 +44,17 @@ function task (opts) {
 			// Always skip gtg if preboot enabled as heroku's implementation of preboot means
 			// we are most likely hitting the last successful deploy, not the current one
 			if (!opts.skipGtg) {
-				return waitForOk(`http://${name}.herokuapp.com/__gtg`)
-					.then(() => smokeTest.run({app: name}));
+				// Smoke test are now compulsory
+				return exists(process.cwd() + '/test/smoke.js')
+					.then(hasSmokeConfig => {
+						if (!hasSmokeConfig) {
+							throw new Error(`Smoke tests, configured using a ./test/smoke.js file, must exist for all apps.
+If this app has no web process use the --skip-gtg option`);
+						}
+						return waitForOk(`http://${name}.herokuapp.com/__gtg`)
+							.then(() => smokeTest.run({app: name}));
+					})
+
 			} else {
 				console.log('Skipping gtg check.');
 			}
