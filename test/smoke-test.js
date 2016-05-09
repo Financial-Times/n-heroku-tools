@@ -2,7 +2,7 @@
 
 const app = require('express')();
 const bodyParser = require('body-parser');
-const task = require('../tasks/test-urls').task;
+const smokeTest = require('../lib/smoke-test').run;
 const expect = require('chai').expect;
 
 app.get('/get-200', (req, res) => {
@@ -36,8 +36,6 @@ app.post('/post-form', bodyParser.urlencoded({ extended: true }), (req, res) => 
 	res.sendStatus(200);
 });
 
-
-
 app.post('/post-404', (req, res) => {
 	res.sendStatus(404);
 });
@@ -45,7 +43,6 @@ app.post('/post-404', (req, res) => {
 app.post('/post-302', (req, res) => {
 	res.redirect('http://www.thing.com')
 });
-
 
 app.post('/post-json-302', bodyParser.json({ extended: true }), (req, res) => {
 	expect(req.body).to.deep.equal({foo: 'bar'});
@@ -69,7 +66,7 @@ describe('test-urls', function () {
 	})
 
 	it('should execute a wide variety of test-url configs', function () {
-		return task({
+		return smokeTest({
 			configPath: 'test/fixtures/smoke',
 			app: 'localhost:' + process.env.PORT
 		});

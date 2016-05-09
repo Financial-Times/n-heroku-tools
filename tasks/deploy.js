@@ -9,6 +9,7 @@ const denodeify = require('denodeify');
 const fs = require('fs');
 const exists = denodeify(fs.exists, function (exists) { return [undefined, exists]; });
 const commit = require('../lib/commit');
+const smokeTest = require('../lib/smoke-test');
 
 function task (opts) {
 	let token;
@@ -41,9 +42,19 @@ function task (opts) {
 		// Start polling
 		.then(() => {
 			// Always skip gtg if preboot enabled as heroku's implementation of preboot means
-			// we are most likley hitting the last successful deploy, not the current one
+			// we are most likely hitting the last successful deploy, not the current one
 			if (!opts.skipGtg) {
-				return waitForOk(`http://${name}.herokuapp.com/__gtg`);
+				// Smoke test are now compulsory
+				return exists(process.cwd() + '/test/smoke.js')
+					.then(hasSmokeConfig => {
+						if (!hasSmokeConfig) {
+							throw new Error(`Smoke tests, configured using a ./test/smoke.js file, must exist for all apps.
+If this app has no web process use the --skip-gtg option`);
+						}
+						return waitForOk(`http://${name}.herokuapp.com/__gtg`)
+							.then(() => smokeTest.run({app: name}));
+					})
+
 			} else {
 				console.log('Skipping gtg check.');
 			}
@@ -55,11 +66,7 @@ module.exports = function (program, utils) {
 		.command('deploy [app]')
 		.description('runs haikro deployment scripts with sensible defaults for Next projects')
 		.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
-		.option('--gtg-urls <urls>', 'Comma separated list of urls to check before concluding the app is ok (these are in addition to __gtg)', utils.list)
 		.action(function (app, options) {
-			if (options.gtgUrls) {
-				throw 'Configuring gtg urls is now supported in a separate task: nbt test-urls';
-			}
 			task({
 				app: app,
 				skipGtg: options.skipGtg,
