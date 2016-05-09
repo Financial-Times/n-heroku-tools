@@ -30,7 +30,7 @@ describe('lib/pipelines', function (){
 		pipelines = require('../lib/pipelines');
 	}
 
-	it('Should be able to test if pipielines are supported on the host system', function (){
+	it('Should be able to test if pipelines are supported on the host system', function (){
 		setup({mockShellPromise:true,shellPromiseReturns:Promise.reject(new Error('blah'))});
 		return co(function* (){
 			let result = yield pipelines.supported();

@@ -70,7 +70,7 @@ describe('tasks/ship', function (){
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
 
-			sinon.assert.calledWith(mockDeploy.task, { app:mockApps.staging });
+			sinon.assert.calledWith(mockDeploy.task, { app:mockApps.staging, authenticatedSmokeTests: true });
 		});
 	});
 

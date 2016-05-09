@@ -52,7 +52,7 @@ function task (opts) {
 If this app has no web process use the --skip-gtg option`);
 						}
 						return waitForOk(`http://${name}.herokuapp.com/__gtg`)
-							.then(() => smokeTest.run({app: name}));
+							.then(() => smokeTest.run({app: name, authenticated: opts.authenticatedSmokeTests}));
 					})
 
 			} else {
