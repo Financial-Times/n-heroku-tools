@@ -49,6 +49,7 @@ function task (opts) {
 					.then(hasSmokeConfig => {
 						if (!hasSmokeConfig) {
 							throw new Error(`Smoke tests, configured using a ./test/smoke.js file, must exist for all apps.
+See https://github.com/Financial-Times/n-heroku-tools/docs/smoke/md for docs.
 If this app has no web process use the --skip-gtg option`);
 						}
 						return waitForOk(`http://${name}.herokuapp.com/__gtg`)
