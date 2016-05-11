@@ -20,6 +20,7 @@ function task (opts) {
 
 	for (var opt in opts) {
 		if (opts.hasOwnProperty(opt) && opts[opt]) {
+			args.push('--' + opt);
 			args.push(opts[opt]);
 		}
 	}
