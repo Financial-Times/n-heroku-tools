@@ -19,7 +19,7 @@ function task (opts) {
 	var args = [ '--env', env, '--test', test, '--config', config ];
 
 	for (var opt in opts) {
-		if (opts.hasOwnProperty(opt) && opts[opt]) {
+		if (opts.hasOwnProperty(opt) && opts[opt] && args.indexOf(opts[opt]) === -1) {
 			args.push('--' + opt);
 			args.push(opts[opt]);
 		}
