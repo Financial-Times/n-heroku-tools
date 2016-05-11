@@ -49,7 +49,7 @@ module.exports = function (program, utils) {
 		.option('-a, --tag <tag>', 'Filter test modules by tags. Only tests that have the specified tags will be loaded')
 		.option('--skiptags <skiptags>', 'Skips tests that have the specified tag or tags (comma separated)')
 		.option('-g, --group <group>', 'Runs only the specified group of tests (subfolder). Tests are grouped by being placed in the same subfolder')
-		.option('--skipgroup <skipgroup>', 'Skip one or several (comma separated) group of tests')
+		.option('-s, --skipgroup <skipgroup>', 'Skip one or several (comma separated) group of tests')
 		.description('runs nightwatch with some sensible defaults')
 		.action(function (test, options) {
 			task({
