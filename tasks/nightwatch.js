@@ -18,13 +18,11 @@ function task (opts) {
 	var config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
 	var args = [ '--env', env, '--test', test, '--config', config ];
 
-	if (opts.retries) {
-		args.push('--retries');
-		args.push(opts.retries);
-	}
-	if (opts.suiteRetries) {
-		args.push('--suiteRetries');
-		args.push(opts.suiteRetries);
+	for (var opt in opts) {
+		if (opts.hasOwnProperty(opt) && opts[opt] && args.indexOf(opts[opt]) === -1) {
+			args.push('--' + opt);
+			args.push(opts[opt]);
+		}
 	}
 
 	return new Promise(function (resolve, reject) {
@@ -49,6 +47,10 @@ module.exports = function (program, utils) {
 		.option('-e, --env <env>', 'The location of the nightwatch.json, defaults to Next Build Tools defined environments')
 		.option('--retries <retries>', 'Retries failed or errored testcases up to the specified number of times')
 		.option('--suiteRetries <suiteRetries>', 'Retries failed or errored testsuites up to the specified number of times')
+		.option('-a, --tag <tag>', 'Filter test modules by tags. Only tests that have the specified tags will be loaded')
+		.option('--skiptags <skiptags>', 'Skips tests that have the specified tag or tags (comma separated)')
+		.option('-g, --group <group>', 'Runs only the specified group of tests (subfolder). Tests are grouped by being placed in the same subfolder')
+		.option('-s, --skipgroup <skipgroup>', 'Skip one or several (comma separated) group of tests')
 		.description('runs nightwatch with some sensible defaults')
 		.action(function (test, options) {
 			task({
@@ -56,9 +58,13 @@ module.exports = function (program, utils) {
 				env: options.env,
 				config: options.config,
 				retries: options.retries,
-				suiteRetries: options.suiteRetries
+				suiteRetries: options.suiteRetries,
+				tag: options.tag,
+				skiptags: options.skiptags,
+				group: options.group,
+				skipgroup: options.skipgroup
 			})
-				.catch(utils.exit);
+			.catch(utils.exit);
 		});
 };
 
