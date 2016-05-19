@@ -70,7 +70,10 @@ module.exports = function (program, utils) {
 		.action(function (app, options) {
 			task({
 				app: app,
-				skipGtg: options.skipGtg,
+
+				// Skip GTG check if ‘--skip-gtg’ specified or if doing a production (i.e. no ‘app’ specified)
+				// deploy (because preboot will mean that the gtg checks are meaningless)
+				skipGtg: options.skipGtg || !app,
 			}).catch(utils.exit);
 		});
 }
