@@ -44,7 +44,7 @@ module.exports = function (program, utils) {
 	program
 		.command('nightwatch [test]')
 		.option('-c, --config <config>', 'The location of the nightwatch.json, defaults to Next Build Tools nightwatch.json')
-		.option('-e, --env <env>', 'The location of the nightwatch.json, defaults to Next Build Tools defined environments')
+		.option('-e, --env <env>', 'List of browser environments to run on DEPRECATED')
 		.option('--retries <retries>', 'Retries failed or errored testcases up to the specified number of times')
 		.option('--suiteRetries <suiteRetries>', 'Retries failed or errored testsuites up to the specified number of times')
 		.option('-a, --tag <tag>', 'Filter test modules by tags. Only tests that have the specified tags will be loaded')
@@ -53,9 +53,12 @@ module.exports = function (program, utils) {
 		.option('-s, --skipgroup <skipgroup>', 'Skip one or several (comma separated) group of tests')
 		.description('runs nightwatch with some sensible defaults')
 		.action(function (test, options) {
+			if (options.env) {
+				console.warn(`Setting browser environments for nightwatch is deprecated
+This is now managed centrally in config-vars`)
+			}
 			task({
 				test: test,
-				env: options.env,
 				config: options.config,
 				retries: options.retries,
 				suiteRetries: options.suiteRetries,
