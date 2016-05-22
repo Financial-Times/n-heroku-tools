@@ -1,76 +1,76 @@
-"use strict";
+'use strict';
 
-var aws = require('aws-sdk');
-var denodeify = require('denodeify');
-var fs = require('fs');
-var readFile = denodeify(fs.readFile);
-var lstatSync = fs.lstatSync;
-var determineContentType = require('../lib/determine-content-type');
-var path = require('path');
-
-var AWS_ACCESS = process.env.AWS_ACCESS;
-var AWS_SECRET = process.env.AWS_SECRET;
+const aws = require('aws-sdk');
+const denodeify = require('denodeify');
+const fs = require('fs');
+const readFile = denodeify(fs.readFile);
+const lstatSync = fs.lstatSync;
+const mime = require('mime');
+const path = require('path');
+const co = require('co');
+const md5File = denodeify(require('md5-file'));
 
 function task (opts) {
-	if (!(AWS_ACCESS && AWS_SECRET)) {
-		Promise.reject("Must set AWS_ACCESS and AWS_SECRET");
-	}
-
-	var files = opts.files
+	const files = opts.files
 		.filter(function (file) {
 			return !lstatSync(file).isDirectory();
 		});
+	const destination = opts.destination || "";
+	const bucket = opts.bucket;
 
-	var destination = opts.destination || "";
-	var bucket = opts.bucket;
+	// Backwards compatibility, prefer to use the standard AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY used by AWS NodeJS SDK
+	if (process.env.AWS_ACCESS && process.env.AWS_SECRET) {
+		aws.config.update({
+			accessKeyId: process.env.AWS_ACCESS,
+			secretAccessKey: process.env.AWS_SECRET
+		});
+	}
 
-	aws.config.update({
-		accessKeyId: process.env.AWS_ACCESS,
-		secretAccessKey: process.env.AWS_SECRET,
-		region: opts.region
-	});
-
-	var s3bucket = new aws.S3({ params: { Bucket: bucket } });
+	const s3bucket = new aws.S3({ params: { Bucket: bucket, region: opts.region } });
 
 	return Promise.all(files.map(function (file) {
-		return readFile(file)
-			.then(function (content) {
-				file = path.relative(process.cwd(), file);
-				var key = file;
+		return co(function*() {
+			const content = yield readFile(file);
+			file = path.relative(process.cwd(), file);
+			let key = file;
 
-				if (opts.strip) {
-					key = file.split('/').splice(opts.strip).join('/');
-				}
+			if (opts.strip) {
+				key = file.split('/').splice(opts.strip).join('/');
+			}
 
-				key = path.join(destination, key);
+			key = path.join(destination, key);
 
-				console.log("About to upload " + file + " to " + key);
-				return new Promise(function (resolve, reject) {
-					s3bucket.upload({
+			const s3Version = yield denodeify(s3bucket.headObject.bind(s3bucket))({ Key: key })
+				.catch(err => {
+					if (err.code === 'NotFound') {
+						return { ETag: '"NotFound"' };
+					}
+					return Promise.reject(err);
+				})
+				.then(head => head.ETag.replace(/"/g, ''));
+			const localVersion = yield md5File(file);
+
+			if (s3Version === localVersion) {
+				console.log(`Unchanged, skipping: ${key}`);
+			} else {
+				console.log(`Will upload ${file} to ${key}`);
+				yield denodeify(s3bucket.upload.bind(s3bucket))({
 						Key: key,
-						ContentType: opts.contentType || determineContentType(file),
+						ContentType: opts.contentType || mime.lookup(file),
 						ACL: 'public-read',
 						Body: content,
 						CacheControl: opts.cacheControl || (opts.cache ? 'public, max-age=31536000' : undefined)
-					}, function (err, data) {
-						if (err) {
-							reject(err);
-						} else {
-							resolve(data);
-						}
 					});
-				})
-					.then(function () {
-						console.log("Successfully uploaded: " + key);
-					});
-			});
+				console.log(`Successfully uploaded: ${key}`);
+			}
+		});
 	}));
 };
 
 module.exports = function (program, utils) {
 	program
 		.command('deploy-static <source> [otherSources...]')
-		.description('Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars')
+		.description('Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars')
 		.option('--strip <strip>', 'Optionally strip off the <strip> leading components off of the source file name')
 		.option('--destination <destination>', 'Optionally add a prefix to the upload path')
 		.option('--region <region>', 'Optionally set the region (default to eu-west-1)')
@@ -80,9 +80,9 @@ module.exports = function (program, utils) {
 		.option('--content-type <contentType>', 'Optionally specify a content type value')
 		.action(function (file, files, opts) {
 			files.unshift(file);
-			var region = opts.region || 'eu-west-1';
-			var bucket = opts.bucket || 'ft-next-qa';
-			var destination = opts.destination || "";
+			const region = opts.region || 'eu-west-1';
+			const bucket = opts.bucket || 'ft-next-qa';
+			const destination = opts.destination || "";
 
 			return task({
 				files: files,
