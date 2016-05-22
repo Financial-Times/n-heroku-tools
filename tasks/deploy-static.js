@@ -53,6 +53,7 @@ function task (opts) {
 			if (s3Version === localVersion) {
 				console.log(`Unchanged, skipping: ${key}`);
 			} else {
+				console.log(`s3/local: ${s3Version} ${localVersion}`);
 				console.log(`Will upload ${file} to ${key}`);
 				yield denodeify(s3bucket.upload.bind(s3bucket))({
 						Key: key,
