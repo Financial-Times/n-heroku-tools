@@ -14,7 +14,11 @@ function toStdErr(data) {
 
 function task (opts) {
 	var test = opts.test;
-	var env = process.env.SAUCELABS_BROWSERS;
+	var env = opts.env || process.env.SAUCELABS_BROWSERS;
+	var brokenBrowsers = ('' || process.env.SAUCELABS_UNSTABLE_BROWSERS).split(',');
+	env = env.split(',').filter(browser => {
+		return brokenBrowsers.indexOf(browser) === -1;
+	}).join(',');
 	var config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
 	var args = [ '--env', env, '--test', test, '--config', config ];
 
@@ -53,10 +57,6 @@ module.exports = function (program, utils) {
 		.option('-s, --skipgroup <skipgroup>', 'Skip one or several (comma separated) group of tests')
 		.description('runs nightwatch with some sensible defaults')
 		.action(function (test, options) {
-			if (options.env) {
-				console.warn(`Setting browser environments for nightwatch is deprecated
-This is now managed centrally in config-vars`)
-			}
 			task({
 				test: test,
 				config: options.config,
