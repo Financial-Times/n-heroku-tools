@@ -12,13 +12,35 @@ function toStdErr(data) {
 	process.stderr.write(data.toString());
 }
 
+function filterBrowsers (env, broken) {
+	if (!broken) {
+		return env;
+	}
+
+	broken = broken.split(',');
+
+	return env.split(',').filter(browser => {
+		if (broken.indexOf(browser) > -1) {
+			console.warn(`${browser} is unstable currently - nightwatch tests disabled`);
+			return false;
+		}
+		return true;
+	}).join(',');
+}
+
+
 function task (opts) {
 	var test = opts.test;
 	var env = opts.env || process.env.SAUCELABS_BROWSERS;
-	var brokenBrowsers = ('' || process.env.SAUCELABS_UNSTABLE_BROWSERS).split(',');
-	env = env.split(',').filter(browser => {
-		return brokenBrowsers.indexOf(browser) === -1;
-	}).join(',');
+
+	env = filterBrowsers(env, process.env.SAUCELABS_UNSTABLE_BROWSERS);
+
+	if (opts.js) {
+		env = filterBrowsers(env, process.env.SAUCELABS_UNSTABLE_BROWSERS_JS);
+	}
+	if (!env) {
+
+	}
 	var config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
 	var args = [ '--env', env, '--test', test, '--config', config ];
 
@@ -55,6 +77,7 @@ module.exports = function (program, utils) {
 		.option('--skiptags <skiptags>', 'Skips tests that have the specified tag or tags (comma separated)')
 		.option('-g, --group <group>', 'Runs only the specified group of tests (subfolder). Tests are grouped by being placed in the same subfolder')
 		.option('-s, --skipgroup <skipgroup>', 'Skip one or several (comma separated) group of tests')
+		.option('--no-js', 'Specify the tests are not dependent on javascript running in the browser')
 		.description('runs nightwatch with some sensible defaults')
 		.action(function (test, options) {
 			task({
@@ -63,7 +86,9 @@ module.exports = function (program, utils) {
 				retries: options.retries,
 				suiteRetries: options.suiteRetries,
 				tag: options.tag,
+				env: options.env,
 				skiptags: options.skiptags,
+				js: options.js,
 				group: options.group,
 				skipgroup: options.skipgroup
 			})
