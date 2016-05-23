@@ -19,7 +19,7 @@ function task (opts) {
 	const bucket = opts.bucket;
 
 	if (files.length < 1) {
-		console.warn("Warning: No files found for upload to s3.  (Directories are ignored)");
+		return Promise.reject("No files found for upload to s3.  (Directories are ignored)");
 	}
 
 	// Backwards compatibility, prefer to use the standard AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY used by AWS NodeJS SDK
