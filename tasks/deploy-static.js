@@ -71,7 +71,7 @@ function task (opts) {
 module.exports = function (program, utils) {
 	program
 		.command('deploy-static <source> [otherSources...]')
-		.description('Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars')
+		.description('Deploys static <source> to S3.  Requires AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars')
 		.option('--strip <strip>', 'Optionally strip off the <strip> leading components off of the source file name')
 		.option('--destination <destination>', 'Optionally add a prefix to the upload path')
 		.option('--region <region>', 'Optionally set the region (default to eu-west-1)')
