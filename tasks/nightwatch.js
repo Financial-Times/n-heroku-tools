@@ -20,7 +20,11 @@ function filterBrowsers (env, broken) {
 	broken = broken.split(',');
 
 	return env.split(',').filter(browser => {
-		return broken.indexOf(browser) === -1;
+		if (broken.indexOf(browser) > -1) {
+			console.warn(`${browser} is unstable currently - nightwatch tests disabled`);
+			return false;
+		}
+		return true;
 	}).join(',');
 }
 
