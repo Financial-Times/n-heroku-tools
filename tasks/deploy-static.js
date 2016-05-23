@@ -58,7 +58,7 @@ function task (opts) {
 				yield denodeify(s3bucket.upload.bind(s3bucket))({
 						Key: key,
 						ContentType: opts.contentType || mime.lookup(file),
-						ACL: 'public-read',
+						ACL: opts.acl,
 						Body: content,
 						CacheControl: opts.cacheControl || (opts.cache ? 'public, max-age=31536000' : undefined)
 					});
@@ -79,21 +79,24 @@ module.exports = function (program, utils) {
 		.option('--no-cache', 'Optionally don\'t set a far future cache')
 		.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
 		.option('--content-type <contentType>', 'Optionally specify a content type value')
+		.option('--acl <acl>', 'Optionally set the Canned Access Control List for new files being put into s3 (default to public-read)')
 		.action(function (file, files, opts) {
 			files.unshift(file);
 			const region = opts.region || 'eu-west-1';
 			const bucket = opts.bucket || 'ft-next-qa';
 			const destination = opts.destination || "";
+			const acl = opts.acl || 'public-read';
 
 			return task({
 				files: files,
 				destination: destination,
 				region: region,
 				bucket: bucket,
+				acl: acl,
 				strip: opts.strip,
 				cache: opts.cache,
 				cacheControl: opts.cacheControl,
-				contentType: opts.contentType
+				contentType: opts.contentType,
 			}).catch(utils.exit);
 		});
 };
