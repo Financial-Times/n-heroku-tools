@@ -60,7 +60,8 @@ function task (opts) {
 		app: app,
 		instance: false,
 		useDefaultAggregators: false,
-		flushEvery: false
+		flushEvery: false,
+		forceGraphiteLogging: true
 	});
 
 	console.log('Deploying hashed assets to S3...');
