@@ -37,7 +37,7 @@ function task (opts) {
 		log.success('App configured');
 
 		log.info('Deploy to test app and run __gtg checks');
-		yield deploy({app:testAppName, skipEnablePreboot:true});
+		yield deploy({ app: testAppName, skipGtg: opts.skipGtg });
 		log.success('Deployed successfully');
 
 		if(opts.destroy){
@@ -70,6 +70,7 @@ module.exports = function (program, utils) {
 		.option('-t --testapp [value]', 'Name of the app to be created')
 		.option('-m --master', "Run even if on master branch (not required if using nbt ship).")
 		.option('-d, --no-destroy', 'Don\'t automatically destroy new apps')
+		.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
 		.action(function (options){
 			task(options).catch(utils.exit);
 		});
