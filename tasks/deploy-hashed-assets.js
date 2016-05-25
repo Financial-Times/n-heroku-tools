@@ -75,6 +75,8 @@ function task (opts) {
 
 				return readFile(path.join(process.cwd(), 'public', file))
 					.then(content => {
+						// ignore source maps
+						const isMonitoringAsset = shouldMonitorAssets && path.extname(file) !== '.map';
 						let params = {
 							Key: key,
 							Body: content,
@@ -93,11 +95,10 @@ function task (opts) {
 							.then(() => Promise.all([
 								waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`),
 								waitForOk(`http://${usBucket}.s3-website-${usRegion}.amazonaws.com/${key}`),
-								shouldMonitorAssets ? gzip(content) : Promise.resolve()
+								isMonitoringAsset ? gzip(content) : Promise.resolve()
 							]))
 							.then(values => {
-								// ignore source maps
-								if (!shouldMonitorAssets || path.extname(file) === '.map') {
+								if (!isMonitoringAsset) {
 									return;
 								}
 								const contentSize = Buffer.byteLength(content);
