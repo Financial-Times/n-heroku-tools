@@ -1,4 +1,3 @@
-
 'use strict';
 
 const packageJson = require(process.cwd() + '/package.json');
@@ -8,6 +7,7 @@ const readFile = denodeify(require('fs').readFile);
 const waitForOk = require('../lib/wait-for-ok');
 const path = require('path');
 const aws = require('aws-sdk');
+const Metrics = require('next-metrics').Metrics;
 
 const AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process.env.aws_access_hashed_assets;
 const AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.env.aws_secret_hashed_assets;
@@ -16,6 +16,7 @@ const bucket = 'ft-next-hashed-assets-prod';
 const usBucket = 'ft-next-hashed-assets-prod-us';
 const region = 'eu-west-1';
 const usRegion = 'us-east-1';
+const gzip = denodeify(require('zlib').gzip);
 
 aws.config.update({
 	accessKeyId: AWS_ACCESS_HASHED_ASSETS,
@@ -37,7 +38,8 @@ function upload(params) {
 			});
 }
 
-function task (app) {
+function task (opts) {
+	const shouldMonitorAssets = opts.monitorAssets;
 	let assetHashes;
 	try {
 		console.log(process.cwd() + '/public/assets-hashes.json');
@@ -50,49 +52,76 @@ function task (app) {
 		return Promise.reject('Must set AWS_ACCESS_HASHED_ASSETS and AWS_SECRET_HASHED_ASSETS');
 	}
 
-	app = app || normalizeName(packageJson.name, { version: false });
+	const app = normalizeName(packageJson.name, { version: false });
+
+	const metrics = new Metrics;
+	metrics.init({
+		platform: 's3',
+		app: app,
+		instance: false,
+		useDefaultAggregators: false,
+		flushEvery: false
+	});
 
 	console.log('Deploying hashed assets to S3...');
 
 	return Promise.all(Object.keys(assetHashes)
-		.map(file => {
-			const hashedName = assetHashes[file];
-			const key = 'hashed-assets/' + app + '/' + hashedName;
-			const extension = path.extname(file).substring(1);
+			.map(file => {
+				const hashedName = assetHashes[file];
+				const key = 'hashed-assets/' + app + '/' + hashedName;
+				const extension = path.extname(file).substring(1);
 
-			console.log(`sending ${key} to S3`);
+				console.log(`sending ${key} to S3`);
 
-			return readFile(path.join(process.cwd(), 'public', file))
-				.then(content => {
-					let params = {
-						Key: key,
-						Body: content,
-						ACL: 'public-read',
-						CacheControl: 'public, max-age=31536000'
-					};
-					switch(extension) {
-						case 'js':
-							params.ContentType = 'text/javascript';
-							break;
-						case 'css':
-							params.ContentType = 'text/css';
-							break;
-					}
-					return upload(params)
-						.then(() => Promise.all([
-							waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`),
-							waitForOk(`http://${usBucket}.s3-website-${usRegion}.amazonaws.com/${key}`)
-						]));
-				});
-		}));
-};
+				return readFile(path.join(process.cwd(), 'public', file))
+					.then(content => {
+						// ignore source maps
+						const isMonitoringAsset = shouldMonitorAssets && path.extname(file) !== '.map';
+						let params = {
+							Key: key,
+							Body: content,
+							ACL: 'public-read',
+							CacheControl: 'public, max-age=31536000'
+						};
+						switch(extension) {
+							case 'js':
+								params.ContentType = 'text/javascript';
+								break;
+							case 'css':
+								params.ContentType = 'text/css';
+								break;
+						}
+						return upload(params)
+							.then(() => Promise.all([
+								waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`),
+								waitForOk(`http://${usBucket}.s3-website-${usRegion}.amazonaws.com/${key}`),
+								isMonitoringAsset ? gzip(content) : Promise.resolve()
+							]))
+							.then(values => {
+								if (!isMonitoringAsset) {
+									return;
+								}
+								const contentSize = Buffer.byteLength(content);
+								const gzippedContentSize = Buffer.byteLength(values[2]);
+								console.log(`${file} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`);
+								metrics.count(`${file}.size`, contentSize);
+								metrics.count(`${file}.gzip_size`, gzippedContentSize);
+							});
+					});
+			})
+		)
+		.then(() => {
+			metrics.flush();
+		});
+}
 
 module.exports = function (program, utils) {
 	program
 		.command('deploy-hashed-assets')
 		.description('deploys hashed asset files to S3 (if AWS keys set correctly)')
-		.action(function () {
-			task().catch(utils.exit);
+		.option('--monitor-assets', 'Will send asset sizes to Graphite')
+		.action(function (options) {
+			task(options).catch(utils.exit);
 		});
 };
 
