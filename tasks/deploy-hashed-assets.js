@@ -60,7 +60,7 @@ function task (opts) {
 		app: app,
 		instance: false,
 		useDefaultAggregators: false,
-		flushEvery: 60000
+		flushEvery: false
 	});
 
 	console.log('Deploying hashed assets to S3...');
