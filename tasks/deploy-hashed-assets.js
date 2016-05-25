@@ -38,7 +38,8 @@ function upload(params) {
 			});
 }
 
-function task (app) {
+function task (opts) {
+	const shouldMonitorAssets = opts.monitorAssets;
 	let assetHashes;
 	try {
 		console.log(process.cwd() + '/public/assets-hashes.json');
@@ -51,7 +52,7 @@ function task (app) {
 		return Promise.reject('Must set AWS_ACCESS_HASHED_ASSETS and AWS_SECRET_HASHED_ASSETS');
 	}
 
-	app = app || normalizeName(packageJson.name, { version: false });
+	const app = normalizeName(packageJson.name, { version: false });
 
 	const metrics = new Metrics;
 	metrics.init({
@@ -92,16 +93,16 @@ function task (app) {
 							.then(() => Promise.all([
 								waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`),
 								waitForOk(`http://${usBucket}.s3-website-${usRegion}.amazonaws.com/${key}`),
-								gzip(content)
+								shouldMonitorAssets ? gzip(content) : Promise.resolve()
 							]))
 							.then(values => {
 								// ignore source maps
-								if (path.extname(file) === '.map') {
+								if (!shouldMonitorAssets || path.extname(file) === '.map') {
 									return;
 								}
 								const contentSize = Buffer.byteLength(content);
 								const gzippedContentSize = Buffer.byteLength(values[2]);
-								console.log(`${file} is ${contentSize} bytes and ${gzippedContentSize} bytes gzipped`);
+								console.log(`${file} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`);
 								metrics.count(`${file}.size`, contentSize);
 								metrics.count(`${file}.gzip_size`, gzippedContentSize);
 							});
@@ -117,8 +118,9 @@ module.exports = function (program, utils) {
 	program
 		.command('deploy-hashed-assets')
 		.description('deploys hashed asset files to S3 (if AWS keys set correctly)')
-		.action(function () {
-			task().catch(utils.exit);
+		.option('--monitor-assets', 'Will send asset sizes to Graphite')
+		.action(function (options) {
+			task(options).catch(utils.exit);
 		});
 };
 
