@@ -59,7 +59,7 @@ function runLocal(opts) {
 		}
 
 		if(opts.nodemon) {
-			args.push('--watch server');
+			args.push('--watch', 'server');
 
 			return ['nodemon', args, { cwd: process.cwd(), env: env }];
 		} else {
