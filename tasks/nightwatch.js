@@ -52,7 +52,7 @@ function task (opts) {
 	}
 
 	return new Promise(function (resolve, reject) {
-		var nightwatch = spawn('nightwatch', args, { cwd: process.cwd() });
+		var nightwatch = spawn(path.join(__dirname, '..', 'node_modules', '.bin', 'nightwatch'), args, { cwd: process.cwd() });
 		nightwatch.stdout.on('data', toStdOut);
 		nightwatch.stderr.on('data', toStdErr);
 		nightwatch.on('error', reject);
