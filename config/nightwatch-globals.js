@@ -14,6 +14,12 @@ const notify = (sessionId, passed) =>
 		});
 
 module.exports = {
+	buildUrl: (testApp, path) => `https://${testApp}.herokuapp.com${path}`,
+
+	gtgUrl: function (testApp) {
+		return this.buildUrl(testApp, '/__gtg')
+	},
+
 	afterEach: function (browser, done) {
 		const sessionId = browser.sessionId;
 		const results = browser.currentTest.results;

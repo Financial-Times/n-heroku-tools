@@ -17,8 +17,8 @@
       "access_key": "${SAUCE_KEY}",
       "desiredCapabilities": {
         "browserName": "chrome",
-        "version": "37",
-        "platform": "WINDOWS"
+        "version": "latest",
+        "platform": "Windows 10"
       }
     },
     "chrome": {
@@ -46,14 +46,14 @@
       "desiredCapabilities": {
         "browserName": "internet explorer",
         "version": "11.0",
-        "platform": "Windows 7"
+        "platform": "Windows 8.1"
       }
     },
     "ie10": {
       "desiredCapabilities": {
         "browserName": "internet explorer",
         "version": "10.0",
-        "platform": "Windows 7"
+        "platform": "Windows 8"
       }
     },
     "ie9": {
@@ -67,23 +67,25 @@
       "desiredCapabilities": {
         "browserName": "safari",
         "version": "latest",
-        "platform": "OS X 10.10"
+        "platform": "OS X 10.11"
       }
     },
     "iphone6_plus": {
       "desiredCapabilities": {
-        "version": "8.3",
+        "browserName": "Safari",
         "deviceName": "iPhone 6 Plus",
+        "platformVersion": "9.3",
+        "platformName": "iOS",
         "deviceOrientation": "portrait"
       }
     },
     "Android_Nexus7HD": {
       "desiredCapabilities": {
-        "browserName": "android",
-        "platform": "Linux",
-        "version": "4.4",
+        "browserName": "Browser",
         "deviceName": "Google Nexus 7 HD Emulator",
-        "device-orientation": "portrait"
+        "platformVersion": "4.4",
+        "platformName": "Android",
+        "deviceOrientation": "portrait"
       }
     }
   }
