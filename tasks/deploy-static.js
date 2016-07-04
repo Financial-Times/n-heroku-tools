@@ -9,6 +9,8 @@ const mime = require('mime');
 const path = require('path');
 const co = require('co');
 const md5File = denodeify(require('md5-file'));
+const gzip = denodeify(require('zlib').gzip);
+const Metrics = require('next-metrics').Metrics;
 
 function task (opts) {
 	const files = opts.files
@@ -17,6 +19,17 @@ function task (opts) {
 		});
 	const destination = opts.destination || "";
 	const bucket = opts.bucket;
+
+	const metrics = new Metrics;
+	metrics.init({
+		platform: 's3',
+		app: opts.bucket,
+		instance: false,
+		useDefaultAggregators: false,
+		flushEvery: false,
+		forceGraphiteLogging: true
+	});
+
 
 	if (files.length < 1) {
 		return Promise.reject("No files found for upload to s3.  (Directories are ignored)");
@@ -37,6 +50,7 @@ function task (opts) {
 			const content = yield readFile(file);
 			file = path.relative(process.cwd(), file);
 			let key = file;
+			const isMonitoringAsset = opts.monitor && path.extname(file) !== '.map';
 
 			if (opts.strip) {
 				key = file.split('/').splice(opts.strip).join('/');
@@ -65,6 +79,17 @@ function task (opts) {
 						ACL: opts.acl,
 						Body: content,
 						CacheControl: opts.cacheControl || (opts.cache ? 'public, max-age=31536000' : undefined)
+					})
+					.then(() => isMonitoringAsset ? gzip(content) : Promise.resolve())
+					.then(gzipped => {
+						if (!isMonitoringAsset) {
+							return;
+						}
+						const contentSize = Buffer.byteLength(content);
+						const gzippedContentSize = Buffer.byteLength(gzipped);
+						console.log(`${file} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`);
+						metrics.count(`${file}.size`, contentSize);
+						metrics.count(`${file}.gzip_size`, gzippedContentSize);
 					});
 				console.log(`Successfully uploaded: ${key}`);
 			}
@@ -84,6 +109,7 @@ module.exports = function (program, utils) {
 		.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
 		.option('--content-type <contentType>', 'Optionally specify a content type value')
 		.option('--acl <acl>', 'Optionally set the Canned Access Control List for new files being put into s3 (default to public-read)')
+		.option('--monitor', 'Optionally monitor the size of the asset')
 		.action(function (file, files, opts) {
 			files.unshift(file);
 			const region = opts.region || 'eu-west-1';
@@ -99,6 +125,7 @@ module.exports = function (program, utils) {
 				acl: acl,
 				strip: opts.strip,
 				cache: opts.cache,
+				monitor: opts.monitor,
 				cacheControl: opts.cacheControl,
 				contentType: opts.contentType,
 			}).catch(utils.exit);
