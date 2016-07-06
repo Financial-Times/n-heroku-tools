@@ -50,8 +50,11 @@ function task (options) {
 	return keys()
 		.then(function (env) {
 			circleToken = env.CIRCLECI_REBUILD_KEY;
-			if (apps.length === 0 && allApps) {
-				return fetch('http://next-registry.ft.com/services')
+			let appNamesPromise;
+			if (apps.length) {
+				appNamesPromise = Promise.resolve(apps);
+			} else if (allApps) {
+				appNamesPromise = fetch('http://next-registry.ft.com/services')
 					.then(fetchres.json)
 					.then(function (data) {
 						apps = data
@@ -77,6 +80,7 @@ function task (options) {
 				console.log('Use the --all flag to rebuild all apps or supply a specific app name.')
 				process.exit(1);
 			}
+			return appNamesPromise;
 		})
 		.then(function () {
 			return Promise.all(apps.map(function (app) {
