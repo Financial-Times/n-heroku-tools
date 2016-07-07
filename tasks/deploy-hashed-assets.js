@@ -84,6 +84,7 @@ function task (opts) {
 							ACL: 'public-read',
 							CacheControl: 'public, max-age=31536000'
 						};
+
 						switch(extension) {
 							case 'js':
 								params.ContentType = 'text/javascript';
