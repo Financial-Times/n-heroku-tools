@@ -82,8 +82,14 @@ function task (opts) {
 							Key: key,
 							Body: content,
 							ACL: 'public-read',
-							CacheControl: 'public, max-age=31536000'
+							CacheControl: opts.cacheControl || 'public, max-age=31536000'
 						};
+
+						if (opts.surrogateControl) {
+							params.metadata = {
+								'X-AMZ-Meta-Surrogate-Control': opts.surrogateControl
+							}
+						}
 
 						switch(extension) {
 							case 'js':
@@ -122,6 +128,8 @@ module.exports = function (program, utils) {
 		.command('deploy-hashed-assets')
 		.description('deploys hashed asset files to S3 (if AWS keys set correctly)')
 		.option('--monitor-assets', 'Will send asset sizes to Graphite')
+		.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
+		.option('--surrogate-control <cacheControl>', 'Optionally specify a surrogate control value')
 		.action(function (options) {
 			task(options).catch(utils.exit);
 		});
