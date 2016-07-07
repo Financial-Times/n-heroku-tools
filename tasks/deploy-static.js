@@ -73,13 +73,22 @@ function task (opts) {
 			} else {
 				console.log(`s3/local: ${s3Version} ${localVersion}`);
 				console.log(`Will upload ${file} to ${key}`);
-				yield denodeify(s3bucket.upload.bind(s3bucket))({
-						Key: key,
-						ContentType: opts.contentType || mime.lookup(file),
-						ACL: opts.acl,
-						Body: content,
-						CacheControl: opts.cacheControl || (opts.cache ? 'public, max-age=31536000' : undefined)
-					})
+
+				const payload = {
+					Key: key,
+					ContentType: opts.contentType || mime.lookup(file),
+					ACL: opts.acl,
+					Body: content,
+					CacheControl: opts.cacheControl || (opts.cache ? 'public, max-age=31536000' : undefined)
+				};
+
+				if (opts.surrogateControl) {
+					payload.metadata = {
+						'X-AMZ-Meta-Surrogate-Control': opts.surrogateControl
+					}
+				}
+
+				yield denodeify(s3bucket.upload.bind(s3bucket))(payload)
 					.then(() => isMonitoringAsset ? gzip(content) : Promise.resolve())
 					.then(gzipped => {
 						if (!isMonitoringAsset) {
@@ -107,6 +116,7 @@ module.exports = function (program, utils) {
 		.option('--bucket <bucket>', 'Optionally set the bucket (default to ft-next-qa)')
 		.option('--no-cache', 'Optionally don\'t set a far future cache')
 		.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
+		.option('--surrogate-control <cacheControl>', 'Optionally specify a surrogate control value')
 		.option('--content-type <contentType>', 'Optionally specify a content type value')
 		.option('--acl <acl>', 'Optionally set the Canned Access Control List for new files being put into s3 (default to public-read)')
 		.option('--monitor', 'Optionally monitor the size of the asset')
@@ -127,6 +137,7 @@ module.exports = function (program, utils) {
 				cache: opts.cache,
 				monitor: opts.monitor,
 				cacheControl: opts.cacheControl,
+				surrogateControl: opts.surrogateControl,
 				contentType: opts.contentType,
 			}).catch(utils.exit);
 		});
