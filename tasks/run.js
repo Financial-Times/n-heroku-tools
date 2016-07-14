@@ -15,6 +15,15 @@ function toStdErr(data) {
 	process.stderr.write(data.toString());
 }
 
+function extractLocalApps(localApps) {
+	return localApps.split(',')
+		.reduce(function (currentLocalApps, localApp) {
+			const localAppParts = localApp.split('=');
+			currentLocalApps.push({ name: localAppParts[0], port: localAppParts[1] });
+			return currentLocalApps;
+		}, []);
+}
+
 function configureAndSpawn(opts, func) {
 	return keys()
 		.then(function (env) {
@@ -102,9 +111,13 @@ function runRouter(opts) {
 		envVars.CERT_KEY = opts.key;
 	}
 
-	envVars[normalizeName(packageJson.name, { version: false })] = opts.localPort;
-	return configureAndSpawn(envVars, function (env) {
+	(opts.localApps || [])
+		.concat({ name: normalizeName(packageJson.name, { version: false }), port: opts.localPort })
+		.forEach(function (localApp) {
+			envVars[localApp.name] = localApp.port;
+		});
 
+	return configureAndSpawn(envVars, function (env) {
 		var bin = opts.https ? 'next-router-https' : 'next-router';
 		return [bin, { env: env }];
 	});
@@ -125,11 +138,12 @@ function task (opts) {
 	} else if (opts.script) {
 		return runScript({script: opts.script, harmony: opts.harmony, debug: opts.debug, subargs: opts.subargs});
 	} else {
+		const localApps = opts.localApps ? extractLocalApps(opts.localApps) : [];
 		return ensureRouterInstall()
 			.then(function () {
 				return Promise.all([
 					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
-					runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key })
+					runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key, localApps: localApps })
 				]);
 			});
 	}
@@ -149,6 +163,7 @@ module.exports = function (program, utils) {
 		.option('--https', 'Run with HTTPS')
 		.option('--cert <file>', 'Specify a certificate to use with HTTPS. Use with --https.')
 		.option('--key <file>', 'Specify a certificate key to use with HTTPS. Use with --https.')
+		.option('--local-apps <apps>', 'Specify extra apps that are running locally, as `[name]=[port]`, comma-seperated pairs, e.g. `service-worker=3001,front-page=3002`')
 		.action(function (opts){
 			task(opts).catch(utils.exit);
 		});
