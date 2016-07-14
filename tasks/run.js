@@ -163,7 +163,7 @@ module.exports = function (program, utils) {
 		.option('--https', 'Run with HTTPS')
 		.option('--cert <file>', 'Specify a certificate to use with HTTPS. Use with --https.')
 		.option('--key <file>', 'Specify a certificate key to use with HTTPS. Use with --https.')
-		.option('--local-apps <apps>', 'Specify extra apps that are running locally, as `[name]=[port]`, comma-seperated pairs, e.g. `service-worker=3001,front-page=3002`')
+		.option('--local-apps <apps>', 'Specify extra apps that are running locally, as comma-seperated `[name]=[port]`, e.g. `service-worker=3001,front-page=3002`')
 		.action(function (opts){
 			task(opts).catch(utils.exit);
 		});
