@@ -143,7 +143,7 @@ function task (opts) {
 			.then(function () {
 				return Promise.all([
 					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
-					runRouter({ PORT: 5050, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key, localApps: localApps })
+					runRouter({ PORT: opts.port, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key, localApps: localApps })
 				]);
 			});
 	}
@@ -164,6 +164,7 @@ module.exports = function (program, utils) {
 		.option('--cert <file>', 'Specify a certificate to use with HTTPS. Use with --https.')
 		.option('--key <file>', 'Specify a certificate key to use with HTTPS. Use with --https.')
 		.option('--local-apps <apps>', 'Specify extra apps that are running locally, as comma-seperated `[name]=[port]`, e.g. `service-worker=3001,front-page=3002`')
+		.option('-p --port <port>', 'Port to run the router through', 5050)
 		.action(function (opts){
 			task(opts).catch(utils.exit);
 		});
