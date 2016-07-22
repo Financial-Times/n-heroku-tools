@@ -86,7 +86,7 @@ function task (opts) {
 						};
 
 						if (opts.surrogateControl) {
-							params.metadata = {
+							params.Metadata = {
 								'X-AMZ-Meta-Surrogate-Control': opts.surrogateControl
 							}
 						}
