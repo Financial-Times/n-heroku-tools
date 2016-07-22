@@ -1,6 +1,6 @@
 {
   "name": "@financial-times/n-heroku-tools",
-  "version": "6.10.2",
+  "version": "0.0.0",
   "bin": {
     "next-build-tools": "./bin/n-heroku-tools.js",
     "nbt": "./bin/n-heroku-tools.js",
@@ -37,6 +37,7 @@
     "lintspaces-cli": "^0.1.1",
     "mocha": "^2.2.4",
     "mockery": "^1.4.0",
+    "npm-prepublish": "^1.2.1",
     "sinon": "^1.14.1"
   },
   "babel": {
