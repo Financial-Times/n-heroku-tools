@@ -23,6 +23,7 @@ module.exports = {
 	afterEach: function (browser, done) {
 		const sessionId = browser.sessionId;
 		const results = browser.currentTest.results;
+		this.sessionId = sessionId;
 		console.log(`Sauce Test Results at https://saucelabs.com/tests/${browser.sessionId}`);
 		if (results.failed || results.errors) {
 			browser
