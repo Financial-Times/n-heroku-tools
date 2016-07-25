@@ -78,6 +78,7 @@ module.exports = function (program, utils) {
 		.option('-g, --group <group>', 'Runs only the specified group of tests (subfolder). Tests are grouped by being placed in the same subfolder')
 		.option('-s, --skipgroup <skipgroup>', 'Skip one or several (comma separated) group of tests')
 		.option('--no-js', 'Specify the tests are not dependent on javascript running in the browser')
+		.option('--reporter <reporter>', 'Specify a custom nightwatch reporter')
 		.description('runs nightwatch with some sensible defaults')
 		.action(function (test, options) {
 			task({
@@ -90,7 +91,8 @@ module.exports = function (program, utils) {
 				skiptags: options.skiptags,
 				js: options.js,
 				group: options.group,
-				skipgroup: options.skipgroup
+				skipgroup: options.skipgroup,
+				reporter: options.reporter
 			})
 			.catch(utils.exit);
 		});
