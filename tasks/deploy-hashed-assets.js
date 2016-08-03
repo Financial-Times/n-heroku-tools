@@ -19,21 +19,6 @@ const usRegion = 'us-east-1';
 const gzip = denodeify(require('zlib').gzip);
 
 
-
-const s3bucket = new aws.S3({ params: { Bucket: bucket } });
-
-function upload(params) {
-	return new Promise((resolve, reject) => {
-		return s3bucket.upload(params, err => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve();
-					}
-				});
-			});
-}
-
 function task (opts) {
 
 	aws.config.update({
@@ -41,6 +26,20 @@ function task (opts) {
 		secretAccessKey: AWS_SECRET_HASHED_ASSETS,
 		region
 	});
+
+	const s3bucket = new aws.S3({ params: { Bucket: bucket } });
+
+	function upload(params) {
+		return new Promise((resolve, reject) => {
+			return s3bucket.upload(params, err => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve();
+						}
+					});
+				});
+	}
 
 	const shouldMonitorAssets = opts.monitorAssets;
 	let assetHashes;
