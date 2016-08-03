@@ -83,8 +83,8 @@ function task (opts) {
 				};
 
 				if (opts.surrogateControl) {
-					payload.metadata = {
-						'X-AMZ-Meta-Surrogate-Control': opts.surrogateControl
+					payload.Metadata = {
+						'Surrogate-Control': opts.surrogateControl
 					}
 				}
 

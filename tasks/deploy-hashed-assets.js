@@ -18,11 +18,7 @@ const region = 'eu-west-1';
 const usRegion = 'us-east-1';
 const gzip = denodeify(require('zlib').gzip);
 
-aws.config.update({
-	accessKeyId: AWS_ACCESS_HASHED_ASSETS,
-	secretAccessKey: AWS_SECRET_HASHED_ASSETS,
-	region
-});
+
 
 const s3bucket = new aws.S3({ params: { Bucket: bucket } });
 
@@ -39,6 +35,13 @@ function upload(params) {
 }
 
 function task (opts) {
+
+	aws.config.update({
+		accessKeyId: AWS_ACCESS_HASHED_ASSETS,
+		secretAccessKey: AWS_SECRET_HASHED_ASSETS,
+		region
+	});
+
 	const shouldMonitorAssets = opts.monitorAssets;
 	let assetHashes;
 	try {
@@ -87,7 +90,7 @@ function task (opts) {
 
 						if (opts.surrogateControl) {
 							params.Metadata = {
-								'X-AMZ-Meta-Surrogate-Control': opts.surrogateControl
+								'Surrogate-Control': opts.surrogateControl
 							}
 						}
 
