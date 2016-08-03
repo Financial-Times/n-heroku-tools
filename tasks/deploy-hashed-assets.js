@@ -41,6 +41,7 @@ function task (opts) {
 		secretAccessKey: AWS_SECRET_HASHED_ASSETS,
 		region
 	});
+
 	const shouldMonitorAssets = opts.monitorAssets;
 	let assetHashes;
 	try {
@@ -89,7 +90,7 @@ function task (opts) {
 
 						if (opts.surrogateControl) {
 							params.Metadata = {
-								'X-AMZ-Meta-Surrogate-Control': opts.surrogateControl
+								'Surrogate-Control': opts.surrogateControl
 							}
 						}
 
