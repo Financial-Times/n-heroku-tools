@@ -76,7 +76,7 @@ function task (opts) {
 
 				console.log(`sending ${key} to S3`);
 
-				return readFile(path.join(process.cwd(), 'public', file))
+				return readFile(path.join(process.cwd(), 'public', file), { encoding: 'utf-8' })
 					.then(content => {
 						// ignore source maps
 						const isMonitoringAsset = shouldMonitorAssets && path.extname(file) !== '.map';
