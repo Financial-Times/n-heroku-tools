@@ -95,10 +95,10 @@ function task (opts) {
 
 						switch(extension) {
 							case 'js':
-								params.ContentType = 'text/javascript';
+								params.ContentType = 'text/javascript; charset=utf-8';
 								break;
 							case 'css':
-								params.ContentType = 'text/css';
+								params.ContentType = 'text/css; charset=utf-8';
 								break;
 						}
 						return upload(params)
