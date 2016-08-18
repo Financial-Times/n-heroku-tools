@@ -68,7 +68,7 @@ function task (opts) {
 				.then(head => head.ETag.replace(/"/g, ''));
 			const localVersion = yield md5File(file);
 
-			if (s3Version === localVersion) {
+			if (false) {//s3Version === localVersion) {
 				console.log(`Unchanged, skipping: ${key}`);
 			} else {
 				console.log(`s3/local: ${s3Version} ${localVersion}`);
@@ -101,8 +101,9 @@ function task (opts) {
 						const contentSize = Buffer.byteLength(content);
 						const gzippedContentSize = Buffer.byteLength(gzipped);
 						console.log(`${file} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`);
-						metrics.count(`${file}.size`, contentSize);
-						metrics.count(`${file}.gzip_size`, gzippedContentSize);
+						const safeFile = file.replace(/\//g, '.');
+						metrics.count(`${safeFile}.size`, contentSize);
+						metrics.count(`${safeFile}.gzip_size`, gzippedContentSize);
 					})
 				console.log(`Successfully uploaded: ${key}`);
 			}
