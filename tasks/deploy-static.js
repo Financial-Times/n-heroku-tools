@@ -103,6 +103,9 @@ function task (opts) {
 						console.log(`${file} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`);
 						metrics.count(`${file}.size`, contentSize);
 						metrics.count(`${file}.gzip_size`, gzippedContentSize);
+					})
+					.then(() => {
+						metrics.flush();
 					});
 				console.log(`Successfully uploaded: ${key}`);
 			}
