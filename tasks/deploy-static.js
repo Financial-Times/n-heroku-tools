@@ -104,13 +104,13 @@ function task (opts) {
 						metrics.count(`${file}.size`, contentSize);
 						metrics.count(`${file}.gzip_size`, gzippedContentSize);
 					})
-					.then(() => {
-						metrics.flush();
-					});
 				console.log(`Successfully uploaded: ${key}`);
 			}
 		});
-	}));
+	}))
+		.then(() => {
+			metrics.flush();
+		});
 };
 
 module.exports = function (program, utils) {
