@@ -34,7 +34,6 @@ function task (opts) {
 	if (files.length < 1) {
 		return Promise.reject("No files found for upload to s3.  (Directories are ignored)");
 	}
-
 	// Backwards compatibility, prefer to use the standard AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY used by AWS NodeJS SDK
 	if (process.env.AWS_ACCESS && process.env.AWS_SECRET) {
 		aws.config.update({
@@ -100,8 +99,8 @@ function task (opts) {
 						}
 						const contentSize = Buffer.byteLength(content);
 						const gzippedContentSize = Buffer.byteLength(gzipped);
-						console.log(`${file} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`);
-						const safeFile = file.replace(/\//g, '.');
+						console.log(`${key} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`);
+						const safeFile = key.replace(/\//g, '.');
 						metrics.count(`${safeFile}.size`, contentSize);
 						metrics.count(`${safeFile}.gzip_size`, gzippedContentSize);
 					})
