@@ -34,7 +34,6 @@ function task (opts) {
 	if (files.length < 1) {
 		return Promise.reject("No files found for upload to s3.  (Directories are ignored)");
 	}
-	console.log(aws.config)
 	// Backwards compatibility, prefer to use the standard AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY used by AWS NodeJS SDK
 	if (process.env.AWS_ACCESS && process.env.AWS_SECRET) {
 		aws.config.update({
