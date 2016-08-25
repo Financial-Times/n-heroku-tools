@@ -14,6 +14,9 @@ const notify = (sessionId, passed) =>
 		});
 
 module.exports = {
+	// ft.com can take a while to load
+	asyncHookTimeout : 20000,
+
 	buildUrl: (testApp, path) => `https://${testApp}.herokuapp.com${path}`,
 
 	gtgUrl: function (testApp) {

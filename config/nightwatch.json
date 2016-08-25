@@ -1,5 +1,5 @@
 {
-  "src_folders": ["tests"],
+  "src_folders": ["test/browser/tests"],
   "output_folder": "./test/browser/reports",
   "globals_path": "./node_modules/@financial-times/n-heroku-tools/config/nightwatch-globals.js",
   "test_settings": {

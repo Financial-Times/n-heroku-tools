@@ -30,19 +30,13 @@ function filterBrowsers (env, broken) {
 
 
 function task (opts) {
-	var test = opts.test;
-	var env = opts.env || process.env.SAUCELABS_BROWSERS;
-
+	var env = opts.env || process.env.SAUCELABS_BROWSERS || 'default';
 	env = filterBrowsers(env, process.env.SAUCELABS_UNSTABLE_BROWSERS);
-
 	if (opts.js) {
 		env = filterBrowsers(env, process.env.SAUCELABS_UNSTABLE_BROWSERS_JS);
 	}
-	if (!env) {
-
-	}
 	var config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
-	var args = [ '--env', env, '--test', test, '--config', config ];
+	var args = [ '--env', env, '--config', config ];
 
 	for (var opt in opts) {
 		if (opts.hasOwnProperty(opt) && opts[opt] && args.indexOf(opts[opt]) === -1) {
