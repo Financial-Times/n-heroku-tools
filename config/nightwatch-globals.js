@@ -3,8 +3,8 @@
 require('isomorphic-fetch');
 const notifySauceLabs = require('notify-saucelabs');
 
-const notify = (sessionId, passed) =>
-	notifySauceLabs({ sessionId, passed })
+const notify = (sessionId, passed, opts) =>
+	notifySauceLabs(Object.assign({ sessionId, passed }, opts))
 		.then(() => {
 			console.info('Finished updating Sauce Labs');
 		})
@@ -23,25 +23,27 @@ module.exports = {
 		return this.buildUrl(testApp, '/__gtg')
 	},
 
-	afterEach: function (browser, done) {
+	afterEach: (browser, done) => {
 		const sessionId = browser.sessionId;
-		const results = browser.currentTest.results;
-		this.sessionId = sessionId;
-		console.log(`Sauce Test Results at https://saucelabs.com/tests/${browser.sessionId}`);
-		if (results.failed || results.errors) {
-			browser
-				.getLog('browser', logs => {
+		const currentTest = browser.currentTest;
+		const passed = !currentTest.results.failed && !currentTest.results.errors;
+		const notifyOpts = {};
+		if (currentTest.group) {
+			notifyOpts.tags = [currentTest.group];
+		}
+		console.log(`Sauce Test Results at https://saucelabs.com/tests/${sessionId}`);
+		browser
+			.getLog('browser', logs => {
+				if (!passed) {
 					console.log('JS Console');
 					console.log('==========');
 					console.log(logs);
-				})
-				.end(() => notify(sessionId, false).then(done));
-		} else {
-			notify(sessionId, true)
-				.then(err => {
-					browser.end();
-					done(err);
-				});
-		}
+				}
+			})
+			.perform((browser, done) => {
+				notify(sessionId, passed, notifyOpts)
+					.then(done);
+			})
+			.end(done);
 	}
 };
