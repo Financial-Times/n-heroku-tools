@@ -2,6 +2,7 @@
   "src_folders": ["test/browser/tests"],
   "output_folder": "./test/browser/reports",
   "globals_path": "./node_modules/@financial-times/n-heroku-tools/config/nightwatch-globals.js",
+  "test_workers": true,
   "test_settings": {
     "default": {
       "end_session_on_fail": false,
