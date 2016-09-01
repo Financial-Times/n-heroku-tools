@@ -27,10 +27,14 @@ module.exports = {
 		const sessionId = browser.sessionId;
 		const currentTest = browser.currentTest;
 		const passed = !currentTest.results.failed && !currentTest.results.errors;
-		const notifyOpts = {};
+		const tags = [];
 		if (currentTest.group) {
-			notifyOpts.tags = [currentTest.group];
+			tags.push(currentTest.group);
 		}
+		if (process.env.NODE_ENV) {
+			tags.push(process.env.NODE_ENV);
+		}
+		const notifyOpts = { tags };
 		console.log(`Sauce Test Results at https://saucelabs.com/tests/${sessionId}`);
 		browser
 			.getLog('browser', logs => {
