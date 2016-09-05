@@ -13,6 +13,10 @@ const gzip = denodeify(require('zlib').gzip);
 const Metrics = require('next-metrics').Metrics;
 
 function task (opts) {
+	opts.region = opts.region || 'eu-west-1';
+	opts.bucket = opts.bucket || 'ft-next-qa';
+	opts.destination = opts.destination || "";
+	opts.acl = opts.acl || 'public-read';
 	const files = opts.files
 		.filter(function (file) {
 			return !lstatSync(file).isDirectory();
@@ -129,17 +133,13 @@ module.exports = function (program, utils) {
 		.option('--monitor', 'Optionally monitor the size of the asset')
 		.action(function (file, files, opts) {
 			files.unshift(file);
-			const region = opts.region || 'eu-west-1';
-			const bucket = opts.bucket || 'ft-next-qa';
-			const destination = opts.destination || "";
-			const acl = opts.acl || 'public-read';
 
 			return task({
 				files: files,
-				destination: destination,
-				region: region,
-				bucket: bucket,
-				acl: acl,
+				destination: opts.destination,
+				region: opts.region,
+				bucket: opts.bucket,
+				acl: opts.acl,
 				strip: opts.strip,
 				cache: opts.cache,
 				monitor: opts.monitor,
