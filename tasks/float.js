@@ -33,7 +33,7 @@ function task (opts) {
 		log.success('Created app %s', testAppName);
 
 		log.info('Configure test app');
-		yield configure({source:appName, target:testAppName, overrides:['NODE_ENV=branch']});
+		yield configure({source:appName, target:testAppName, overrides:['NODE_ENV=branch', `TEST_APP=${testAppName}`]});
 		log.success('App configured');
 
 		log.info('Deploy to test app and run __gtg checks');
