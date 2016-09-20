@@ -38,6 +38,7 @@ require('../tasks/ship')(program, utils);
 require('../tasks/float')(program, utils);
 require('../tasks/drydock')(program, utils);
 require('../tasks/smoke')(program, utils);
+require('../tasks/a11y')(program, utils);
 
 program
 	.command('*')
