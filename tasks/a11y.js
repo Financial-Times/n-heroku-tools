@@ -3,9 +3,11 @@
 
 module.exports = function (program, utils) {
 	program
-		.command('pa11y-ci')
+		.command('pa11y-ci [app]')
 		.action(function () {
-			task()
+			task({
+				app: app
+			})
 			.catch(utils.exit);
 		});
 };
