@@ -66,7 +66,7 @@ function runLocal(opts) {
 		if (opts.debug) {
 			args.unshift('--debug');
 		}
-		
+
 		if( opts.inspect) {
 			args.unshift('--inspect');
 		}
