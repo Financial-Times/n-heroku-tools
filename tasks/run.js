@@ -66,6 +66,10 @@ function runLocal(opts) {
 		if (opts.debug) {
 			args.unshift('--debug');
 		}
+		
+		if( opts.inspect) {
+			args.unshift('--inspect');
+		}
 
 		if(opts.nodemon) {
 			return ['nodemon', args, { cwd: process.cwd(), env: env }];
