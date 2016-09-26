@@ -67,6 +67,10 @@ function runLocal(opts) {
 			args.unshift('--debug');
 		}
 
+		if( opts.inspect) {
+			args.unshift('--inspect');
+		}
+
 		if(opts.nodemon) {
 			return ['nodemon', args, { cwd: process.cwd(), env: env }];
 		} else {
@@ -156,6 +160,7 @@ module.exports = function (program, utils) {
 		.option('-l, --local', 'Run the app but don\'t start the router')
 		.option('--harmony', 'Runs the local app with harmony')
 		.option('--debug', 'Runs the local app with debug flag')
+		.options('--inspect', 'Runs the local app with the inspect flag (experimental - will only work with latest node versions)')
 		.option('--procfile', 'Runs all processes specified in the Procfile')
 		.option('-s, --script <file>', 'Runs a single javascript file')
 		.option('--subargs [subargs]', 'Sub arguments to pass to a single script', /^\[.+]$/)
