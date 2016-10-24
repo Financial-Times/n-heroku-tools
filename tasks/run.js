@@ -151,7 +151,7 @@ function task (opts) {
 		return ensureRouterInstall()
 			.then(function () {
 				return Promise.all([
-					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon, https: opts.https }),
+					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
 					runRouter({ PORT: opts.port, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key, localApps: localApps })
 				]);
 			});
