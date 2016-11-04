@@ -11,6 +11,7 @@ const co = require('co');
 const md5File = denodeify(require('md5-file'));
 const gzip = denodeify(require('zlib').gzip);
 const Metrics = require('next-metrics').Metrics;
+const isImage = require('is-image');
 
 function task (opts) {
 	opts.region = opts.region || 'eu-west-1';
@@ -50,9 +51,7 @@ function task (opts) {
 
 	return Promise.all(files.map(function (file) {
 		return co(function*() {
-			const imgFileExt = /\.(png|jpg|gif)$/i;
-			const isImage = imgFileExt.test(file);
-			const content = (isImage) ? yield readFile(file) : yield readFile(file, { encoding: 'utf-8' });
+			const content = (isImage(file)) ? yield readFile(file) : yield readFile(file, { encoding: 'utf-8' });
 			file = path.relative(process.cwd(), file);
 			let key = file;
 			const isMonitoringAsset = opts.monitor && path.extname(file) !== '.map';
