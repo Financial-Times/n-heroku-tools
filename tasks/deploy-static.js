@@ -50,7 +50,9 @@ function task (opts) {
 
 	return Promise.all(files.map(function (file) {
 		return co(function*() {
-			const content = yield readFile(file, { encoding: 'utf-8' });
+			const imgFileExt = /\.(png|jpg|gif)$/i;
+			const isImage = imgFileExt.test(file);
+			const content = (isImage) ? yield readFile(file) : yield readFile(file, { encoding: 'utf-8' });
 			file = path.relative(process.cwd(), file);
 			let key = file;
 			const isMonitoringAsset = opts.monitor && path.extname(file) !== '.map';
