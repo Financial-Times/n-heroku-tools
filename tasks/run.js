@@ -67,7 +67,7 @@ function runLocal(opts) {
 			args.unshift('--debug');
 		}
 
-		if( opts.inspect) {
+		if (opts.inspect) {
 			args.unshift('--inspect');
 		}
 
@@ -141,7 +141,7 @@ function task (opts) {
 	var localPort = process.env.PORT || 3002;
 
 	if (opts.local) {
-		return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon, https: opts.https });
+		return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon, https: opts.https, inspect: opts.inspect });
 	} else if (opts.procfile) {
 		return runProcfile();
 	} else if (opts.script) {
@@ -151,7 +151,7 @@ function task (opts) {
 		return ensureRouterInstall()
 			.then(function () {
 				return Promise.all([
-					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon }),
+					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon, inspect: opts.inspect }),
 					runRouter({ PORT: opts.port, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key, localApps: localApps })
 				]);
 			});
