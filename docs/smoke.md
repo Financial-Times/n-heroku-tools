@@ -10,7 +10,7 @@ e.g
 ```
 module.exports = [
 	{
-		urls: {
+						urls: {
 			'/home': 200,
 			'/forbidden': 401
 		}
@@ -35,6 +35,7 @@ For each set of urls additional options can be set to configure the requests
 - `method`: http method to use (defaults to GET)
 - `body`: object (which will be converted to JSON) or string to send as body
 
+All urls expecting a status code of `200` will be automatically added to the list of URLs to test for accessibility issues in user-facing apps (example [.pa11yci.js](https://github.com/Financial-Times/next-article/blob/master/.pa11yci.js) file. Per-app exceptions allowed)
 
 e.g. a more complex example
 ```
