@@ -93,11 +93,9 @@ function task (opts) {
 		.then(function () {
 			console.log(target + " config vars are set");
 
-			if (opts.metadata) {
-				return shellpromise('heroku labs:enable runtime-dyno-metadata --app ' + target, { verbose: true })
-					.then(() => console.log('Heroku metadata enabled'))
-					.catch((e) => console.error('Heroku metadata could not be enabled:', e.toString());
-			}
+			return shellpromise('heroku labs:enable runtime-dyno-metadata --app ' + target, { verbose: true })
+				.then(() => console.log('Heroku metadata enabled'))
+				.catch((e) => console.error('Heroku metadata could not be enabled:', e.toString());
 		});
 
 };
@@ -109,7 +107,6 @@ module.exports = function (program, utils) {
 		.description('downloads environment variables from next-config-vars and uploads them to the current app')
 		.option('-o, --overrides <abc>', 'override these values', utils.list)
 		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
-		.option('-m, --metadata', 'enable experimental heroku app metadata')
 		.action(function (source, target, options) {
 			if (!options.splunk) {
 				console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
@@ -118,8 +115,7 @@ module.exports = function (program, utils) {
 				source: source,
 				target: target,
 				overrides: options.overrides,
-				splunk: options.splunk,
-				metadata: options.metadata
+				splunk: options.splunk
 			}).catch(utils.exit);
 		});
 }
