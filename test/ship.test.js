@@ -58,10 +58,12 @@ describe('tasks/ship', function (){
 
 	it('Should scale to staging app up to 1 web dyno before deploying', function (){
 		let pipelineName = 'test';
+		let appName = 'sample-app';
+
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
 
-			sinon.assert.calledWith(mockScale.task, {target:mockApps.staging, scale:'web=1'});
+			sinon.assert.calledWith(mockScale.task, {source:appName, target:mockApps.staging, minimal:true});
 		});
 	});
 
@@ -98,10 +100,12 @@ describe('tasks/ship', function (){
 
 	it('Should scale the staging app down to 0 when complete', function (){
 		let pipelineName = 'test';
+		let appName = 'sample-app';
+
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
 
-			sinon.assert.calledWith(mockScale.task, {target:mockApps.staging, scale:'web=0'});
+			sinon.assert.calledWith(mockScale.task, {source:appName, target:mockApps.staging, inhibit:true});
 		});
 	});
 
