@@ -56,7 +56,7 @@ function task (opts) {
 		}
 
 		log.info('Scale staging app to 1 dyno');
-		yield scale({target:apps.staging, scale:'web=1'}).catch(function (){
+		yield scale({ source: appName, target: apps.staging, minimal: true }).catch(function (){
 			log.info('Failed to scale up staging app - is this the first run?')
 		});
 
@@ -86,7 +86,9 @@ function task (opts) {
 		}
 
 		log.info('scale staging app back to 0');
-		yield scale({target:apps.staging, scale:'web=0'});
+		yield scale({ source: appName, target: apps.staging, inhibit: true }).catch(() => {
+			log.warn('Failed to scale down staging app');
+		});
 
 		log.success('Shipped!');
 		log.art.ship(appName);

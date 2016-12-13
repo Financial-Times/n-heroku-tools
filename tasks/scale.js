@@ -36,9 +36,20 @@ function task (opts) {
 			}
 
 			const processProfiles = Object.keys(processInfo).map(process => {
-					return process + '=' + (opts.minimal ? 1 : processInfo[process].scale)
-						+ ':' + (opts.minimal ? 'standard-1X' : processInfo[process].size);
-				});
+				let scale = processInfo[process].scale;
+				let size = processInfo[process].size;
+
+				if (opts.minimal) {
+					scale = 1;
+					size = 'standard-1X';
+				}
+
+				if (opts.inhibit) {
+					scale = 0;
+				}
+
+				return `${process}=${scale}:${size}`;
+			});
 
 			return shellpromise('heroku ps:scale ' + processProfiles.join(' ') + ' --app ' + target, { verbose: true });
 
@@ -57,12 +68,14 @@ module.exports = function (program, utils) {
 	program
 		.command('scale [source] [target]')
 		.description('downloads process information from next-service-registry and scales/sizes the application servers')
-		.option('-m, --minimal', 'scales each dyno to a single instance (useful for provisioning a test app)')
+		.option('-m, --minimal', 'scales each dyno to a single instance')
+		.option('-i, --inhibit', 'scales each dyno down to 0')
 		.action(function (source, target, options) {
 			task({
 				source: source,
 				target: target,
-				minimal: options.minimal
+				minimal: options.minimal,
+				inhibit: options.inhibit
 			}).catch(utils.exit);
 		});
 };
