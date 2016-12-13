@@ -95,7 +95,7 @@ function task (opts) {
 
 			return shellpromise('heroku labs:enable runtime-dyno-metadata --app ' + target, { verbose: true })
 				.then(() => console.log('Heroku metadata enabled'))
-				.catch((e) => console.error('Heroku metadata could not be enabled:', e.toString());
+				.catch((e) => console.error('Heroku metadata could not be enabled:', e.toString()));
 		});
 
 };
