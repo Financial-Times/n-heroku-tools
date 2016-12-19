@@ -41,7 +41,6 @@ function task (opts) {
 
 				if (opts.minimal) {
 					scale = 1;
-					size = 'standard-1X';
 				}
 
 				if (opts.inhibit) {
