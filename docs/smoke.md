@@ -34,6 +34,7 @@ For each set of urls additional options can be set to configure the requests
 - `headers`: an object of key/value pairs defining headers to send
 - `method`: http method to use (defaults to GET)
 - `body`: object (which will be converted to JSON) or string to send as body
+- `name`: a name for this set of URLs which will be output in test results
 
 All urls expecting a status code of `200` will be automatically added to the list of URLs to test for accessibility issues in user-facing apps (example [.pa11yci.js](https://github.com/Financial-Times/next-article/blob/master/.pa11yci.js) file. Per-app exceptions allowed)
 
@@ -47,6 +48,7 @@ module.exports = [
 		}
 	},
 	{
+		name: 'can create user',
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
