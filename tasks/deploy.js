@@ -85,6 +85,7 @@ module.exports = function (program, utils) {
 		.command('deploy [app]')
 		.description('runs haikro deployment scripts with sensible defaults for Next projects')
 		.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
+		.option('-a, --authenticated-smoke-tests', 'authenticate smoke tests with a backend authorization key')
 		.action(function (app, options) {
 			task({
 				app: app,
@@ -92,6 +93,7 @@ module.exports = function (program, utils) {
 				// Skip GTG check if ‘--skip-gtg’ specified or if doing a production (i.e. no ‘app’ specified)
 				// deploy (because preboot will mean that the gtg checks are meaningless)
 				skipGtg: options.skipGtg || !app,
+				authenticatedSmokeTests: options.authenticatedSmokeTests,
 			}).catch(utils.exit);
 		});
 }
