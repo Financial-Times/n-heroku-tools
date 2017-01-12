@@ -95,7 +95,6 @@ function task (opts) {
 				if (payload.ContentType === 'text/javascript' || payload.ContentType === 'text/css') {
 					payload.ContentType += '; charset=utf-8';
 				}
-
 				yield denodeify(s3bucket.upload.bind(s3bucket))(payload)
 					.then(() => isMonitoringAsset ? gzip(content) : Promise.resolve())
 					.then(gzipped => {
@@ -105,7 +104,7 @@ function task (opts) {
 						const contentSize = Buffer.byteLength(content);
 						const gzippedContentSize = Buffer.byteLength(gzipped);
 						console.log(`${key} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`);
-						const safeFile = key.replace(/\//g, '.');
+						let safeFile = opts.monitorStripDirectories ? key.split('/').pop() : key.replace(/\//g, '.');
 						metrics.count(`${safeFile}.size`, contentSize);
 						metrics.count(`${safeFile}.gzip_size`, gzippedContentSize);
 					})
@@ -132,6 +131,7 @@ module.exports = function (program, utils) {
 		.option('--content-type <contentType>', 'Optionally specify a content type value')
 		.option('--acl <acl>', 'Optionally set the Canned Access Control List for new files being put into s3 (default to public-read)')
 		.option('--monitor', 'Optionally monitor the size of the asset')
+		.option('--monitor-strip-directories <strip>', 'Optionally strip all directories from the name of the metric used for monitoring')
 		.action(function (file, files, opts) {
 			files.unshift(file);
 
@@ -144,6 +144,7 @@ module.exports = function (program, utils) {
 				strip: opts.strip,
 				cache: opts.cache,
 				monitor: opts.monitor,
+				monitorStripDirectories: opts.monitorStripDirectories,
 				cacheControl: opts.cacheControl,
 				surrogateControl: opts.surrogateControl,
 				contentType: opts.contentType,
