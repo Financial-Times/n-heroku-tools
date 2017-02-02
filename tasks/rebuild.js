@@ -46,10 +46,10 @@ function task (options) {
 	var apps = options.apps;
 	var serves = options.serves;
 	var allApps = options.all;
-
-	return keys()
-		.then(function (env) {
-			circleToken = env.CIRCLECI_REBUILD_KEY;
+	const keyPromise = process.env.CIRCLECI_REBUILD_KEY ? Promise.resolve(process.env.CIRCLECI_REBUILD_KEY) : keys().then(env => env.CIRCLECI_REBUILD_KEY)
+	return keyPromise
+		.then(token => {
+			circleToken = token;
 			let appNamesPromise;
 			if (apps.length) {
 				appNamesPromise = Promise.resolve(apps);
