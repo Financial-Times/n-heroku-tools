@@ -72,7 +72,7 @@ function task (opts) {
 				.then(head => head.ETag.replace(/"/g, ''));
 			const localVersion = yield md5File(file);
 
-			if (false) {//s3Version === localVersion) {
+			if (s3Version === localVersion) {
 				console.log(`Unchanged, skipping: ${key}`);
 			} else {
 				console.log(`s3/local: ${s3Version} ${localVersion}`);
