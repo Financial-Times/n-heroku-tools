@@ -12,6 +12,7 @@ const md5File = denodeify(require('md5-file'));
 const gzip = denodeify(require('zlib').gzip);
 const Metrics = require('next-metrics').Metrics;
 const isImage = require('is-image');
+const waitForOk = require('../lib/wait-for-ok');
 
 function task (opts) {
 	opts.region = opts.region || 'eu-west-1';
@@ -96,6 +97,11 @@ function task (opts) {
 					payload.ContentType += '; charset=utf-8';
 				}
 				yield denodeify(s3bucket.upload.bind(s3bucket))(payload)
+					.then(() => {
+						if (opts.waitForOk) {
+							return waitForOk(`http://${opts.bucket}.s3-website-${opts.region}.amazonaws.com/${key}`)
+						}
+					})
 					.then(() => isMonitoringAsset ? gzip(content) : Promise.resolve())
 					.then(gzipped => {
 						if (!isMonitoringAsset) {
@@ -132,6 +138,7 @@ module.exports = function (program, utils) {
 		.option('--acl <acl>', 'Optionally set the Canned Access Control List for new files being put into s3 (default to public-read)')
 		.option('--monitor', 'Optionally monitor the size of the asset')
 		.option('--monitor-strip-directories <strip>', 'Optionally strip all directories from the name of the metric used for monitoring')
+		.option('--wait-for-ok -w', 'Poll s3 to see if the file was uploaded ok')
 		.action(function (file, files, opts) {
 			files.unshift(file);
 
@@ -148,6 +155,7 @@ module.exports = function (program, utils) {
 				cacheControl: opts.cacheControl,
 				surrogateControl: opts.surrogateControl,
 				contentType: opts.contentType,
+				waitForOk: opts.waitForOk,
 			}).catch(utils.exit);
 		});
 };
