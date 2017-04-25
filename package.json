@@ -26,6 +26,7 @@
     "next-metrics": "^1.30.4",
     "nightwatch": "^0.9.8",
     "notify-saucelabs": "^1.0.2",
+    "pa11y-ci": "^0.2.0",
     "semver": "^5.0.3",
     "shellpromise": "^1.0.0"
   },
