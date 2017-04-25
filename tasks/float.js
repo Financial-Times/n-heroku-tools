@@ -32,9 +32,11 @@ function task (opts) {
 		yield provision(testAppName);
 		log.success('Created app %s', testAppName);
 
-		log.info('Configure test app');
-		yield configure({source:appName, target:testAppName, overrides:['NODE_ENV=branch', `TEST_APP=${testAppName}`, `WEB_CONCURRENCY=1`]});
-		log.success('App configured');
+		if (opts.configure) {
+			log.info('Configure test app');
+			yield configure({source:appName, target:testAppName, overrides:['NODE_ENV=branch', `TEST_APP=${testAppName}`, `WEB_CONCURRENCY=1`]});
+			log.success('App configured');
+		}
 
 		log.info('Deploy to test app and run __gtg checks');
 		yield deploy({ app: testAppName, skipGtg: opts.skipGtg });
@@ -67,6 +69,7 @@ module.exports = function (program, utils) {
 		.command('float')
 		.description('Deploys code to a test app and checks it doesn\'t die')
 		.option('-a --app', 'Name of the app')
+		.option('-c --no-configure', 'Skip the configure step')
 		.option('-t --testapp [value]', 'Name of the app to be created')
 		.option('-m --master', "Run even if on master branch (not required if using nbt ship).")
 		.option('-d, --no-destroy', 'Don\'t automatically destroy new apps')
