@@ -5,6 +5,7 @@ var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
 var configVarsKey = require('../lib/config-vars-key');
 var normalizeName = require('../lib/normalize-name');
+var vault = require('../lib/vault');
 var fetchres = require('fetchres');
 
 function fetchFromNextConfigVars(source, target, key) {
@@ -25,7 +26,10 @@ function fetchFromNextConfigVars(source, target, key) {
 
 function fetchFromVault(source, target) {
 	console.log(`Fetching ${source} config from the vault for ${target}`);
-	return Promise.resolve({}); // dummy for now
+	const pathPrefix = 'secret/teams/next';
+	return vault.get()
+		.then(vault => vault.read(`${pathPrefix}/${source}/production`))
+		.then(response => response.data);
 }
 
 function task (opts) {
