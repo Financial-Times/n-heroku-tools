@@ -72,7 +72,7 @@ function task (opts) {
 		.then(function (data) {
 			var desired = data[0];
 			var current = data[1];
-			desired["___WARNING___"] = "Don't edit config vars manually. Make PR to https://github.com/Financial-Times/next-config-vars";
+			desired["___WARNING___"] = "Don't edit config vars manually. Use the Vault or make a PR to next-config-vars";
 			var patch = {};
 
 			Object.keys(current).forEach(function (key) {
