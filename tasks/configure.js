@@ -104,7 +104,7 @@ module.exports = function (program, utils) {
 		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
 		.action(function (source, target, options) {
 			if (!options.splunk) {
-				console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
+				console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NHT")
 			}
 			task({
 				source: source,

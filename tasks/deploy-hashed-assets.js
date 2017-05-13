@@ -47,7 +47,7 @@ function task (opts) {
 		console.log(process.cwd() + '/public/assets-hashes.json');
 		assetHashes = require(process.cwd() + '/public/asset-hashes.json');
 	} catch(err) {
-		return Promise.reject('Must run `make build-production` before running `nbt deploy-hashed-assets`');
+		return Promise.reject('Must run `make build-production` before running `nht deploy-hashed-assets`');
 	}
 
 	if (!(AWS_ACCESS_HASHED_ASSETS && AWS_SECRET_HASHED_ASSETS)) {

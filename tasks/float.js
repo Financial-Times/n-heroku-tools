@@ -71,7 +71,7 @@ module.exports = function (program, utils) {
 		.option('-a --app', 'Name of the app')
 		.option('-c --no-configure', 'Skip the configure step')
 		.option('-t --testapp [value]', 'Name of the app to be created')
-		.option('-m --master', "Run even if on master branch (not required if using nbt ship).")
+		.option('-m --master', "Run even if on master branch (not required if using nht ship).")
 		.option('-d, --no-destroy', 'Don\'t automatically destroy new apps')
 		.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
 		.action(function (options){
