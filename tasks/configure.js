@@ -5,7 +5,32 @@ var packageJson = require(process.cwd() + '/package.json');
 var herokuAuthToken = require('../lib/heroku-auth-token');
 var configVarsKey = require('../lib/config-vars-key');
 var normalizeName = require('../lib/normalize-name');
+var vault = require('../lib/vault');
 var fetchres = require('fetchres');
+
+function fetchFromNextConfigVars(source, target, key) {
+	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
+	fetch('https://ft-next-config-vars.herokuapp.com/production/' + source, { headers: { Authorization: key } })
+		.then(fetchres.json)
+		.catch(function (err) {
+			if (err instanceof fetchres.BadServerResponseError) {
+				if (err.message === 404) {
+					throw new Error("Could not download config vars for " + source + ", check it's set up in ft-next-config-vars");
+				}
+				throw new Error("Could not download config vars for " + source + ", check you have already joined it on Heroku");
+			} else {
+				throw err;
+			}
+		});
+}
+
+function fetchFromVault(source, target) {
+	console.log(`Fetching ${source} config from the vault for ${target}`);
+	const pathPrefix = 'secret/teams/next';
+	return vault.get()
+		.then(vault => vault.read(`${pathPrefix}/${source}/production`))
+		.then(response => response.data);
+}
 
 function task (opts) {
 
@@ -32,18 +57,7 @@ function task (opts) {
 		.then(function (keys) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
 			return Promise.all([
-				fetch('https://ft-next-config-vars.herokuapp.com/production/' + source, { headers: { Authorization: keys[1] } })
-					.then(fetchres.json)
-					.catch(function (err) {
-						if (err instanceof fetchres.BadServerResponseError) {
-							if (err.message === 404) {
-								throw new Error("Could not download config vars for " + source + ", check it's set up in ft-next-config-vars");
-							}
-							throw new Error("Could not download config vars for " + source + ", check you have already joined it on Heroku");
-						} else {
-							throw err;
-						}
-					}),
+				opts.vault ? fetchFromVault(source, target) : fetchFromNextConfigVars(source, target, keys[1]),
 				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
 					.then(fetchres.json)
 					.catch(function (err) {
@@ -58,7 +72,7 @@ function task (opts) {
 		.then(function (data) {
 			var desired = data[0];
 			var current = data[1];
-			desired["___WARNING___"] = "Don't edit config vars manually. Make PR to https://github.com/Financial-Times/next-config-vars";
+			desired["___WARNING___"] = "Don't edit config vars manually. Use the Vault or make a PR to next-config-vars";
 			var patch = {};
 
 			Object.keys(current).forEach(function (key) {
@@ -99,9 +113,10 @@ module.exports = function (program, utils) {
 
 	program
 		.command('configure [source] [target]')
-		.description('downloads environment variables from next-config-vars and uploads them to the current app')
+		.description('gets environment variables from next-config-vars or the vault and uploads them to the current app')
 		.option('-o, --overrides <abc>', 'override these values', utils.list)
 		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
+		.option('-t, --vault', 'use the vault instead of next-config-vars')
 		.action(function (source, target, options) {
 			if (!options.splunk) {
 				console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
@@ -110,7 +125,8 @@ module.exports = function (program, utils) {
 				source: source,
 				target: target,
 				overrides: options.overrides,
-				splunk: options.splunk
+				splunk: options.splunk,
+				vault: !!options.vault
 			}).catch(utils.exit);
 		});
 }

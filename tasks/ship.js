@@ -43,11 +43,11 @@ function task (opts) {
 			log.log('Configure enabled');
 			let source = pipelineName;
 			let configureTasks = [
-				configure({ source: source, target: apps.staging }),
-				configure({ source: source, target: apps.production.eu, overrides: ['REGION=EU'] })
+				configure({ source: source, target: apps.staging, vault: !!opts.vault }),
+				configure({ source: source, target: apps.production.eu, overrides: ['REGION=EU'], vault: !!opts.vault })
 			];
 			if (opts.multiregion) {
-				configureTasks.push(configure({ source: source, target: apps.production.us, overrides: ['REGION=US'] }))
+				configureTasks.push(configure({ source: source, target: apps.production.us, overrides: ['REGION=US'], vault: !!opts.vault }))
 			}
 
 			log.log('Configure all apps');
@@ -100,6 +100,7 @@ module.exports = function (program, utils) {
 		.command('ship')
 		.description('Ships code.  Deploys using pipelines, also running the configure and scale steps automatically')
 		.option('-c --no-configure', 'Skip the configure step')
+		.option('-t --vault', 'Use the vault instead of next-config-vars for any configuration')
 		.option('-s --no-scale', 'Skip the scale step')
 		.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
 		.option('-m --multiregion', 'Will expect a US app as well as an EU one')
