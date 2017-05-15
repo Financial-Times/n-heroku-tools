@@ -10,7 +10,7 @@ var fetchres = require('fetchres');
 
 function fetchFromNextConfigVars(source, target, key) {
 	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
-	fetch('https://ft-next-config-vars.herokuapp.com/production/' + source, { headers: { Authorization: key } })
+	return fetch('https://ft-next-config-vars.herokuapp.com/production/' + source, { headers: { Authorization: key } })
 		.then(fetchres.json)
 		.catch(function (err) {
 			if (err instanceof fetchres.BadServerResponseError) {
