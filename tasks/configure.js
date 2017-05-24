@@ -26,9 +26,14 @@ function fetchFromNextConfigVars(source, target, key) {
 
 function fetchFromVault(source, target) {
 	console.log(`Fetching ${source} config from the vault for ${target}`);
-	const pathPrefix = 'secret/teams/next';
-	return vault.get()
-		.then(vault => vault.read(`${pathPrefix}/${source}/production`))
+
+	const path = fetch('https://next-registry.ft.com/v2/')
+		.then(fetchres)
+		.then(json => json.find(app => app.name === normalizeName(source)).config)
+		.then(url => url.substring(0, url.indexOf('https://vault.in.ft.com/v1/')))
+
+	return Promise.all([path, vault.get()])
+		.then(([path, vault]) => vault.read(`${path}/production`))
 		.then(response => response.data);
 }
 
