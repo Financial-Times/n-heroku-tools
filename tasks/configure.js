@@ -30,11 +30,16 @@ function fetchFromVault(source, target) {
 	const path = fetch('https://next-registry.ft.com/v2/')
 		.then(fetchres.json)
 		.then(json => json.find(app => app.name === normalizeName(source)).config)
-		.then(url => url.substring(0, url.indexOf('https://vault.in.ft.com/v1/')))
+		.then(url => url.replace('https://vault.in.ft.com/v1/',''))
 
 	return Promise.all([path, vault.get()])
-		.then(([path, vault]) => vault.read(`${path}/production`))
-		.then(response => response.data);
+		.then(([path, vault]) => {
+			return Promise.all([
+				vault.read(`secret/teams/next/next-globals/production`),
+				vault.read(`${path}/production`)
+			]);
+		})
+		.then(([globals, app]) => Object.assign({}, globals.data, app.data));
 }
 
 function task (opts) {
