@@ -44,6 +44,11 @@ describe('tasks/ship', function (){
 	});
 
 	after(function (){
+		mockery.deregisterMock('./configure');
+		mockery.deregisterMock('./deploy');
+		mockery.deregisterMock('./scale');
+		mockery.deregisterMock('../lib/pipelines');
+		mockery.deregisterMock(process.cwd() + '/package.json');
 		mockery.disable();
 	});
 
