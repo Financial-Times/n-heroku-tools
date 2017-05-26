@@ -41,7 +41,7 @@ function task (opts) {
 
 		log.info('Found apps %j', apps);
 
-		const REGISTRY_URI = DEFAULT_REGISTRY_URI;
+		const REGISTRY_URI = opts.registry || DEFAULT_REGISTRY_URI;
 
 		if (opts.configure) {
 			log.log('Configure enabled');
