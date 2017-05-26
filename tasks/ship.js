@@ -8,6 +8,8 @@ const pipelines = require('../lib/pipelines');
 const deploy = require('./deploy').task;
 const log = require('../lib/logger');
 
+const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
+
 function task (opts) {
 
 	return co(function* (){
@@ -39,15 +41,34 @@ function task (opts) {
 
 		log.info('Found apps %j', apps);
 
+		const REGISTRY_URI = DEFAULT_REGISTRY_URI;
+
 		if (opts.configure) {
 			log.log('Configure enabled');
 			let source = pipelineName;
 			let configureTasks = [
-				configure({ source: source, target: apps.staging, vault: !!opts.vault }),
-				configure({ source: source, target: apps.production.eu, overrides: ['REGION=EU'], vault: !!opts.vault })
+				configure({
+					source: source,
+					target: apps.staging,
+					registry: REGISTRY_URI,
+					vault: !!opts.vault
+				}),
+				configure({
+					source: source,
+					target: apps.production.eu,
+					overrides: ['REGION=EU'],
+					registry: REGISTRY_URI,
+					vault: !!opts.vault
+				})
 			];
 			if (opts.multiregion) {
-				configureTasks.push(configure({ source: source, target: apps.production.us, overrides: ['REGION=US'], vault: !!opts.vault }))
+				configureTasks.push(configure({
+					source: source,
+					target: apps.production.us,
+					overrides: ['REGION=US'],
+					registry: REGISTRY_URI,
+					vault: !!opts.vault
+				}))
 			}
 
 			log.log('Configure all apps');
@@ -56,7 +77,12 @@ function task (opts) {
 		}
 
 		log.info('Scale staging app to 1 dyno');
-		yield scale({ source: appName, target: apps.staging, minimal: true }).catch(function (){
+		yield scale({
+			source: appName,
+			target: apps.staging,
+			minimal: true,
+			registry: REGISTRY_URI
+		}).catch(function (){
 			log.info('Failed to scale up staging app - is this the first run?')
 		});
 
@@ -73,11 +99,23 @@ function task (opts) {
 			log.log('scale enabled');
 			let source = appName;
 			let scaleTasks = [
-				scale({source:source, target:apps.staging}),
-				scale({source:source, target:apps.production.eu})
+				scale({
+					source:source,
+					target:apps.staging,
+					registry: REGISTRY_URI
+				}),
+				scale({
+					source:source,
+					target:apps.production.eu,
+					registry: REGISTRY_URI
+				})
 			];
 			if(opts.multiregion){
-				scaleTasks.push(scale({source:source, target:apps.production.us}))
+				scaleTasks.push(scale({
+					source:source,
+					target:apps.production.us,
+					registry: REGISTRY_URI
+				}))
 			}
 
 			log.info('scale production apps');
@@ -86,7 +124,12 @@ function task (opts) {
 		}
 
 		log.info('scale staging app back to 0');
-		yield scale({ source: appName, target: apps.staging, inhibit: true }).catch(() => {
+		yield scale({
+			source: appName,
+			target: apps.staging,
+			inhibit: true,
+			registry: REGISTRY_URI
+		}).catch(() => {
 			log.warn('Failed to scale down staging app');
 		});
 
@@ -103,6 +146,7 @@ module.exports = function (program, utils) {
 		.option('-t --vault', 'Use the vault instead of next-config-vars for any configuration')
 		.option('-s --no-scale', 'Skip the scale step')
 		.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
+		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('-m --multiregion', 'Will expect a US app as well as an EU one')
 		.action(function (options){
 			task(options).catch(utils.exit);

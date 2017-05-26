@@ -4,6 +4,8 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const co = require('co');
 
+const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
+
 describe('tasks/ship', function (){
 
 	function stubbedPromise(value, property){
@@ -50,9 +52,26 @@ describe('tasks/ship', function (){
 		return co(function* (){
 			yield ship({pipeline:pipelineName, configure:true, multiregion:true});
 
-			sinon.assert.calledWith(mockConfigure.task, { source: pipelineName, target: mockApps.staging, vault: false });
-			sinon.assert.calledWith(mockConfigure.task, { source: pipelineName, target: mockApps.production.eu, overrides: ['REGION=EU'], vault: false });
-			sinon.assert.calledWith(mockConfigure.task, { source: pipelineName, target: mockApps.production.us, overrides: ['REGION=US'], vault: false });
+			sinon.assert.calledWith(mockConfigure.task, {
+				source: pipelineName,
+				target: mockApps.staging,
+				registry: DEFAULT_REGISTRY_URI,
+				vault: false
+			});
+			sinon.assert.calledWith(mockConfigure.task, {
+				source: pipelineName,
+				target: mockApps.production.eu,
+				overrides: ['REGION=EU'],
+				registry: DEFAULT_REGISTRY_URI,
+				vault: false
+			});
+			sinon.assert.calledWith(mockConfigure.task, {
+				source: pipelineName,
+				target: mockApps.production.us,
+				overrides: ['REGION=US'],
+				registry: DEFAULT_REGISTRY_URI,
+				vault: false
+			});
 		});
 	});
 
@@ -63,7 +82,12 @@ describe('tasks/ship', function (){
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
 
-			sinon.assert.calledWith(mockScale.task, {source:appName, target:mockApps.staging, minimal:true});
+			sinon.assert.calledWith(mockScale.task, {
+				source:appName,
+				target:mockApps.staging,
+				minimal:true,
+				registry: DEFAULT_REGISTRY_URI
+			});
 		});
 	});
 
@@ -91,9 +115,21 @@ describe('tasks/ship', function (){
 		return co(function* (){
 			yield ship({pipeline:pipelineName,scale:true,multiregion:true});
 
-			sinon.assert.calledWith(mockScale.task, {source:appName, target:mockApps.staging});
-			sinon.assert.calledWith(mockScale.task, {source:appName, target:mockApps.production.eu});
-			sinon.assert.calledWith(mockScale.task, {source:appName, target:mockApps.production.us});
+			sinon.assert.calledWith(mockScale.task, {
+				source:appName,
+				target:mockApps.staging,
+				registry: DEFAULT_REGISTRY_URI
+			});
+			sinon.assert.calledWith(mockScale.task, {
+				source:appName,
+				target:mockApps.production.eu,
+				registry: DEFAULT_REGISTRY_URI
+			});
+			sinon.assert.calledWith(mockScale.task, {
+				source:appName,
+				target:mockApps.production.us,
+				registry: DEFAULT_REGISTRY_URI
+			});
 
 		});
 	});
@@ -105,7 +141,12 @@ describe('tasks/ship', function (){
 		return co(function* (){
 			yield ship({pipeline:pipelineName});
 
-			sinon.assert.calledWith(mockScale.task, {source:appName, target:mockApps.staging, inhibit:true});
+			sinon.assert.calledWith(mockScale.task, {
+				source:appName,
+				target:mockApps.staging,
+				inhibit:true,
+				registry: DEFAULT_REGISTRY_URI
+			});
 		});
 	});
 

@@ -1,9 +1,11 @@
 
 'use strict';
 
-var fetchres = require('fetchres');
-var keys = require('../lib/keys');
+const fetchres = require('fetchres');
+const keys = require('../lib/keys');
 var circleToken;
+
+const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/services';
 
 function circleFetch(path, opts) {
 	opts = opts || {};
@@ -44,6 +46,7 @@ function lastMasterBuild(project) {
 
 function task (options) {
 	var apps = options.apps;
+	var registry = options.registry || DEFAULT_REGISTRY_URI;
 	var serves = options.serves;
 	var allApps = options.all;
 	const keyPromise = process.env.CIRCLECI_REBUILD_KEY ? Promise.resolve(process.env.CIRCLECI_REBUILD_KEY) : keys().then(env => env.CIRCLECI_REBUILD_KEY)
@@ -54,7 +57,7 @@ function task (options) {
 			if (apps.length) {
 				appNamesPromise = Promise.resolve(apps);
 			} else if (allApps) {
-				appNamesPromise = fetch('http://next-registry.ft.com/services')
+				appNamesPromise = fetch(registry)
 					.then(fetchres.json)
 					.then(function (data) {
 						apps = data
@@ -108,12 +111,14 @@ module.exports = function (program, utils) {
 	program
 		.command('rebuild [apps...]')
 		.option('--all', 'Trigger rebuilds of all apps.')
+		.option('--registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('--serves <type>', 'Trigger rebuilds of apps where type is served.')
 		.description('DEPRECATED.  Will be moved a new home soon.  Trigger a rebuild of the latest master on Circle')
 		.action(function (apps, opts) {
 			return task({
 				apps: apps,
 				serves: opts.serves,
+				registry: opts.registry,
 				all: opts.all
 			}).catch(utils.exit);
 		});
