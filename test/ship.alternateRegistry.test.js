@@ -38,7 +38,7 @@ describe('tasks/ship (using alternate registry)', function (){
 		mockery.registerMock('./deploy', mockDeploy);
 		mockery.registerMock('./scale', mockScale);
 		mockery.registerMock('../lib/pipelines', mockPipelines);
-		mockery.registerMock(process.cwd() + '/package.json', { name: 'ft-kat-sample-app' });
+		mockery.registerMock(process.cwd() + '/package.json', { name: 'ft-kat-app' });
 		mockery.enable({warnOnUnregistered:false,useCleanCache:true});
 		ship = require('../tasks/ship').task;
 	});
@@ -82,7 +82,7 @@ describe('tasks/ship (using alternate registry)', function (){
 
 	it('Should scale to staging app up to 1 web dyno before deploying', function (){
 		let pipelineName = 'test';
-		let appName = 'sample-app';
+		let appName = 'ft-kat-app';
 
 		return co(function* (){
 			yield ship({
@@ -125,7 +125,7 @@ describe('tasks/ship (using alternate registry)', function (){
 
 	it('Should be able to run the scale task on the production apps', function (){
 		let pipelineName = 'test';
-		let appName = 'sample-app';
+		let appName = 'ft-kat-app';
 		return co(function* (){
 			yield ship({
 				pipeline:pipelineName,
@@ -155,7 +155,7 @@ describe('tasks/ship (using alternate registry)', function (){
 
 	it('Should scale the staging app down to 0 when complete', function (){
 		let pipelineName = 'test';
-		let appName = 'sample-app';
+		let appName = 'ft-kat-app';
 
 		return co(function* (){
 			yield ship({
