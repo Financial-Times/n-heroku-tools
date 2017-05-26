@@ -39,12 +39,33 @@ describe('lib/pipelines', function (){
 		});
 	});
 
-	it('Should be able to get the apps associated with a given pipeline', function (){
-		this.timeout(10000);
+	it('Should be able to get the apps associated with a given pipeline `ft-next-health`', function (){
+		this.timeout(15000);
 		setup({mockShellPromise:false});
 		return co(function* (){
 			let apps = yield pipelines.getApps('ft-next-health');
 			expect(apps.production.eu).to.equal('ft-next-health-eu');
+		});
+	});
+
+	it('Should be able to get the apps associated with a given pipeline `ft-kat-router`', function (){
+		this.timeout(15000);
+		setup({mockShellPromise:false});
+		return co(function* (){
+			let apps = yield pipelines.getApps('ft-kat-router');
+			expect(apps.staging).to.equal('ft-kat-router-staging');
+			expect(apps.production.eu).to.equal('ft-kat-router-eu');
+			expect(apps.production.us).to.equal('ft-kat-router-us');
+		});
+	});
+
+
+	it('Should be able to get the apps associated with a given pipeline `ft-kat-overview`', function (){
+		this.timeout(15000);
+		setup({mockShellPromise:false});
+		return co(function* (){
+			let apps = yield pipelines.getApps('ft-kat-overview');
+			expect(apps.production.eu).to.equal('ft-kat-overview-eu');
 		});
 	});
 
