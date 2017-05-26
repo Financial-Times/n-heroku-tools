@@ -27,12 +27,14 @@ function fetchFromNextConfigVars(source, target, key) {
 }
 
 function fetchFromVault(source, target, registry = DEFAULT_REGISTRY_URI) {
+	console.log(`Using registry: ${registry}`);
+
 	console.log(`Fetching ${source} config from the vault for ${target}`);
 
 	const path = fetch(registry)
 		.then(fetchres.json)
 		.then(json => json.find(app => app.name === normalizeName(source)).config)
-		.then(url => url.replace('https://vault.in.ft.com/v1/',''))
+		.then(url => url.replace('https://vault.in.ft.com/v1/',''));
 
 	return Promise.all([path, vault.get()])
 		.then(([path, vault]) => {

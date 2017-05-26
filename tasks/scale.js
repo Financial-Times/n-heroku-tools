@@ -26,6 +26,8 @@ function task (opts) {
 		});
 	}
 
+	console.log('Using registry: ', registry);
+
 	console.log('Scaling ' + target + ' using service registry information for ' + source);
 	return herokuAuthToken()
 		.then(() => fetch(registry))

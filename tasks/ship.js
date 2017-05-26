@@ -43,6 +43,8 @@ function task (opts) {
 
 		const REGISTRY_URI = opts.registry || DEFAULT_REGISTRY_URI;
 
+		log.log('Using registry: ', REGISTRY_URI);
+
 		if (opts.configure) {
 			log.log('Configure enabled');
 			let source = pipelineName;

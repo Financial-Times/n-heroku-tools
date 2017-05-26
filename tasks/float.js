@@ -34,12 +34,15 @@ function task (opts) {
 		log.success('Created app %s', testAppName);
 
 		if (opts.configure) {
-			log.info('Configure test app');
+			const REGISTRY_URI = opts.registry || DEFAULT_REGISTRY_URI;
+
+			log.info('Configure test app using registry: ', REGISTRY_URI);
+
 			yield configure({
 				source:appName,
 				target:testAppName,
 				overrides:['NODE_ENV=branch', `TEST_APP=${testAppName}`, `WEB_CONCURRENCY=1`],
-				registry: opts.registry || DEFAULT_REGISTRY_URI,
+				registry: REGISTRY_URI,
 				vault:!!opts.vault
 			});
 			log.success('App configured');
