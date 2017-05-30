@@ -37,7 +37,7 @@ function task (opts) {
 				source:appName,
 				target:testAppName,
 				overrides:['NODE_ENV=branch', `TEST_APP=${testAppName}`, `WEB_CONCURRENCY=1`],
-				vault:!!opts.vault
+				vault:!!opts.vault,
 				configEnv: opts.configEnv
 			});
 			log.success('App configured');
