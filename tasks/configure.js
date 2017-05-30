@@ -10,8 +10,15 @@ var fetchres = require('fetchres');
 
 function fetchFromNextConfigVars(source, target, key) {
 	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
-	return fetch('https://ft-next-config-vars.herokuapp.com/production/' + source, { headers: { Authorization: key } })
+	const configEnv = process.env.CONFIG_ENV || 'production';
+	return fetch(`https://ft-next-config-vars.herokuapp.com/${configEnv}/${source}`, { headers: { Authorization: key } })
 		.then(fetchres.json)
+		.then(json => {
+			if (configEnv === 'continuous-integration') {
+				return json.env;
+			}
+			return json;
+		})
 		.catch(function (err) {
 			if (err instanceof fetchres.BadServerResponseError) {
 				if (err.message === 404) {
