@@ -143,6 +143,7 @@ module.exports = function (program, utils) {
 				target: target,
 				overrides: options.overrides,
 				splunk: options.splunk,
+				configEnv: options.configEnv,
 				vault: !!options.vault
 			}).catch(utils.exit);
 		});
