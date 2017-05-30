@@ -9,7 +9,6 @@ const host = require('../lib/host');
 const packageJson = require(process.cwd() + '/package.json');
 const log = require('../lib/logger');
 
-
 function task (opts) {
 	var testAppName;
 	return co(function* (){
@@ -34,7 +33,13 @@ function task (opts) {
 
 		if (opts.configure) {
 			log.info('Configure test app');
-			yield configure({source:appName, target:testAppName, overrides:['NODE_ENV=branch', `TEST_APP=${testAppName}`, `WEB_CONCURRENCY=1`], vault:!!opts.vault});
+			yield configure({
+				source:appName,
+				target:testAppName,
+				overrides:['NODE_ENV=branch', `TEST_APP=${testAppName}`, `WEB_CONCURRENCY=1`],
+				vault:!!opts.vault
+				configEnv: opts.configEnv
+			});
 			log.success('App configured');
 		}
 
@@ -70,6 +75,7 @@ module.exports = function (program, utils) {
 		.description('Deploys code to a test app and checks it doesn\'t die')
 		.option('-a --app', 'Name of the app')
 		.option('-c --no-configure', 'Skip the configure step')
+		.option('-e --config-env [value]', 'Configuration environment', 'production')
 		.option('-t --vault', 'Use the vault instead of next-config-vars for any configuration')
 		.option('-t --testapp [value]', 'Name of the app to be created')
 		.option('-m --master', "Run even if on master branch (not required if using nbt ship).")

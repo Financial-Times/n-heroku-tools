@@ -8,10 +8,16 @@ var normalizeName = require('../lib/normalize-name');
 var vault = require('../lib/vault');
 var fetchres = require('fetchres');
 
-function fetchFromNextConfigVars(source, target, key) {
+function fetchFromNextConfigVars(source, target, key, configEnv) {
 	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
-	return fetch('https://ft-next-config-vars.herokuapp.com/production/' + source, { headers: { Authorization: key } })
+	return fetch(`https://ft-next-config-vars.herokuapp.com/${configEnv}/${source}`, { headers: { Authorization: key } })
 		.then(fetchres.json)
+		.then(json => {
+			if (configEnv === 'continuous-integration') {
+				return json.env;
+			}
+			return json;
+		})
 		.catch(function (err) {
 			if (err instanceof fetchres.BadServerResponseError) {
 				if (err.message === 404) {
@@ -24,7 +30,7 @@ function fetchFromNextConfigVars(source, target, key) {
 		});
 }
 
-function fetchFromVault(source, target) {
+function fetchFromVault(source, target, configEnv) {
 	console.log(`Fetching ${source} config from the vault for ${target}`);
 
 	const path = fetch('https://next-registry.ft.com/v2/')
@@ -35,8 +41,8 @@ function fetchFromVault(source, target) {
 	return Promise.all([path, vault.get()])
 		.then(([path, vault]) => {
 			return Promise.all([
-				vault.read(`secret/teams/next/next-globals/production`),
-				vault.read(`${path}/production`)
+				vault.read(`secret/teams/next/next-globals/${configEnv}`),
+				vault.read(`${path}/${configEnv}`)
 			]);
 		})
 		.then(([globals, app]) => Object.assign({}, globals.data, app.data));
@@ -67,7 +73,7 @@ function task (opts) {
 		.then(function (keys) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
 			return Promise.all([
-				opts.vault ? fetchFromVault(source, target) : fetchFromNextConfigVars(source, target, keys[1]),
+				opts.vault ? fetchFromVault(source, target, opts.configEnv) : fetchFromNextConfigVars(source, target, keys[1], opts.configEnv),
 				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
 					.then(fetchres.json)
 					.catch(function (err) {
@@ -124,6 +130,7 @@ module.exports = function (program, utils) {
 	program
 		.command('configure [source] [target]')
 		.description('gets environment variables from next-config-vars or the vault and uploads them to the current app')
+		.option('-c, --config-env [env]', 'configuration environment to use', 'production')
 		.option('-o, --overrides <abc>', 'override these values', utils.list)
 		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
 		.option('-t, --vault', 'use the vault instead of next-config-vars')
