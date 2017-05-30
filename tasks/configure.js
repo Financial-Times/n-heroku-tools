@@ -8,9 +8,10 @@ var normalizeName = require('../lib/normalize-name');
 var vault = require('../lib/vault');
 var fetchres = require('fetchres');
 
+const DEFAULT_CONFIG_ENV = 'production';
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
-function fetchFromNextConfigVars(source, target, key, configEnv) {
+function fetchFromNextConfigVars(source, target, key, configEnv = DEFAULT_CONFIG_ENV) {
 	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
 	return fetch(`https://ft-next-config-vars.herokuapp.com/${configEnv}/${source}`, { headers: { Authorization: key } })
 		.then(fetchres.json)
@@ -32,7 +33,7 @@ function fetchFromNextConfigVars(source, target, key, configEnv) {
 		});
 }
 
-function fetchFromVault(source, target, configEnv, registry = DEFAULT_REGISTRY_URI) {
+function fetchFromVault(source, target, configEnv = DEFAULT_CONFIG_ENV, registry = DEFAULT_REGISTRY_URI) {
 	console.log(`Using registry: ${registry}`);
 
 	console.log(`Fetching ${source} config from the vault for ${target}`);
