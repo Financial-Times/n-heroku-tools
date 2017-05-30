@@ -1,15 +1,18 @@
 'use strict';
 
-var packageJson = require(process.cwd() + '/package.json');
-var herokuAuthToken = require('../lib/heroku-auth-token');
-var normalizeName = require('../lib/normalize-name');
-var fetchres = require('fetchres');
-var shellpromise = require('shellpromise');
+const packageJson = require(process.cwd() + '/package.json');
+const herokuAuthToken = require('../lib/heroku-auth-token');
+const normalizeName = require('../lib/normalize-name');
+const fetchres = require('fetchres');
+const shellpromise = require('shellpromise');
+
+const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
 function task (opts) {
 
 	var source = opts.source || normalizeName(packageJson.name, { version: false });
 	var target = opts.target || packageJson.name;
+	var registry = opts.registry || DEFAULT_REGISTRY_URI;
 	var overrides = {};
 
 	if(opts.scale){
@@ -23,9 +26,11 @@ function task (opts) {
 		});
 	}
 
+	console.log('Using registry: ', registry);
+
 	console.log('Scaling ' + target + ' using service registry information for ' + source);
 	return herokuAuthToken()
-		.then(() => fetch('https://next-registry.ft.com/v2/'))
+		.then(() => fetch(registry))
 		.then(fetchres.json)
 		.then(data => {
 			const serviceData = data.find(service => service.name === source);
@@ -69,12 +74,14 @@ module.exports = function (program, utils) {
 		.description('downloads process information from next-service-registry and scales/sizes the application servers')
 		.option('-m, --minimal', 'scales each dyno to a single instance')
 		.option('-i, --inhibit', 'scales each dyno down to 0')
+		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.action(function (source, target, options) {
 			task({
 				source: source,
 				target: target,
 				minimal: options.minimal,
-				inhibit: options.inhibit
+				inhibit: options.inhibit,
+				registry: options.registry
 			}).catch(utils.exit);
 		});
 };

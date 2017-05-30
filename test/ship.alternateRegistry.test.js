@@ -4,9 +4,9 @@ const mockery = require('mockery');
 const sinon = require('sinon');
 const co = require('co');
 
-const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
+const OVERRIDE_REGISTRY_URI = 'https://next-registry.ft.com/v2/services.kat.json';
 
-describe('tasks/ship', function (){
+describe('tasks/ship (using alternate registry)', function (){
 
 	function stubbedPromise(value, property){
 		const stub = sinon.stub().returns(Promise.resolve(value));
@@ -20,10 +20,10 @@ describe('tasks/ship', function (){
 	}
 
 	var mockApps = {
-		staging: 'ft-next-app-staging',
+		staging: 'ft-kat-app-staging',
 		production: {
-			eu: 'ft-next-app-eu',
-			us: 'ft-next-app-us'
+			eu: 'ft-kat-app-eu',
+			us: 'ft-kat-app-us'
 		}
 	};
 
@@ -38,7 +38,7 @@ describe('tasks/ship', function (){
 		mockery.registerMock('./deploy', mockDeploy);
 		mockery.registerMock('./scale', mockScale);
 		mockery.registerMock('../lib/pipelines', mockPipelines);
-		mockery.registerMock(process.cwd() + '/package.json', { name: 'ft-next-sample-app' });
+		mockery.registerMock(process.cwd() + '/package.json', { name: 'ft-kat-app' });
 		mockery.enable({warnOnUnregistered:false,useCleanCache:true});
 		ship = require('../tasks/ship').task;
 	});
@@ -55,26 +55,31 @@ describe('tasks/ship', function (){
 	it('Should be able to run the configure task on all apps, using the pipeline name as the source', function (){
 		let pipelineName = 'test';
 		return co(function* (){
-			yield ship({pipeline:pipelineName, configure:true, multiregion:true});
+			yield ship({
+				pipeline:pipelineName,
+				configure:true,
+				multiregion:true,
+				registry: OVERRIDE_REGISTRY_URI
+			});
 
 			sinon.assert.calledWith(mockConfigure.task, {
 				source: pipelineName,
 				target: mockApps.staging,
-				registry: DEFAULT_REGISTRY_URI,
+				registry: OVERRIDE_REGISTRY_URI,
 				vault: false
 			});
 			sinon.assert.calledWith(mockConfigure.task, {
 				source: pipelineName,
 				target: mockApps.production.eu,
 				overrides: ['REGION=EU'],
-				registry: DEFAULT_REGISTRY_URI,
+				registry: OVERRIDE_REGISTRY_URI,
 				vault: false
 			});
 			sinon.assert.calledWith(mockConfigure.task, {
 				source: pipelineName,
 				target: mockApps.production.us,
 				overrides: ['REGION=US'],
-				registry: DEFAULT_REGISTRY_URI,
+				registry: OVERRIDE_REGISTRY_URI,
 				vault: false
 			});
 		});
@@ -82,16 +87,19 @@ describe('tasks/ship', function (){
 
 	it('Should scale to staging app up to 1 web dyno before deploying', function (){
 		let pipelineName = 'test';
-		let appName = 'sample-app';
+		let appName = 'ft-kat-app';
 
 		return co(function* (){
-			yield ship({pipeline:pipelineName});
+			yield ship({
+				pipeline:pipelineName,
+				registry: OVERRIDE_REGISTRY_URI
+			});
 
 			sinon.assert.calledWith(mockScale.task, {
 				source:appName,
 				target:mockApps.staging,
 				minimal:true,
-				registry: DEFAULT_REGISTRY_URI
+				registry: OVERRIDE_REGISTRY_URI
 			});
 		});
 	});
@@ -99,7 +107,10 @@ describe('tasks/ship', function (){
 	it('Should be able to deploy to the staging app', function (){
 		let pipelineName = 'test';
 		return co(function* (){
-			yield ship({pipeline:pipelineName});
+			yield ship({
+				pipeline:pipelineName,
+				registry: OVERRIDE_REGISTRY_URI
+			});
 
 			sinon.assert.calledWith(mockDeploy.task, { app:mockApps.staging, authenticatedSmokeTests: true });
 		});
@@ -108,7 +119,10 @@ describe('tasks/ship', function (){
 	it('Should be able to promote the slug to production', function (){
 		let pipelineName = 'test';
 		return co(function* (){
-			yield ship({pipeline:pipelineName});
+			yield ship({
+				pipeline:pipelineName,
+				registry: OVERRIDE_REGISTRY_URI
+			});
 
 			sinon.assert.calledWith(mockPipelines.promote, mockApps.staging);
 		});
@@ -116,24 +130,29 @@ describe('tasks/ship', function (){
 
 	it('Should be able to run the scale task on the production apps', function (){
 		let pipelineName = 'test';
-		let appName = 'sample-app';
+		let appName = 'ft-kat-app';
 		return co(function* (){
-			yield ship({pipeline:pipelineName,scale:true,multiregion:true});
+			yield ship({
+				pipeline:pipelineName,
+				scale:true,
+				multiregion:true,
+				registry: OVERRIDE_REGISTRY_URI
+			});
 
 			sinon.assert.calledWith(mockScale.task, {
 				source:appName,
 				target:mockApps.staging,
-				registry: DEFAULT_REGISTRY_URI
+				registry: OVERRIDE_REGISTRY_URI
 			});
 			sinon.assert.calledWith(mockScale.task, {
 				source:appName,
 				target:mockApps.production.eu,
-				registry: DEFAULT_REGISTRY_URI
+				registry: OVERRIDE_REGISTRY_URI
 			});
 			sinon.assert.calledWith(mockScale.task, {
 				source:appName,
 				target:mockApps.production.us,
-				registry: DEFAULT_REGISTRY_URI
+				registry: OVERRIDE_REGISTRY_URI
 			});
 
 		});
@@ -141,16 +160,19 @@ describe('tasks/ship', function (){
 
 	it('Should scale the staging app down to 0 when complete', function (){
 		let pipelineName = 'test';
-		let appName = 'sample-app';
+		let appName = 'ft-kat-app';
 
 		return co(function* (){
-			yield ship({pipeline:pipelineName});
+			yield ship({
+				pipeline:pipelineName,
+				registry: OVERRIDE_REGISTRY_URI
+			});
 
 			sinon.assert.calledWith(mockScale.task, {
 				source:appName,
 				target:mockApps.staging,
 				inhibit:true,
-				registry: DEFAULT_REGISTRY_URI
+				registry: OVERRIDE_REGISTRY_URI
 			});
 		});
 	});

@@ -9,6 +9,8 @@ const host = require('../lib/host');
 const packageJson = require(process.cwd() + '/package.json');
 const log = require('../lib/logger');
 
+const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
+
 function task (opts) {
 	var testAppName;
 	return co(function* (){
@@ -32,11 +34,15 @@ function task (opts) {
 		log.success('Created app %s', testAppName);
 
 		if (opts.configure) {
-			log.info('Configure test app');
+			const REGISTRY_URI = opts.registry || DEFAULT_REGISTRY_URI;
+
+			log.info('Configure test app using registry: ', REGISTRY_URI);
+
 			yield configure({
 				source:appName,
 				target:testAppName,
 				overrides:['NODE_ENV=branch', `TEST_APP=${testAppName}`, `WEB_CONCURRENCY=1`],
+				registry: REGISTRY_URI,
 				vault:!!opts.vault,
 				configEnv: opts.configEnv
 			});
@@ -80,6 +86,7 @@ module.exports = function (program, utils) {
 		.option('-t --testapp [value]', 'Name of the app to be created')
 		.option('-m --master', "Run even if on master branch (not required if using nbt ship).")
 		.option('-d --no-destroy', 'Don\'t automatically destroy new apps')
+		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('-s --skip-gtg', 'skip the good-to-go HTTP check')
 		.action(function (options){
 			task(options).catch(utils.exit);

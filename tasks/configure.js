@@ -8,6 +8,8 @@ var normalizeName = require('../lib/normalize-name');
 var vault = require('../lib/vault');
 var fetchres = require('fetchres');
 
+const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
+
 function fetchFromNextConfigVars(source, target, key, configEnv) {
 	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
 	return fetch(`https://ft-next-config-vars.herokuapp.com/${configEnv}/${source}`, { headers: { Authorization: key } })
@@ -30,13 +32,15 @@ function fetchFromNextConfigVars(source, target, key, configEnv) {
 		});
 }
 
-function fetchFromVault(source, target, configEnv) {
+function fetchFromVault(source, target, configEnv, registry = DEFAULT_REGISTRY_URI) {
+	console.log(`Using registry: ${registry}`);
+
 	console.log(`Fetching ${source} config from the vault for ${target}`);
 
-	const path = fetch('https://next-registry.ft.com/v2/')
+	const path = fetch(registry)
 		.then(fetchres.json)
 		.then(json => json.find(app => app.name === normalizeName(source)).config)
-		.then(url => url.replace('https://vault.in.ft.com/v1/',''))
+		.then(url => url.replace('https://vault.in.ft.com/v1/',''));
 
 	return Promise.all([path, vault.get()])
 		.then(([path, vault]) => {
@@ -73,7 +77,7 @@ function task (opts) {
 		.then(function (keys) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
 			return Promise.all([
-				opts.vault ? fetchFromVault(source, target, opts.configEnv) : fetchFromNextConfigVars(source, target, keys[1], opts.configEnv),
+				opts.vault ? fetchFromVault(source, target, opts.configEnv, opts.registry) : fetchFromNextConfigVars(source, target, keys[1], opts.configEnv),
 				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
 					.then(fetchres.json)
 					.catch(function (err) {
@@ -133,6 +137,7 @@ module.exports = function (program, utils) {
 		.option('-c, --config-env [env]', 'configuration environment to use', 'production')
 		.option('-o, --overrides <abc>', 'override these values', utils.list)
 		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
+		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('-t, --vault', 'use the vault instead of next-config-vars')
 		.action(function (source, target, options) {
 			if (!options.splunk) {
@@ -143,10 +148,11 @@ module.exports = function (program, utils) {
 				target: target,
 				overrides: options.overrides,
 				splunk: options.splunk,
+				registry: options.registry,
 				configEnv: options.configEnv,
 				vault: !!options.vault
 			}).catch(utils.exit);
 		});
-}
+};
 
 module.exports.task = task;
