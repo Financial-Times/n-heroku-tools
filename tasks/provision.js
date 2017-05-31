@@ -7,7 +7,7 @@ function task (name, region) {
 	if(typeof region === 'undefined'){
 		region = 'us'
 	}
-	return spawn('heroku create -a ' + name + ' --region ' + region + ' -o financial-times --no-remote', { verbose: true });
+	return spawn('heroku create -a ' + name + ' --region ' + region + ' --org financial-times --no-remote', { verbose: true });
 };
 
 module.exports = function (program, utils) {
