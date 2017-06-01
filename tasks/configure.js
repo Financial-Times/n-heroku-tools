@@ -8,19 +8,12 @@ var normalizeName = require('../lib/normalize-name');
 var vault = require('../lib/vault');
 var fetchres = require('fetchres');
 
-const DEFAULT_CONFIG_ENV = 'production';
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
-function fetchFromNextConfigVars(source, target, key, configEnv = DEFAULT_CONFIG_ENV) {
+function fetchFromNextConfigVars(source, target, key) {
 	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
-	return fetch(`https://ft-next-config-vars.herokuapp.com/${configEnv}/${source}`, { headers: { Authorization: key } })
+	return fetch(`https://ft-next-config-vars.herokuapp.com/production/${source}`, { headers: { Authorization: key } })
 		.then(fetchres.json)
-		.then(json => {
-			if (configEnv === 'continuous-integration') {
-				return json.env;
-			}
-			return json;
-		})
 		.catch(function (err) {
 			if (err instanceof fetchres.BadServerResponseError) {
 				if (err.message === 404) {
@@ -33,7 +26,7 @@ function fetchFromNextConfigVars(source, target, key, configEnv = DEFAULT_CONFIG
 		});
 }
 
-function fetchFromVault(source, target, configEnv = DEFAULT_CONFIG_ENV, registry = DEFAULT_REGISTRY_URI) {
+function fetchFromVault(source, target, registry = DEFAULT_REGISTRY_URI) {
 	console.log(`Using registry: ${registry}`);
 
 	console.log(`Fetching ${source} config from the vault for ${target}`);
@@ -46,8 +39,8 @@ function fetchFromVault(source, target, configEnv = DEFAULT_CONFIG_ENV, registry
 	return Promise.all([path, vault.get()])
 		.then(([path, vault]) => {
 			return Promise.all([
-				vault.read(`secret/teams/next/next-globals/${configEnv}`),
-				vault.read(`${path}/${configEnv}`)
+				vault.read('secret/teams/next/next-globals/production'),
+				vault.read(`${path}/production`)
 			]);
 		})
 		.then(([globals, app]) => Object.assign({}, globals.data, app.data));
@@ -78,7 +71,7 @@ function task (opts) {
 		.then(function (keys) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
 			return Promise.all([
-				opts.vault ? fetchFromVault(source, target, opts.configEnv, opts.registry) : fetchFromNextConfigVars(source, target, keys[1], opts.configEnv),
+				opts.vault ? fetchFromVault(source, target, opts.registry) : fetchFromNextConfigVars(source, target, keys[1]),
 				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
 					.then(fetchres.json)
 					.catch(function (err) {
@@ -135,7 +128,6 @@ module.exports = function (program, utils) {
 	program
 		.command('configure [source] [target]')
 		.description('gets environment variables from next-config-vars or the vault and uploads them to the current app')
-		.option('-c, --config-env [env]', 'configuration environment to use', 'production')
 		.option('-o, --overrides <abc>', 'override these values', utils.list)
 		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
 		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
@@ -150,7 +142,6 @@ module.exports = function (program, utils) {
 				overrides: options.overrides,
 				splunk: options.splunk,
 				registry: options.registry,
-				configEnv: options.configEnv,
 				vault: !!options.vault
 			}).catch(utils.exit);
 		});
