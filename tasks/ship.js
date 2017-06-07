@@ -13,12 +13,6 @@ const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 function task (opts) {
 
 	return co(function* (){
-		let support = yield pipelines.supported();
-		if(!support){
-			log.error('Heroku pipelines are not enabled on this system');
-			return;
-		}
-
 
 		let appName = packageJson.name.replace('ft-next-', '');
 		let pipelineName = opts.pipeline || packageJson.name;
