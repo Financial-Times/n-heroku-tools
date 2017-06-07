@@ -5,7 +5,7 @@ const co = require('co');
 const mockery = require('mockery');
 const sinon = require('sinon');
 
-describe('lib/pipelines', function (){
+describe.skip('lib/pipelines', function (){
 
 	var pipelines;
 	var shellPromiseMock;
