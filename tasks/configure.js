@@ -7,6 +7,7 @@ var configVarsKey = require('../lib/config-vars-key');
 var normalizeName = require('../lib/normalize-name');
 var vault = require('../lib/vault');
 var fetchres = require('fetchres');
+const shellpromise = require('shellpromise');
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
@@ -119,6 +120,10 @@ function task (opts) {
 		})
 		.then(function () {
 			console.log(target + " config vars are set");
+
+			return shellpromise('heroku labs:enable runtime-dyno-metadata --app ' + target, { verbose: true })
+				.then(() => console.log('Heroku metadata enabled'))
+				.catch((e) => console.error('Heroku metadata could not be enabled:', e.toString()));
 		});
 
 };
