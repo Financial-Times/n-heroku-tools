@@ -1,4 +1,3 @@
-
 'use strict';
 
 var packageJson = require(process.cwd() + '/package.json');
@@ -10,26 +9,24 @@ var fetchres = require('fetchres');
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
-function fetchFromNextConfigVars(source, target, key) {
+function fetchFromNextConfigVars (source, target, key) {
 	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
 	return fetch(`https://ft-next-config-vars.herokuapp.com/production/${source}`, { headers: { Authorization: key } })
 		.then(fetchres.json)
 		.catch(function (err) {
 			if (err instanceof fetchres.BadServerResponseError) {
 				if (err.message === 404) {
-					throw new Error("Could not download config vars for " + source + ", check it's set up in ft-next-config-vars");
+					throw new Error('Could not download config vars for ' + source + ', check it\'s set up in ft-next-config-vars');
 				}
-				throw new Error("Could not download config vars for " + source + ", check you have already joined it on Heroku");
+				throw new Error('Could not download config vars for ' + source + ', check you have already joined it on Heroku');
 			} else {
 				throw err;
 			}
 		});
 }
 
-function fetchFromVault(source, target, registry = DEFAULT_REGISTRY_URI) {
+function fetchFromVault (source, target, registry = DEFAULT_REGISTRY_URI) {
 	console.log(`Using registry: ${registry}`);
-
-	console.log(`Fetching ${source} config from the vault for ${target}`);
 
 	const path = fetch(registry)
 		.then(fetchres.json)
@@ -39,7 +36,7 @@ function fetchFromVault(source, target, registry = DEFAULT_REGISTRY_URI) {
 	return Promise.all([path, vault.get()])
 		.then(([path, vault]) => {
 			return Promise.all([
-				vault.read('secret/teams/next/next-globals/production'),
+				vault.read('secret/teams/next/shared/production'),
 				vault.read(`${path}/production`)
 			]);
 		})
@@ -76,7 +73,7 @@ function task (opts) {
 					.then(fetchres.json)
 					.catch(function (err) {
 						if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
-							throw new Error(source + " app needs to be manually added to heroku before it, or any branches, can be deployed");
+							throw new Error(source + ' app needs to be manually added to heroku before it, or any branches, can be deployed');
 						} else {
 							throw err;
 						}
@@ -86,7 +83,7 @@ function task (opts) {
 		.then(function (data) {
 			var desired = data[0];
 			var current = data[1];
-			desired["___WARNING___"] = "Don't edit config vars manually. Use the Vault or make a PR to next-config-vars";
+			desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault or make a PR to next-config-vars';
 			var patch = {};
 
 			Object.keys(current).forEach(function (key) {
@@ -103,13 +100,13 @@ function task (opts) {
 
 			Object.keys(patch).forEach(function (key) {
 				if (patch[key] === null) {
-					console.log("Deleting config var: " + key);
+					console.log('Deleting config var: ' + key);
 				} else if (patch[key] !== current[key]) {
-					console.log("Setting config var: " + key);
+					console.log('Setting config var: ' + key);
 				}
 			});
 
-			console.log("Setting environment keys", Object.keys(patch));
+			console.log('Setting environment keys', Object.keys(patch));
 
 			return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
 				headers: authorizedPostHeaders,
@@ -118,7 +115,7 @@ function task (opts) {
 			});
 		})
 		.then(function () {
-			console.log(target + " config vars are set");
+			console.log(target + ' config vars are set');
 		});
 
 };
@@ -134,7 +131,7 @@ module.exports = function (program, utils) {
 		.option('-t, --vault', 'use the vault instead of next-config-vars')
 		.action(function (source, target, options) {
 			if (!options.splunk) {
-				console.log("WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT")
+				console.log('WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT')
 			}
 			task({
 				source: source,
