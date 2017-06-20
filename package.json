@@ -31,6 +31,7 @@
     "shellpromise": "^1.0.0"
   },
   "devDependencies": {
+    "@financial-times/n-gage": "^1.4.0",
     "body-parser": "^1.14.1",
     "chai": "^3.3.0",
     "eslint": "^2.8.0",
@@ -44,5 +45,10 @@
   },
   "babel": {
     "optional": "es7.classProperties"
+  },
+  "config": {
+    "pre-git": {
+      "pre-commit": ["node_modules/.bin/secret-squirrel"]
+    }
   }
 }

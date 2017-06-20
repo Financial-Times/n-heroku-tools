@@ -1,4 +1,8 @@
-include n.Makefile
+node_modules/@financial-times/n-gage/index.mk:
+	npm install --no-save @financial-times/n-gage
+	touch $@
+
+-include node_modules/@financial-times/n-gage/index.mk
 
 unit-test:
 	export PORT=5134; mocha -r loadvars.js
