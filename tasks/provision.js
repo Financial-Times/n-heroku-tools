@@ -4,7 +4,7 @@
 var spawn = require('shellpromise');
 
 function task (name, region) {
-	if(typeof region === 'undefined'){
+	if (typeof region === 'undefined'){
 		region = 'us'
 	}
 	return spawn('heroku create -a ' + name + ' --region ' + region + ' --org financial-times --no-remote', { verbose: true });
