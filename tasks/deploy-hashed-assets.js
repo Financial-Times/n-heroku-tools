@@ -42,10 +42,11 @@ function task (opts) {
 	}
 
 	const shouldMonitorAssets = opts.monitorAssets;
+	const directory = opts.directory || 'public';
 	let assetHashes;
 	try {
-		console.log(process.cwd() + '/public/assets-hashes.json');
-		assetHashes = require(process.cwd() + '/public/asset-hashes.json');
+		console.log(process.cwd() + `/${directory}/assets-hashes.json`);
+		assetHashes = require(process.cwd() + `/${directory}/asset-hashes.json`);
 	} catch(err) {
 		return Promise.reject('Must run `make build-production` before running `nbt deploy-hashed-assets`');
 	}
@@ -72,11 +73,12 @@ function task (opts) {
 			.map(file => {
 				const hashedName = assetHashes[file];
 				const key = 'hashed-assets/' + app + '/' + hashedName;
-				const extension = path.extname(file).substring(1);
+				// get the extension, ignoring brotli
+				const extension = (/\.(js|css)(\.br)?$/.exec(file) || [])[1];
 
 				console.log(`sending ${key} to S3`);
 
-				return readFile(path.join(process.cwd(), 'public', file), { encoding: 'utf-8' })
+				return readFile(path.join(process.cwd(), directory, file), { encoding: 'utf-8' })
 					.then(content => {
 						// ignore source maps
 						const isMonitoringAsset = shouldMonitorAssets && path.extname(file) !== '.map';
@@ -130,6 +132,7 @@ module.exports = function (program, utils) {
 		.command('deploy-hashed-assets')
 		.description('deploys hashed asset files to S3 (if AWS keys set correctly)')
 		.option('--monitor-assets', 'Will send asset sizes to Graphite')
+		.option('--directory <directory>', 'Directory to deploy (defaults to public)')
 		.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
 		.option('--surrogate-control <cacheControl>', 'Optionally specify a surrogate control value')
 		.action(function (options) {
