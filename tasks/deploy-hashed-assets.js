@@ -73,7 +73,8 @@ function task (opts) {
 			.map(file => {
 				const hashedName = assetHashes[file];
 				const key = 'hashed-assets/' + app + '/' + hashedName;
-				const extension = path.extname(file).substring(1);
+				// get the extension, ignoring brotli
+				const extension = (/\.(js|css)(\.br)?$/.exec(file) || [])[1];
 
 				console.log(`sending ${key} to S3`);
 
