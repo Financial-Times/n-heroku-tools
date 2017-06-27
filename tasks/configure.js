@@ -37,10 +37,22 @@ function fetchFromVault (source, target, registry = DEFAULT_REGISTRY_URI) {
 		.then(([path, vault]) => {
 			return Promise.all([
 				vault.read('secret/teams/next/shared/production'),
-				vault.read(`${path}/production`)
+				vault.read(`${path}/production`),
+				vault.read(`${path}/shared`)
 			]);
 		})
-		.then(([globals, app]) => Object.assign({}, globals.data, app.data));
+		.then(([sharedVars, appVars, appShared]) => {
+			// Only include globals the application needs.
+			const shared = appShared.data.env.reduce((shared, key) => {
+				if (key in sharedVars.data) {
+					shared[key] = sharedVars.data[key];
+				}
+
+				return shared;
+			}, {});
+
+			return Object.assign({}, shared, appVars.data);
+		});
 }
 
 function task (opts) {
