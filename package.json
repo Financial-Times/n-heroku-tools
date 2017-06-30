@@ -40,15 +40,15 @@
     "lintspaces-cli": "^0.1.1",
     "mocha": "^2.2.4",
     "mockery": "^1.4.0",
+    "nodemon": "^1.11.0",
     "npm-prepublish": "^1.2.1",
     "sinon": "^1.14.1"
   },
   "babel": {
     "optional": "es7.classProperties"
   },
-  "config": {
-    "pre-git": {
-      "pre-commit": ["node_modules/.bin/secret-squirrel"]
-    }
+  "scripts": {
+    "precommit": "node_modules/.bin/secret-squirrel",
+    "prepush": "make verify -j3"
   }
 }
