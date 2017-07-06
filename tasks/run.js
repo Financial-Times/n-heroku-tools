@@ -1,22 +1,24 @@
+/* eslint no-console: 0 */
 'use strict';
 
-var exec = require('../lib/exec');
-var spawn = require('child_process').spawn;
-var packageJson = require(process.cwd() + '/package.json');
-var normalizeName = require('../lib/normalize-name');
-var keys = require('../lib/keys');
-var path = require('path');
+const exec = require('../lib/exec');
+const spawn = require('child_process').spawn;
+const packageJson = require(process.cwd() + '/package.json');
+const normalizeName = require('../lib/normalize-name');
+const keys = require('../lib/keys');
+const path = require('path');
+
 const shell = require('shellpromise');
 
-function toStdOut(data) {
+function toStdOut (data) {
 	process.stdout.write(data.toString());
 }
 
-function toStdErr(data) {
+function toStdErr (data) {
 	process.stderr.write(data.toString());
 }
 
-function extractLocalApps(localApps) {
+function extractLocalApps (localApps) {
 	return localApps.split(',')
 		.reduce(function (currentLocalApps, localApp) {
 			const localAppParts = localApp.split('=');
@@ -25,7 +27,7 @@ function extractLocalApps(localApps) {
 		}, []);
 }
 
-function configureAndSpawn(opts, func) {
+function configureAndSpawn (opts, func) {
 	return keys()
 		.then(function (env) {
 			// Overwrite any key specified locally
@@ -37,10 +39,10 @@ function configureAndSpawn(opts, func) {
 				env[key] = opts[key];
 			});
 
-			var processToRun = func(env);
+			const processToRun = func(env);
 
 			return new Promise(function (resolve, reject) {
-				var local = spawn.apply(null, processToRun);
+				const local = spawn.apply(null, processToRun);
 
 				local.stdout.on('data', toStdOut);
 				local.stderr.on('data', toStdErr);
@@ -50,9 +52,9 @@ function configureAndSpawn(opts, func) {
 		});
 }
 
-function runLocal(opts) {
+function runLocal (opts) {
 	return configureAndSpawn(opts, function (env) {
-		var args = [];
+		const args = [];
 
 		if(opts.script) {
 			args.push(opts.script);
@@ -87,10 +89,10 @@ function runLocal(opts) {
 	});
 }
 
-function runScript(opts) {
+function runScript (opts) {
 
 	return configureAndSpawn({}, function (env) {
-		var args = [path.join(process.cwd(), opts.script)];
+		let args = [path.join(process.cwd(), opts.script)];
 		if (opts.debug) {
 			args.push('--debug');
 		}
@@ -102,14 +104,14 @@ function runScript(opts) {
 }
 
 
-function runProcfile() {
+function runProcfile () {
 	return configureAndSpawn({}, function (env) {
 		return ['foreman', ['start'], { cwd: process.cwd(), env: env }];
 	});
 }
 
-function runRouter(opts) {
-	var envVars = {
+function runRouter (opts) {
+	const envVars = {
 		DEBUG: 'proxy',
 		REGION: 'us',
 		PORT: opts.PORT
@@ -131,19 +133,19 @@ function runRouter(opts) {
 	console.log(envVars);
 
 	return configureAndSpawn(envVars, function (env) {
-		var bin = opts.https ? 'next-router-https' : 'next-router';
+		const bin = opts.https ? 'next-router-https' : 'next-router';
 		return [bin, { env: env }];
 	});
 }
 
-function ensureRouterInstall() {
+function ensureRouterInstall () {
 	return exec('which next-router')
 		.catch(function () { throw new Error('You need to install the next router first!  See docs here: https://github.com/Financial-Times/next-router'); });
 }
 
 // Remind developers that if they want to use a local version of n-ui,
 // they need to `export NEXT_APP_SHELL=local`.
-function devNui() {
+function devNui () {
 	if (
 		(!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') // Not production
 		&& !process.env.CIRCLE_BRANCH // Not CircleCI
@@ -152,14 +154,14 @@ function devNui() {
 		// Check if the app is using n-ui
 		shell('grep -s -Fim 1 n-ui bower.json')
 			.then(res => {
-				if (res !== '') toStdOut('Developers: If you want your app to point to n-ui locally, then `export NEXT_APP_SHELL=local`. \r\n')
+				if (res !== '') toStdOut('Developers: If you want your app to point to n-ui locally, then `export NEXT_APP_SHELL=local`. \r\n');
 			})
 			.catch(() => null);
 	}
 }
 
 function task (opts) {
-	var localPort = process.env.PORT || 3002;
+	const localPort = process.env.PORT || 3002;
 
 	devNui();
 
@@ -183,15 +185,15 @@ function task (opts) {
 			.then(function () {
 				const promises = [
 					runRouter({ PORT: opts.port, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key, localApps: localApps })
-				]
+				];
 
 				if(opts.app){
-					promises.push(runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon, inspect: opts.inspect }))
+					promises.push(runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon, inspect: opts.inspect }));
 				}
 				return Promise.all(promises);
 			});
 	}
-};
+}
 
 module.exports = function (program, utils) {
 	program

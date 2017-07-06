@@ -64,7 +64,7 @@ function task (opts) {
 					overrides: ['REGION=US'],
 					registry: REGISTRY_URI,
 					vault: !!opts.vault
-				}))
+				}));
 			}
 
 			log.log('Configure all apps');
@@ -79,7 +79,7 @@ function task (opts) {
 			minimal: true,
 			registry: REGISTRY_URI
 		}).catch(function (){
-			log.info('Failed to scale up staging app - is this the first run?')
+			log.info('Failed to scale up staging app - is this the first run?');
 		});
 
 		log.info('Deploy to staging app and run gtg checks');
@@ -111,7 +111,7 @@ function task (opts) {
 					source:source,
 					target:apps.production.us,
 					registry: REGISTRY_URI
-				}))
+				}));
 			}
 
 			log.info('scale production apps');

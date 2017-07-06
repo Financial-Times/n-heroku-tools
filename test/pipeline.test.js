@@ -7,8 +7,8 @@ const sinon = require('sinon');
 
 describe.skip('lib/pipelines', function (){
 
-	var pipelines;
-	var shellPromiseMock;
+	let pipelines;
+	let shellPromiseMock;
 
 	after(function (){
 		mockery.disable();
@@ -20,7 +20,7 @@ describe.skip('lib/pipelines', function (){
 		shellPromiseMock = null;
 	});
 
-	function setup(options){
+	function setup (options){
 		shellPromiseMock = sinon.stub().returns(options.shellPromiseReturns);
 		if(options.mockShellPromise){
 			mockery.registerMock('shellpromise', shellPromiseMock);

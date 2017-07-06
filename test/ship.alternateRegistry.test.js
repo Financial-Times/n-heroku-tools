@@ -8,7 +8,7 @@ const OVERRIDE_REGISTRY_URI = 'https://next-registry.ft.com/v2/services.kat.json
 
 describe('tasks/ship (using alternate registry)', function (){
 
-	function stubbedPromise(value, property){
+	function stubbedPromise (value, property){
 		const stub = sinon.stub().returns(Promise.resolve(value));
 		if (property) {
 			const obj = {};
@@ -19,7 +19,7 @@ describe('tasks/ship (using alternate registry)', function (){
 		}
 	}
 
-	var mockApps = {
+	const mockApps = {
 		staging: 'ft-kat-app-staging',
 		production: {
 			eu: 'ft-kat-app-eu',
@@ -27,11 +27,15 @@ describe('tasks/ship (using alternate registry)', function (){
 		}
 	};
 
-	var ship;
-	var mockScale = stubbedPromise(null, 'task');
-	var mockConfigure = stubbedPromise(null, 'task');
-	var mockDeploy = stubbedPromise(null, 'task');
-	var mockPipelines = {getApps: stubbedPromise(mockApps), supported:stubbedPromise(true), promote:stubbedPromise(null)};
+	let ship;
+	const mockScale = stubbedPromise(null, 'task');
+	const mockConfigure = stubbedPromise(null, 'task');
+	const mockDeploy = stubbedPromise(null, 'task');
+	const mockPipelines = {
+		getApps: stubbedPromise(mockApps),
+		supported: stubbedPromise(true),
+		promote: stubbedPromise(null)
+	};
 
 	before(function (){
 		mockery.registerMock('./configure', mockConfigure);

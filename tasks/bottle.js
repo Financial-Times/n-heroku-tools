@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 'use strict';
 
 const shell = require('shellpromise');
@@ -17,11 +18,11 @@ const getLatestTag = () => {
 			const latest = tagList.split('\n')
 				.filter(semver.valid)
 				.sort(semver.compare)
-				.pop()
+				.pop();
 
 			return latest ? latest.replace(/^v/, '') : null;
 		});
-}
+};
 
 function npmSetVersion (version) {
 	console.log('Setting package.json version');
@@ -29,26 +30,24 @@ function npmSetVersion (version) {
 	packageJson.version = version.substr(1);
 
 	return writeFile(path.join(process.cwd(), 'package.json'), JSON.stringify(packageJson, null, '\t'))
-		.then(() => shell(`git add package.json`))
+		.then(() => shell('git add package.json'))
 		.then(() => shell(`git commit -m 'version ${version}'`))
 		.then(() => shell(`git tag ${version}`))
-		.then(() => shell(`git push origin HEAD`));
+		.then(() => shell('git push origin HEAD'));
 }
 
-function checkIncrement(increment, forceNpm) {
+function checkIncrement (increment, forceNpm) {
 
 	if (!increment) {
 		if (forceNpm) {
 			return Promise.resolve();
 		} else {
-			return Promise.reject(`Unless forcing npm to publish a version at the latest tag
-always specify an increment`);
+			return Promise.reject('Unless forcing npm to publish a version at the latest tag always specify an increment');
 		}
 	}
 
 	if (increments.indexOf(increment) === -1 && !semver.valid(increment)) {
-		return Promise.reject(`Incorrect version identifier. Accepted values: major, minor, patch, v1 or a prerelease semver
-e.g. nbt bottle minor`);
+		return Promise.reject('Incorrect version identifier. Accepted values: major, minor, patch, v1 or a prerelease semver e.g. nbt bottle minor');
 	}
 
 	if (semver.valid(increment)) {
@@ -94,7 +93,7 @@ function fetchVersions () {
 		// get version from npm registry
 		shell('npm view --json')
 			.then(info => {
-				const versions = JSON.parse(info).versions
+				const versions = JSON.parse(info).versions;
 				if (Array.isArray(versions)) {
 					return versions.pop();
 				} else if (typeof versions === 'string') {
@@ -138,7 +137,7 @@ function fetchVersions () {
 				return resolve(null);
 			}
 		})
-	])
+	]);
 }
 
 
@@ -150,12 +149,12 @@ function getFixedVersion (currentVersion, proposedVersion) {
 		if (currentVersion) {
 			if (proposedVersion === 'v1') {
 				if (semver.gt(currentVersion, '1.0.0')) {
-					throw `Cannot release version 1 - latest published version already has a greater semver`;
+					throw 'Cannot release version 1 - latest published version already has a greater semver';
 				}
 				return 'v1.0.0';
 			} else if (isBeta) {
 				if (semver.gt(currentVersion, proposedVersion)) {
-					throw `Cannot release this beta - latest published version already has a greater semver`;
+					throw 'Cannot release this beta - latest published version already has a greater semver';
 				}
 				const currentMajor = semver.major(currentVersion);
 				const proposedMajor = semver.major(proposedVersion);
@@ -168,15 +167,15 @@ function getFixedVersion (currentVersion, proposedVersion) {
 				const proposedMinor = semver.minor(proposedVersion);
 
 				if (proposedMajor > currentMajor + 1) {
-					throw `Beta releases must be no more than an increment of one major version`;
+					throw 'Beta releases must be no more than an increment of one major version';
 				}
 
 				if (proposedMajor === currentMajor + 1 && proposedMinor !== 0) {
-					throw `Beta releases for a new major version should have a minor version of 0`;
+					throw 'Beta releases for a new major version should have a minor version of 0';
 				}
 
 				if (proposedMajor === currentMajor && proposedMinor > currentMinor + 1) {
-					throw `Beta releases for a new minor version should be no more than an increment of one minor version`;
+					throw 'Beta releases for a new minor version should be no more than an increment of one minor version';
 				}
 
 				return /^v/.test(proposedVersion) ? proposedVersion : ('v' + proposedVersion);
@@ -191,7 +190,7 @@ function getFixedVersion (currentVersion, proposedVersion) {
 	}
 }
 
-function bottle(versions, increment, forceNpm) {
+function bottle (versions, increment, forceNpm) {
 	console.log('Verifying version consistency');
 	const npmVersion = versions[0];
 	const tagVersion = versions[1];
@@ -232,7 +231,7 @@ need to correct previous releases`;
 
 function npmBottle (increment, fixedVersion, newModule) {
 	console.log('Publishing as npm module');
-	let dots = setInterval(() => process.stdout.write('.'), 700)
+	let dots = setInterval(() => process.stdout.write('.'), 700);
 	return shell('npm whoami --registry http://registry.npmjs.org')
 		.then(user => {
 			if (user.trim() !== 'financial-times') {
@@ -248,7 +247,7 @@ Credentials are stored in lastpass. Ask somebody about getting access if you don
 				return npmSetVersion(fixedVersion, newModule);
 			} else {
 				return shell(`npm version ${increment}`)
-					.then(() => shell('git push --tags origin HEAD'))
+					.then(() => shell('git push --tags origin HEAD'));
 			}
 		})
 		.then(() => shell('npm publish --registry http://registry.npmjs.org'))
@@ -282,7 +281,7 @@ function task (increment, forceNpm) {
 	return checkIncrement(increment, forceNpm)
 		.then(verifyBranch)
 		.then(fetchVersions)
-		.then(versions => bottle(versions, increment, forceNpm))
+		.then(versions => bottle(versions, increment, forceNpm));
 };
 
 module.exports = function (program, utils) {

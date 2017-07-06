@@ -1,11 +1,12 @@
+/* eslint no-console: 0 */
 'use strict';
 
-var packageJson = require(process.cwd() + '/package.json');
-var herokuAuthToken = require('../lib/heroku-auth-token');
-var configVarsKey = require('../lib/config-vars-key');
-var normalizeName = require('../lib/normalize-name');
-var vault = require('../lib/vault');
-var fetchres = require('fetchres');
+const packageJson = require(process.cwd() + '/package.json');
+const herokuAuthToken = require('../lib/heroku-auth-token');
+const configVarsKey = require('../lib/config-vars-key');
+const normalizeName = require('../lib/normalize-name');
+const vault = require('../lib/vault');
+const fetchres = require('fetchres');
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
@@ -57,18 +58,18 @@ function fetchFromVault (source, target, registry = DEFAULT_REGISTRY_URI) {
 
 function task (opts) {
 
-	var source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
-	var target = opts.target || source;
-	var overrides = {};
+	const source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
+	const target = opts.target || source;
+	const overrides = {};
 
 	if (opts.overrides) {
 		opts.overrides.map(function (o) {
-			var t = o.split('=');
+			const t = o.split('=');
 			overrides[t[0]] = t[1];
 		});
 	}
 
-	var authorizedPostHeaders = {
+	const authorizedPostHeaders = {
 		'Accept': 'application/vnd.heroku+json; version=3',
 		'Content-Type': 'application/json'
 	};
@@ -93,10 +94,10 @@ function task (opts) {
 			]);
 		})
 		.then(function (data) {
-			var desired = data[0];
-			var current = data[1];
+			const desired = data[0];
+			const current = data[1];
 			desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault or make a PR to next-config-vars';
-			var patch = {};
+			const patch = {};
 
 			Object.keys(current).forEach(function (key) {
 				patch[key] = null;
@@ -130,7 +131,7 @@ function task (opts) {
 			console.log(target + ' config vars are set');
 		});
 
-};
+}
 
 module.exports = function (program, utils) {
 
@@ -143,7 +144,7 @@ module.exports = function (program, utils) {
 		.option('-t, --vault', 'use the vault instead of next-config-vars')
 		.action(function (source, target, options) {
 			if (!options.splunk) {
-				console.log('WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT')
+				console.log('WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT');
 			}
 			task({
 				source: source,

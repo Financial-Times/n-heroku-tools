@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 'use strict';
 
 const packageJson = require(process.cwd() + '/package.json');
@@ -29,7 +30,7 @@ function task (opts) {
 
 	const s3bucket = new aws.S3({ params: { Bucket: bucket } });
 
-	function upload(params) {
+	function upload (params) {
 		return new Promise((resolve, reject) => {
 			return s3bucket.upload(params, err => {
 						if (err) {
@@ -92,7 +93,7 @@ function task (opts) {
 						if (opts.surrogateControl) {
 							params.Metadata = {
 								'Surrogate-Control': opts.surrogateControl
-							}
+							};
 						}
 
 						switch(extension) {
