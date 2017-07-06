@@ -123,10 +123,12 @@ function runRouter(opts) {
 	}
 
 	(opts.localApps || [])
-		.concat({ name: normalizeName(packageJson.name, { version: false }), port: opts.localPort })
+		.concat([{ name: normalizeName(packageJson.name, { version: false }), port: opts.localPort }])
 		.forEach(function (localApp) {
 			envVars[localApp.name] = localApp.port;
 		});
+
+	console.log(envVars);
 
 	return configureAndSpawn(envVars, function (env) {
 		var bin = opts.https ? 'next-router-https' : 'next-router';
@@ -162,7 +164,15 @@ function task (opts) {
 	devNui();
 
 	if (opts.local) {
-		return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon, https: opts.https, inspect: opts.inspect });
+		return runLocal({
+			PORT: localPort,
+			harmony: opts.harmony,
+			debug: opts.debug,
+			script: opts.script,
+			nodemon: opts.nodemon,
+			https: opts.https,
+			inspect: opts.inspect
+		});
 	} else if (opts.procfile) {
 		return runProcfile();
 	} else if (opts.script) {
@@ -171,10 +181,14 @@ function task (opts) {
 		const localApps = opts.localApps ? extractLocalApps(opts.localApps) : [];
 		return ensureRouterInstall()
 			.then(function () {
-				return Promise.all([
-					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon, inspect: opts.inspect }),
+				const promises = [
 					runRouter({ PORT: opts.port, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key, localApps: localApps })
-				]);
+				]
+
+				if(opts.app){
+					promises.push(runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon, inspect: opts.inspect }))
+				}
+				return Promise.all(promises);
 			});
 	}
 };
@@ -184,6 +198,7 @@ module.exports = function (program, utils) {
 		.command('run')
 		.description('Runs the local app through the router')
 		.option('-l, --local', 'Run the app but don\'t start the router')
+		.option('--no-app', 'Run the router don\'t start a local app')
 		.option('--harmony', 'Runs the local app with harmony')
 		.option('--debug', 'Runs the local app with debug flag')
 		.option('--inspect', 'Runs the local app with the inspect flag (experimental - will only work with latest node versions)')
