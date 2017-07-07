@@ -19,18 +19,15 @@ function task (opts) {
 		log.info('Deploy to ' + pipelineName);
 		let apps = yield pipelines.getApps(pipelineName);
 		if(!apps.staging){
-			log.error('No staging app found');
-			return;
+			throw new Error('No staging app found');
 		}
 
 		if(!apps.production.eu){
-			log.error('No EU production app found');
-			return;
+			throw new Error('No EU production app found');
 		}
 
 		if(opts.multiregion && !apps.production.us){
-			log.error('No US App Found - add --no-multiregion if it does not exist yet');
-			return;
+			throw new Error('No US App Found - add --no-multiregion if it does not exist yet');
 		}
 
 		log.info('Found apps %j', apps);
