@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 'use strict';
 
 require('isomorphic-fetch');
@@ -20,7 +21,7 @@ module.exports = {
 	buildUrl: (testApp, path) => `https://${testApp}.herokuapp.com${path}`,
 
 	gtgUrl: function (testApp) {
-		return this.buildUrl(testApp, '/__gtg')
+		return this.buildUrl(testApp, '/__gtg');
 	},
 
 	afterEach: (browser, done) => {

@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 'use strict';
 
 const aws = require('aws-sdk');
@@ -17,13 +18,13 @@ const waitForOk = require('../lib/wait-for-ok');
 function task (opts) {
 	opts.region = opts.region || 'eu-west-1';
 	opts.bucket = opts.bucket || 'ft-next-qa';
-	opts.destination = opts.destination || "";
+	opts.destination = opts.destination || '';
 	opts.acl = opts.acl || 'public-read';
 	const files = opts.files
 		.filter(function (file) {
 			return !lstatSync(file).isDirectory();
 		});
-	const destination = opts.destination || "";
+	const destination = opts.destination || '';
 	const bucket = opts.bucket;
 
 	const metrics = new Metrics;
@@ -38,7 +39,7 @@ function task (opts) {
 
 
 	if (files.length < 1) {
-		return Promise.reject("No files found for upload to s3.  (Directories are ignored)");
+		return Promise.reject('No files found for upload to s3.  (Directories are ignored)');
 	}
 	// Backwards compatibility, prefer to use the standard AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY used by AWS NodeJS SDK
 	if (process.env.AWS_ACCESS && process.env.AWS_SECRET) {
@@ -90,7 +91,7 @@ function task (opts) {
 				if (opts.surrogateControl) {
 					payload.Metadata = {
 						'Surrogate-Control': opts.surrogateControl
-					}
+					};
 				}
 
 				if (payload.ContentType === 'text/javascript' || payload.ContentType === 'text/css') {
@@ -99,7 +100,7 @@ function task (opts) {
 				yield denodeify(s3bucket.upload.bind(s3bucket))(payload)
 					.then(() => {
 						if (opts.waitForOk) {
-							return waitForOk(`http://${opts.bucket}.s3-website-${opts.region}.amazonaws.com/${key}`)
+							return waitForOk(`http://${opts.bucket}.s3-website-${opts.region}.amazonaws.com/${key}`);
 						}
 					})
 					.then(() => isMonitoringAsset ? gzip(content) : Promise.resolve())
@@ -113,7 +114,7 @@ function task (opts) {
 						let safeFile = opts.monitorStripDirectories ? key.split('/').pop() : key.replace(/\//g, '.');
 						metrics.count(`${safeFile}.size`, contentSize);
 						metrics.count(`${safeFile}.gzip_size`, gzippedContentSize);
-					})
+					});
 				console.log(`Successfully uploaded: ${key}`);
 			}
 		});

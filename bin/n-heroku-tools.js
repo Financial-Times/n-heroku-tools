@@ -3,8 +3,8 @@
 
 require('isomorphic-fetch');
 
-var program = require('commander');
-var logger = require('../lib/logger');
+const program = require('commander');
+const logger = require('../lib/logger');
 
 const utils = {
 	list: val => {
@@ -43,7 +43,7 @@ program
 	.command('*')
 	.description('')
 	.action(function (app) {
-		utils.exit("The command ‘" + app + "’ is not known");
+		utils.exit(`The command ‘${app}’ is not known`);
 	});
 
 

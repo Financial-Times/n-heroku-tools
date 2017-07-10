@@ -7,16 +7,16 @@ const pipelines = require('../lib/pipelines');
 const destroy = require('./destroy').task;
 
 function task (pipelineName, opts){
-	var apps = [];
+	const apps = [];
 
 	return co(function* (){
 
+		const usApp = pipelineName + '-us';
 		let stagingApp = pipelineName + '-staging';
 		apps.push(stagingApp);
 		let euApp = pipelineName + '-eu';
 		apps.push(euApp);
 		if(opts.multiregion){
-			var usApp = pipelineName + '-us';
 			apps.push(usApp);
 		}
 		log.info('Creating apps for pipeline...');

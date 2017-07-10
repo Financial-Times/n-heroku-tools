@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 'use strict';
 
 const packageJson = require(process.cwd() + '/package.json');
@@ -56,10 +57,10 @@ If this app has no web process use the --skip-gtg option`);
 						return waitForOk(`http://${name}.herokuapp.com/__gtg`)
 							.then(() => smokeTest.run({app: name, authenticated: opts.authenticatedSmokeTests}))
 							.catch(err => {
-								console.log('/**************** heroku app logs start ****************/')
+								console.log('/**************** heroku app logs start ****************/');
 								return shell('heroku logs -a ' + name, { verbose: true })
 									.then(() => {
-										console.log('/**************** heroku app logs end ****************/')
+										console.log('/**************** heroku app logs end ****************/');
 										console.log(`\
 TIP: To recreate the deployed app locally run the following:
 make clean install build-production
@@ -68,11 +69,11 @@ cp .env ../my-app-slug/app/.env
 cd ../my-app-slug/app
 npm install @financial-times/n-heroku-tools
 nht run
-`)
+`);
 										throw err;
-									})
+									});
 							});
-					})
+					});
 
 			} else {
 				console.log('Skipping gtg check.');
@@ -96,6 +97,6 @@ module.exports = function (program, utils) {
 				authenticatedSmokeTests: options.authenticatedSmokeTests,
 			}).catch(utils.exit);
 		});
-}
+};
 
 module.exports.task = task;

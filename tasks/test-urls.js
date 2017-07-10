@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 module.exports = function (program) {
 	program
 		.command('test-urls [app]')

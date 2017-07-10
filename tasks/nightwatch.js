@@ -1,14 +1,14 @@
-
+/* eslint no-console: 0 */
 'use strict';
 
-var path = require('path');
-var spawn = require('child_process').spawn;
+const path = require('path');
+const spawn = require('child_process').spawn;
 
-function toStdOut(data) {
+function toStdOut (data) {
 	process.stdout.write(data.toString());
 }
 
-function toStdErr(data) {
+function toStdErr (data) {
 	process.stderr.write(data.toString());
 }
 
@@ -30,15 +30,15 @@ function filterBrowsers (env, broken) {
 
 
 function task (opts) {
-	var env = opts.env || process.env.SAUCELABS_BROWSERS || 'default';
+	let env = opts.env || process.env.SAUCELABS_BROWSERS || 'default';
 	env = filterBrowsers(env, process.env.SAUCELABS_UNSTABLE_BROWSERS);
 	if (opts.js) {
 		env = filterBrowsers(env, process.env.SAUCELABS_UNSTABLE_BROWSERS_JS);
 	}
-	var config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
-	var args = [ '--env', env, '--config', config ];
+	const config = opts.config || path.join(__dirname, '..', 'config', 'nightwatch.json');
+	const args = ['--env', env, '--config', config];
 
-	for (var opt in opts) {
+	for (let opt in opts) {
 		if (opts.hasOwnProperty(opt) && opts[opt] && args.indexOf(opts[opt]) === -1) {
 			args.push('--' + opt);
 			args.push(opts[opt]);
@@ -46,7 +46,7 @@ function task (opts) {
 	}
 
 	return new Promise(function (resolve, reject) {
-		var nightwatch = spawn('nightwatch', args, { cwd: process.cwd() });
+		const nightwatch = spawn('nightwatch', args, {cwd: process.cwd()});
 		nightwatch.stdout.on('data', toStdOut);
 		nightwatch.stderr.on('data', toStdErr);
 		nightwatch.on('error', reject);
@@ -54,11 +54,11 @@ function task (opts) {
 			if (code === 0) {
 				resolve(0);
 			} else {
-				reject("nightwatch exited with " + code + ', signal ' + signal);
+				reject(`nightwatch exited with ${code}, signal ${signal}`);
 			}
 		});
 	});
-};
+}
 
 module.exports = function (program, utils) {
 	program

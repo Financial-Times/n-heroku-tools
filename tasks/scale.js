@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 'use strict';
 
 const packageJson = require(process.cwd() + '/package.json');
@@ -10,10 +11,10 @@ const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
 function task (opts) {
 
-	var source = opts.source || normalizeName(packageJson.name, { version: false });
-	var target = opts.target || packageJson.name;
-	var registry = opts.registry || DEFAULT_REGISTRY_URI;
-	var overrides = {};
+	const source = opts.source || normalizeName(packageJson.name, {version: false});
+	const target = opts.target || packageJson.name;
+	const registry = opts.registry || DEFAULT_REGISTRY_URI;
+	const overrides = {};
 
 	if(opts.scale){
 		return shellpromise('heroku ps:scale ' + opts.scale + ' --app ' + target, { verbose: true });
@@ -21,7 +22,7 @@ function task (opts) {
 
 	if (opts.overrides) {
 		opts.overrides.map(function (o) {
-			var t = o.split('=');
+			const t = o.split('=');
 			overrides[t[0]] = t[1];
 		});
 	}
