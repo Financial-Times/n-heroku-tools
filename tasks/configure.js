@@ -1,6 +1,7 @@
 'use strict';
 
 var packageJson = require(process.cwd() + '/package.json');
+var findService = require('../lib/find-service');
 var herokuAuthToken = require('../lib/heroku-auth-token');
 var configVarsKey = require('../lib/config-vars-key');
 var normalizeName = require('../lib/normalize-name');
@@ -30,7 +31,15 @@ function fetchFromVault (source, target, registry = DEFAULT_REGISTRY_URI) {
 
 	const path = fetch(registry)
 		.then(fetchres.json)
-		.then(json => json.find(app => app.name === normalizeName(source)).config)
+		.then(json => {
+			const serviceData = findService(json, normalizeName(source));
+
+			if (!serviceData) {
+				throw new Error('Could not find a service in the registry, with `name` or `systemCode`, matching ' + source + '. Please check the service registry.');
+			}
+
+			return serviceData.config;
+		})
 		.then(url => url.replace('https://vault.in.ft.com/v1/',''));
 
 	return Promise.all([path, vault.get()])

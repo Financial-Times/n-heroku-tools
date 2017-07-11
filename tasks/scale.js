@@ -1,6 +1,7 @@
 'use strict';
 
 const packageJson = require(process.cwd() + '/package.json');
+const findService = require('../lib/find-service');
 const herokuAuthToken = require('../lib/heroku-auth-token');
 const normalizeName = require('../lib/normalize-name');
 const fetchres = require('fetchres');
@@ -33,7 +34,12 @@ function task (opts) {
 		.then(() => fetch(registry))
 		.then(fetchres.json)
 		.then(data => {
-			const serviceData = data.find(service => service.name === source);
+			const serviceData = findService(data, source);
+
+			if (!serviceData) {
+				throw new Error('Could not find a service in the registry, with `name` or `systemCode`, matching ' + source + '. Please check the service registry.');
+			}
+
 			const processInfo = serviceData.processes;
 
 			if (!processInfo) {
