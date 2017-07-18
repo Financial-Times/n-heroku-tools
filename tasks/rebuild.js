@@ -5,7 +5,7 @@ const fetchres = require('fetchres');
 const keys = require('../lib/keys');
 var circleToken;
 
-const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/services';
+const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/services.json';
 
 function circleFetch(path, opts) {
 	opts = opts || {};
