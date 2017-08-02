@@ -31,10 +31,12 @@ function task (opts) {
 
 	function upload(params) {
 		return new Promise((resolve, reject) => {
-			return s3bucket.upload(params, err => {
+			return s3bucket.upload(params, (err, data) => {
 						if (err) {
+							console.error('Upload failed', err);
 							reject(err);
 						} else {
+							console.log('Upload success', data);
 							resolve();
 						}
 					});
