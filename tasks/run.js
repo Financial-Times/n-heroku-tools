@@ -129,7 +129,7 @@ function runRouter(opts) {
 		});
 
 	return configureAndSpawn(envVars, function (env) {
-		var bin = opts.https ? `${opts.router}-https` : `${opts.router}`;
+		var bin = opts.https ? `${opts.router}-https` : opts.router;
 		return [bin, { env: env }];
 	});
 }
