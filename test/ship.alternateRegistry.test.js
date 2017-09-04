@@ -96,7 +96,7 @@ describe('tasks/ship (using alternate registry)', function (){
 			});
 
 			sinon.assert.calledWith(mockScale.task, {
-				source:appName,
+				source: 'kat-app',
 				target:mockApps.staging,
 				minimal:true,
 				registry: OVERRIDE_REGISTRY_URI
@@ -140,17 +140,17 @@ describe('tasks/ship (using alternate registry)', function (){
 			});
 
 			sinon.assert.calledWith(mockScale.task, {
-				source:appName,
+				source:'kat-app',
 				target:mockApps.staging,
 				registry: OVERRIDE_REGISTRY_URI
 			});
 			sinon.assert.calledWith(mockScale.task, {
-				source:appName,
+				source:'kat-app',
 				target:mockApps.production.eu,
 				registry: OVERRIDE_REGISTRY_URI
 			});
 			sinon.assert.calledWith(mockScale.task, {
-				source:appName,
+				source:'kat-app',
 				target:mockApps.production.us,
 				registry: OVERRIDE_REGISTRY_URI
 			});
@@ -169,7 +169,7 @@ describe('tasks/ship (using alternate registry)', function (){
 			});
 
 			sinon.assert.calledWith(mockScale.task, {
-				source:appName,
+				source:'kat-app',
 				target:mockApps.staging,
 				inhibit:true,
 				registry: OVERRIDE_REGISTRY_URI

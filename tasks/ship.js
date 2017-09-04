@@ -7,6 +7,7 @@ const packageJson = require(process.cwd() + '/package.json');
 const pipelines = require('../lib/pipelines');
 const deploy = require('./deploy').task;
 const log = require('../lib/logger');
+const normalizeName = require('../lib/normalize-name');
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
@@ -14,7 +15,7 @@ function task (opts) {
 
 	return co(function* (){
 
-		let appName = packageJson.name.replace('ft-next-', '');
+		let appName = normalizeName(packageJson.name);
 		let pipelineName = opts.pipeline || packageJson.name;
 		log.info('Deploy to ' + pipelineName);
 		let apps = yield pipelines.getApps(pipelineName);
