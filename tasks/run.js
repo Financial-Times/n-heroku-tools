@@ -94,6 +94,9 @@ function runScript(opts) {
 		if (opts.debug) {
 			args.push('--debug');
 		}
+		if (opts.inspect) {
+			args.unshift('--inspect');
+		}
 		if (opts.subargs) {
 			args = args.concat(opts.subargs.replace(/^\[/, '').replace(/]$/, '').split(','));
 		}
@@ -129,14 +132,14 @@ function runRouter(opts) {
 		});
 
 	return configureAndSpawn(envVars, function (env) {
-		var bin = opts.https ? `${opts.router}-https` : opts.router;
+		var bin = opts.https ? 'next-router-https' : 'next-router';
 		return [bin, { env: env }];
 	});
 }
 
-function ensureRouterInstall(router) {
-	return exec(`which ${router}`)
-		.catch(function () { throw new Error(`You need to install the ${router} first!  See docs here: https://github.com/Financial-Times/${router}`); });
+function ensureRouterInstall() {
+	return exec('which next-router')
+		.catch(function () { throw new Error('You need to install the next router first!  See docs here: https://github.com/Financial-Times/next-router'); });
 }
 
 // Remind developers that if they want to use a local version of n-ui,
@@ -162,18 +165,18 @@ function task (opts) {
 	devNui();
 
 	if (opts.local) {
-		return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon, https: opts.https, inspect: opts.inspect, router: opts.router });
+		return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon, https: opts.https, inspect: opts.inspect });
 	} else if (opts.procfile) {
 		return runProcfile();
 	} else if (opts.script) {
-		return runScript({ script: opts.script, harmony: opts.harmony, debug: opts.debug, subargs: opts.subargs, router: opts.router });
+		return runScript({script: opts.script, harmony: opts.harmony, debug: opts.debug, subargs: opts.subargs, inspect: opts.inspect});
 	} else {
 		const localApps = opts.localApps ? extractLocalApps(opts.localApps) : [];
-		return ensureRouterInstall(opts.router)
+		return ensureRouterInstall()
 			.then(function () {
 				return Promise.all([
-					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon, inspect: opts.inspect, router: opts.router }),
-					runRouter({ PORT: opts.port, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key, localApps: localApps, router: opts.router })
+					runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, nodemon: opts.nodemon, inspect: opts.inspect }),
+					runRouter({ PORT: opts.port, localPort: localPort, harmony: opts.harmony, https: opts.https, cert: opts.cert, key: opts.key, localApps: localApps })
 				]);
 			});
 	}
@@ -196,7 +199,6 @@ module.exports = function (program, utils) {
 		.option('--key <file>', 'Specify a certificate key to use with HTTPS. Use with --https.')
 		.option('--local-apps <apps>', 'Specify extra apps that are running locally, as comma-seperated `[name]=[port]`, e.g. `service-worker=3001,front-page=3002`')
 		.option('-p --port <port>', 'Port to run the router through', 5050)
-		.option('--router <router>', 'Router to run using', 'next-router')
 		.action(function (opts){
 			task(opts).catch(utils.exit);
 		});
