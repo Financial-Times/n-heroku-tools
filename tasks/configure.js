@@ -10,6 +10,19 @@ var fetchres = require('fetchres');
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
+const getServiceData = source => fetch(DEFAULT_REGISTRY_URI)
+	.then(response => response.json())
+	.then(json => {
+		const serviceData = findService(json, normalizeName(source));
+		if (!serviceData) {
+			throw new Error('Could not find a service in the registry, with `name` or `systemCode`, matching ' + source + '. Please check the service registry.');
+			return false;
+		}
+		else {
+			return serviceData;
+		}
+	});
+
 function fetchFromNextConfigVars (source, target, key) {
 	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
 	return fetch(`https://ft-next-config-vars.herokuapp.com/production/${source}`, { headers: { Authorization: key } })
@@ -26,21 +39,8 @@ function fetchFromNextConfigVars (source, target, key) {
 		});
 }
 
-function fetchFromVault (source, target, registry = DEFAULT_REGISTRY_URI) {
-	console.log(`Using registry: ${registry}`);
-
-	const path = fetch(registry)
-		.then(fetchres.json)
-		.then(json => {
-			const serviceData = findService(json, normalizeName(source));
-
-			if (!serviceData) {
-				throw new Error('Could not find a service in the registry, with `name` or `systemCode`, matching ' + source + '. Please check the service registry.');
-			}
-
-			return serviceData.config;
-		})
-		.then(url => url.replace('https://vault.in.ft.com/v1/',''));
+function fetchFromVault (source, target, serviceData) {
+	const path = serviceData.config.replace('https://vault.in.ft.com/v1/','');
 
 	return Promise.all([path, vault.get()])
 		.then(([path, vault]) => {
@@ -65,7 +65,6 @@ function fetchFromVault (source, target, registry = DEFAULT_REGISTRY_URI) {
 }
 
 function task (opts) {
-
 	var source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
 	var target = opts.target || source;
 	var overrides = {};
@@ -88,8 +87,9 @@ function task (opts) {
 		])
 		.then(function (keys) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
-			return Promise.all([
-				opts.vault ? fetchFromVault(source, target, opts.registry) : fetchFromNextConfigVars(source, target, keys[1]),
+
+			return getServiceData(source).then(serviceData => Promise.all([
+				opts.vault ? fetchFromVault(source, target, serviceData) : fetchFromNextConfigVars(source, target, keys[1]),
 				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
 					.then(fetchres.json)
 					.catch(function (err) {
@@ -99,46 +99,48 @@ function task (opts) {
 							throw err;
 						}
 					})
-			]);
-		})
-		.then(function (data) {
-			var desired = data[0];
-			var current = data[1];
-			desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault or make a PR to next-config-vars';
-			var patch = {};
+				])
+				.then(function (data) {
+					var desired = data[0];
+					var current = data[1];
 
-			Object.keys(current).forEach(function (key) {
-				patch[key] = null;
+					desired['SYSTEM_CODE'] = serviceData.code;
+
+					desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault or make a PR to next-config-vars';
+					var patch = {};
+
+					Object.keys(current).forEach(function (key) {
+						patch[key] = null;
+					});
+
+					Object.keys(desired).forEach(function (key) {
+						patch[key] = desired[key];
+					});
+
+					Object.keys(overrides).forEach(function (key) {
+						patch[key] = overrides[key];
+					});
+
+					Object.keys(patch).forEach(function (key) {
+						if (patch[key] === null) {
+							console.log('Deleting config var: ' + key);
+						} else if (patch[key] !== current[key]) {
+							console.log('Setting config var: ' + key);
+						}
+					});
+
+					console.log('Setting environment keys', Object.keys(patch));
+
+					return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
+						headers: authorizedPostHeaders,
+						method: 'patch',
+						body: JSON.stringify(patch)
+					});
+				})
+				.then(function () {
+					console.log(target + ' config vars are set');
+				}));
 			});
-
-			Object.keys(desired).forEach(function (key) {
-				patch[key] = desired[key];
-			});
-
-			Object.keys(overrides).forEach(function (key) {
-				patch[key] = overrides[key];
-			});
-
-			Object.keys(patch).forEach(function (key) {
-				if (patch[key] === null) {
-					console.log('Deleting config var: ' + key);
-				} else if (patch[key] !== current[key]) {
-					console.log('Setting config var: ' + key);
-				}
-			});
-
-			console.log('Setting environment keys', Object.keys(patch));
-
-			return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
-				headers: authorizedPostHeaders,
-				method: 'patch',
-				body: JSON.stringify(patch)
-			});
-		})
-		.then(function () {
-			console.log(target + ' config vars are set');
-		});
-
 };
 
 module.exports = function (program, utils) {
@@ -152,7 +154,7 @@ module.exports = function (program, utils) {
 		.option('-t, --vault', 'use the vault instead of next-config-vars')
 		.action(function (source, target, options) {
 			if (!options.splunk) {
-				console.log('WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT')
+				console.log('WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT');
 			}
 			task({
 				source: source,
