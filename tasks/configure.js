@@ -10,7 +10,7 @@ var fetchres = require('fetchres');
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
-const getServiceData = source => fetch(DEFAULT_REGISTRY_URI)
+const getServiceData = (source, registry) => fetch(registry)
 	.then(response => response.json())
 	.then(json => {
 		const serviceData = findService(json, normalizeName(source));
@@ -88,7 +88,7 @@ function task (opts) {
 		.then(function (keys) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
 
-			return getServiceData(source).then(serviceData => Promise.all([
+			return getServiceData(source, opts.registry).then(serviceData => Promise.all([
 				opts.vault ? fetchFromVault(source, target, serviceData) : fetchFromNextConfigVars(source, target, keys[1]),
 				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
 					.then(fetchres.json)
