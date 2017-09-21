@@ -94,6 +94,9 @@ function runScript(opts) {
 		if (opts.debug) {
 			args.push('--debug');
 		}
+		if (opts.inspect) {
+			args.unshift('--inspect');
+		}
 		if (opts.subargs) {
 			args = args.concat(opts.subargs.replace(/^\[/, '').replace(/]$/, '').split(','));
 		}
@@ -166,7 +169,7 @@ function task (opts) {
 	} else if (opts.procfile) {
 		return runProcfile();
 	} else if (opts.script) {
-		return runScript({ script: opts.script, harmony: opts.harmony, debug: opts.debug, subargs: opts.subargs, router: opts.router });
+		return runScript({ script: opts.script, harmony: opts.harmony, debug: opts.debug, subargs: opts.subargs, router: opts.router, inspect: opts.inspect });
 	} else {
 		const localApps = opts.localApps ? extractLocalApps(opts.localApps) : [];
 		return ensureRouterInstall(opts.router)
