@@ -197,6 +197,7 @@ function bottle(versions, increment, forceNpm) {
 	const tagVersion = versions[1];
 	const bowerVersion = versions[2];
 	const packageVersion = versions[3];
+	const postBottleAdvice = `\nNote: To update this code in the app/s that use it, use 'nbt rebuild {app name}', or 'nbt rebuild --serves {service type}'`;
 	let publishToNpm = true;
 	// if npm version exists use as canonical version as it's the hardest to alter
 	if (npmVersion) {
@@ -256,7 +257,8 @@ Credentials are stored in lastpass. Ask somebody about getting access if you don
 		.then(getLatestTag)
 		.then(tag => {
 			logger.art.bottle(tag);
-			console.log(`\n${tag} published to npm and tagged in git`);
+			console.log(`\n${tag} published to npm and tagged in git.`);
+			console.log(postBottleAdvice);
 		});
 }
 
@@ -273,7 +275,8 @@ You might want to check how you've set up this bower component.`;
 		.then(getLatestTag)
 		.then(tag => {
 			logger.art.bottle(tag);
-			console.log(`${tag} tagged in git (no requirement for npm release detected)`);
+			console.log(`${tag} tagged in git (no requirement for npm release detected).`);
+			console.log(postBottleAdvice);
 		});
 }
 
