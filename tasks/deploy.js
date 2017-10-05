@@ -31,7 +31,7 @@ function task (opts) {
 			}
 		})
 		.then(function () {
-			console.log('Next Build Tools going to deploy to ' + name);
+			console.log('Next Heroku Tools going to deploy to ' + name);
 			return deploy({
 				app: name,
 				token: token,
