@@ -17,7 +17,7 @@
     "directly": "^1.0.1",
     "dotenv": "^1.2.0",
     "fetchres": "^1.0.4",
-    "foreman": "^1.4.1",
+    "foreman": "^2.0.0",
     "haikro": "^2.2.0",
     "is-image": "^1.0.1",
     "isomorphic-fetch": "^2.0.0",
