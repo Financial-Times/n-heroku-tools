@@ -44,15 +44,13 @@ function task (opts) {
 				configure({
 					source: source,
 					target: apps.staging,
-					registry: REGISTRY_URI,
-					vault: !!opts.vault
+					registry: REGISTRY_URI
 				}),
 				configure({
 					source: source,
 					target: apps.production.eu,
 					overrides: ['REGION=EU'],
-					registry: REGISTRY_URI,
-					vault: !!opts.vault
+					registry: REGISTRY_URI
 				})
 			];
 			if (opts.multiregion) {
@@ -60,9 +58,8 @@ function task (opts) {
 					source: source,
 					target: apps.production.us,
 					overrides: ['REGION=US'],
-					registry: REGISTRY_URI,
-					vault: !!opts.vault
-				}))
+					registry: REGISTRY_URI
+				}));
 			}
 
 			log.log('Configure all apps');
@@ -109,7 +106,7 @@ function task (opts) {
 					source:source,
 					target:apps.production.us,
 					registry: REGISTRY_URI
-				}))
+				}));
 			}
 
 			log.info('scale production apps');
@@ -137,7 +134,6 @@ module.exports = function (program, utils) {
 		.command('ship')
 		.description('Ships code.  Deploys using pipelines, also running the configure and scale steps automatically')
 		.option('-c --no-configure', 'Skip the configure step')
-		.option('-t --vault', 'Use the vault instead of next-config-vars for any configuration')
 		.option('-s --no-scale', 'Skip the scale step')
 		.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
 		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)

@@ -3,7 +3,6 @@
 var packageJson = require(process.cwd() + '/package.json');
 var findService = require('../lib/find-service');
 var herokuAuthToken = require('../lib/heroku-auth-token');
-var configVarsKey = require('../lib/config-vars-key');
 var normalizeName = require('../lib/normalize-name');
 var vault = require('../lib/vault');
 var fetchres = require('fetchres');
@@ -22,22 +21,6 @@ const getServiceData = (source, registry) => fetch(registry)
 			return serviceData;
 		}
 	});
-
-function fetchFromNextConfigVars (source, target, key) {
-	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
-	return fetch(`https://ft-next-config-vars.herokuapp.com/production/${source}`, { headers: { Authorization: key } })
-		.then(fetchres.json)
-		.catch(function (err) {
-			if (err instanceof fetchres.BadServerResponseError) {
-				if (err.message === 404) {
-					throw new Error('Could not download config vars for ' + source + ', check it\'s set up in ft-next-config-vars');
-				}
-				throw new Error('Could not download config vars for ' + source + ', check you have already joined it on Heroku');
-			} else {
-				throw err;
-			}
-		});
-}
 
 function fetchFromVault (source, target, serviceData) {
 	const path = serviceData.config.replace('https://vault.in.ft.com/v1/','');
@@ -81,15 +64,12 @@ function task (opts) {
 		'Content-Type': 'application/json'
 	};
 
-	return Promise.all([
-			herokuAuthToken(),
-			configVarsKey()
-		])
-		.then(function (keys) {
-			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
+	return herokuAuthToken()
+		.then(function (key) {
+			authorizedPostHeaders.Authorization = 'Bearer ' + key;
 
 			return getServiceData(source, opts.registry).then(serviceData => Promise.all([
-				opts.vault ? fetchFromVault(source, target, serviceData) : fetchFromNextConfigVars(source, target, keys[1]),
+				fetchFromVault(source, target, serviceData),
 				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
 					.then(fetchres.json)
 					.catch(function (err) {
@@ -147,11 +127,10 @@ module.exports = function (program, utils) {
 
 	program
 		.command('configure [source] [target]')
-		.description('gets environment variables from next-config-vars or the vault and uploads them to the current app')
+		.description('gets environment variables from Vault and uploads them to the current app')
 		.option('-o, --overrides <abc>', 'override these values', utils.list)
 		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
 		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
-		.option('-t, --vault', 'use the vault instead of next-config-vars')
 		.action(function (source, target, options) {
 			if (!options.splunk) {
 				console.log('WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT');
@@ -161,8 +140,7 @@ module.exports = function (program, utils) {
 				target: target,
 				overrides: options.overrides,
 				splunk: options.splunk,
-				registry: options.registry,
-				vault: !!options.vault
+				registry: options.registry
 			}).catch(utils.exit);
 		});
 };

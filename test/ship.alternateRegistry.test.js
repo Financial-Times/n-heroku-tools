@@ -66,21 +66,18 @@ describe('tasks/ship (using alternate registry)', function (){
 				source: pipelineName,
 				target: mockApps.staging,
 				registry: OVERRIDE_REGISTRY_URI,
-				vault: false
 			});
 			sinon.assert.calledWith(mockConfigure.task, {
 				source: pipelineName,
 				target: mockApps.production.eu,
 				overrides: ['REGION=EU'],
 				registry: OVERRIDE_REGISTRY_URI,
-				vault: false
 			});
 			sinon.assert.calledWith(mockConfigure.task, {
 				source: pipelineName,
 				target: mockApps.production.us,
 				overrides: ['REGION=US'],
 				registry: OVERRIDE_REGISTRY_URI,
-				vault: false
 			});
 		});
 	});
