@@ -17,25 +17,25 @@ const getLatestTag = () => {
 			const latest = tagList.split('\n')
 				.filter(semver.valid)
 				.sort(semver.compare)
-				.pop()
+				.pop();
 
 			return latest ? latest.replace(/^v/, '') : null;
 		});
-}
+};
 
 function npmSetVersion (version) {
-	console.log('Setting package.json version');
+	console.log('Setting package.json version'); // eslint-disable-line no-console
 	const packageJson = require(path.join(process.cwd(), 'package.json'));
 	packageJson.version = version.substr(1);
 
 	return writeFile(path.join(process.cwd(), 'package.json'), JSON.stringify(packageJson, null, '\t'))
-		.then(() => shell(`git add package.json`))
+		.then(() => shell('git add package.json'))
 		.then(() => shell(`git commit -m 'version ${version}'`))
 		.then(() => shell(`git tag ${version}`))
-		.then(() => shell(`git push origin HEAD`));
+		.then(() => shell('git push origin HEAD'));
 }
 
-function checkIncrement(increment, forceNpm) {
+function checkIncrement (increment, forceNpm) {
 
 	if (!increment) {
 		if (forceNpm) {
@@ -67,7 +67,7 @@ For non prereleases you should use major, minor or patch, or v1 for first releas
 }
 
 function verifyBranch () {
-	console.log('Verifying git branch');
+	console.log('Verifying git branch'); // eslint-disable-line no-console
 	// make sure on master and up to date with origin
 	return shell('git rev-parse --abbrev-ref HEAD')
 		.then(branchName => {
@@ -76,7 +76,7 @@ function verifyBranch () {
 			} else {
 				return shell('git remote update')
 					.catch(error => {
-						console.log(error);
+						console.log(error); // eslint-disable-line no-console
 						throw error;
 					})
 					.then(() => shell('git status -uno | grep up-to-date'))
@@ -88,13 +88,13 @@ function verifyBranch () {
 }
 
 function fetchVersions () {
-	console.log('Fetching existing versions');
+	console.log('Fetching existing versions'); // eslint-disable-line no-console
 	// get current version from npm, from git tag and from package.json and bower.json
 	return Promise.all([
 		// get version from npm registry
 		shell('npm view --json')
 			.then(info => {
-				const versions = JSON.parse(info).versions
+				const versions = JSON.parse(info).versions;
 				if (Array.isArray(versions)) {
 					return versions.pop();
 				} else if (typeof versions === 'string') {
@@ -138,7 +138,7 @@ function fetchVersions () {
 				return resolve(null);
 			}
 		})
-	])
+	]);
 }
 
 
@@ -150,12 +150,12 @@ function getFixedVersion (currentVersion, proposedVersion) {
 		if (currentVersion) {
 			if (proposedVersion === 'v1') {
 				if (semver.gt(currentVersion, '1.0.0')) {
-					throw `Cannot release version 1 - latest published version already has a greater semver`;
+					throw 'Cannot release version 1 - latest published version already has a greater semver';
 				}
 				return 'v1.0.0';
 			} else if (isBeta) {
 				if (semver.gt(currentVersion, proposedVersion)) {
-					throw `Cannot release this beta - latest published version already has a greater semver`;
+					throw 'Cannot release this beta - latest published version already has a greater semver';
 				}
 				const currentMajor = semver.major(currentVersion);
 				const proposedMajor = semver.major(proposedVersion);
@@ -168,15 +168,15 @@ function getFixedVersion (currentVersion, proposedVersion) {
 				const proposedMinor = semver.minor(proposedVersion);
 
 				if (proposedMajor > currentMajor + 1) {
-					throw `Beta releases must be no more than an increment of one major version`;
+					throw 'Beta releases must be no more than an increment of one major version';
 				}
 
 				if (proposedMajor === currentMajor + 1 && proposedMinor !== 0) {
-					throw `Beta releases for a new major version should have a minor version of 0`;
+					throw 'Beta releases for a new major version should have a minor version of 0';
 				}
 
 				if (proposedMajor === currentMajor && proposedMinor > currentMinor + 1) {
-					throw `Beta releases for a new minor version should be no more than an increment of one minor version`;
+					throw 'Beta releases for a new minor version should be no more than an increment of one minor version';
 				}
 
 				return /^v/.test(proposedVersion) ? proposedVersion : ('v' + proposedVersion);
@@ -191,8 +191,8 @@ function getFixedVersion (currentVersion, proposedVersion) {
 	}
 }
 
-function bottle(versions, increment, forceNpm) {
-	console.log('Verifying version consistency');
+function bottle (versions, increment, forceNpm) {
+	console.log('Verifying version consistency'); // eslint-disable-line no-console
 	const npmVersion = versions[0];
 	const tagVersion = versions[1];
 	const bowerVersion = versions[2];
@@ -231,8 +231,8 @@ need to correct previous releases`;
 
 
 function npmBottle (increment, fixedVersion, newModule) {
-	console.log('Publishing as npm module');
-	let dots = setInterval(() => process.stdout.write('.'), 700)
+	console.log('Publishing as npm module'); // eslint-disable-line no-console
+	let dots = setInterval(() => process.stdout.write('.'), 700);
 	return shell('npm whoami --registry http://registry.npmjs.org')
 		.then(user => {
 			if (user.trim() !== 'financial-times') {
@@ -248,7 +248,7 @@ Credentials are stored in lastpass. Ask somebody about getting access if you don
 				return npmSetVersion(fixedVersion, newModule);
 			} else {
 				return shell(`npm version ${increment}`)
-					.then(() => shell('git push --tags origin HEAD'))
+					.then(() => shell('git push --tags origin HEAD'));
 			}
 		})
 		.then(() => shell('npm publish --registry http://registry.npmjs.org'))
@@ -256,13 +256,13 @@ Credentials are stored in lastpass. Ask somebody about getting access if you don
 		.then(getLatestTag)
 		.then(tag => {
 			logger.art.bottle(tag);
-			console.log(`\n${tag} published to npm and tagged in git`);
+			console.log(`\n${tag} published to npm and tagged in git`); // eslint-disable-line no-console
 		});
 }
 
 function bowerBottle (increment, currentVersion, fixedVersion) {
 
-	console.log('Publishing as bower component');
+	console.log('Publishing as bower component'); // eslint-disable-line no-console
 	const tag = fixedVersion || semver.inc(currentVersion, increment);
 	if (!tag) {
 		throw `Looks like it's trying to publish an invalid tag: ${tag}.
@@ -273,7 +273,7 @@ You might want to check how you've set up this bower component.`;
 		.then(getLatestTag)
 		.then(tag => {
 			logger.art.bottle(tag);
-			console.log(`${tag} tagged in git (no requirement for npm release detected)`);
+			console.log(`${tag} tagged in git (no requirement for npm release detected)`); // eslint-disable-line no-console
 		});
 }
 
@@ -282,7 +282,7 @@ function task (increment, forceNpm) {
 	return checkIncrement(increment, forceNpm)
 		.then(verifyBranch)
 		.then(fetchVersions)
-		.then(versions => bottle(versions, increment, forceNpm))
+		.then(versions => bottle(versions, increment, forceNpm));
 };
 
 module.exports = function (program, utils) {

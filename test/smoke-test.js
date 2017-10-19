@@ -14,7 +14,7 @@ app.get('/get-404', (req, res) => {
 });
 
 app.get('/get-302', (req, res) => {
-	res.redirect('http://www.thing.com')
+	res.redirect('http://www.thing.com');
 });
 
 app.get('/get-header', (req, res) => {
@@ -41,17 +41,17 @@ app.post('/post-404', (req, res) => {
 });
 
 app.post('/post-302', (req, res) => {
-	res.redirect('http://www.thing.com')
+	res.redirect('http://www.thing.com');
 });
 
 app.post('/post-json-302', bodyParser.json({ extended: true }), (req, res) => {
 	expect(req.body).to.deep.equal({foo: 'bar'});
-	res.redirect('http://www.thing.com')
+	res.redirect('http://www.thing.com');
 });
 
 app.post('/post-form-302', bodyParser.urlencoded({ extended: true }), (req, res) => {
 	expect(req.body).to.deep.equal({foo: 'bar'});
-	res.redirect('http://www.thing.com')
+	res.redirect('http://www.thing.com');
 });
 
 describe('test-urls', function () {
@@ -59,17 +59,17 @@ describe('test-urls', function () {
 	before(() => {
 		return new Promise(resolve => {
 			app.listen(process.env.PORT, function () {
-				console.log('test app listening on ' + process.env.PORT);
+				console.log('test app listening on ' + process.env.PORT); // eslint-disable-line no-console
 				resolve();
 			});
 		});
-	})
+	});
 
 	it('should execute a wide variety of test-url configs', function () {
 		return smokeTest({
 			configPath: 'test/fixtures/smoke',
 			app: 'localhost:' + process.env.PORT
 		});
-	})
+	});
 
 });

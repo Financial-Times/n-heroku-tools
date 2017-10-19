@@ -8,7 +8,7 @@ const OVERRIDE_REGISTRY_URI = 'https://next-registry.ft.com/v2/services.kat.json
 
 describe('tasks/ship (using alternate registry)', function (){
 
-	function stubbedPromise(value, property){
+	function stubbedPromise (value, property){
 		const stub = sinon.stub().returns(Promise.resolve(value));
 		if (property) {
 			const obj = {};
@@ -19,7 +19,7 @@ describe('tasks/ship (using alternate registry)', function (){
 		}
 	}
 
-	var mockApps = {
+	let mockApps = {
 		staging: 'ft-kat-app-staging',
 		production: {
 			eu: 'ft-kat-app-eu',
@@ -27,11 +27,11 @@ describe('tasks/ship (using alternate registry)', function (){
 		}
 	};
 
-	var ship;
-	var mockScale = stubbedPromise(null, 'task');
-	var mockConfigure = stubbedPromise(null, 'task');
-	var mockDeploy = stubbedPromise(null, 'task');
-	var mockPipelines = {getApps: stubbedPromise(mockApps), supported:stubbedPromise(true), promote:stubbedPromise(null)};
+	let ship;
+	let mockScale = stubbedPromise(null, 'task');
+	let mockConfigure = stubbedPromise(null, 'task');
+	let mockDeploy = stubbedPromise(null, 'task');
+	let mockPipelines = {getApps: stubbedPromise(mockApps), supported:stubbedPromise(true), promote:stubbedPromise(null)};
 
 	before(function (){
 		mockery.registerMock('./configure', mockConfigure);
@@ -84,7 +84,6 @@ describe('tasks/ship (using alternate registry)', function (){
 
 	it('Should scale to staging app up to 1 web dyno before deploying', function (){
 		let pipelineName = 'test';
-		let appName = 'ft-kat-app';
 
 		return co(function* (){
 			yield ship({
@@ -127,7 +126,6 @@ describe('tasks/ship (using alternate registry)', function (){
 
 	it('Should be able to run the scale task on the production apps', function (){
 		let pipelineName = 'test';
-		let appName = 'ft-kat-app';
 		return co(function* (){
 			yield ship({
 				pipeline:pipelineName,
@@ -157,7 +155,6 @@ describe('tasks/ship (using alternate registry)', function (){
 
 	it('Should scale the staging app down to 0 when complete', function (){
 		let pipelineName = 'test';
-		let appName = 'ft-kat-app';
 
 		return co(function* (){
 			yield ship({

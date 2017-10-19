@@ -17,13 +17,13 @@ const waitForOk = require('../lib/wait-for-ok');
 function task (opts) {
 	opts.region = opts.region || 'eu-west-1';
 	opts.bucket = opts.bucket || 'ft-next-qa';
-	opts.destination = opts.destination || "";
+	opts.destination = opts.destination || '';
 	opts.acl = opts.acl || 'public-read';
 	const files = opts.files
 		.filter(function (file) {
 			return !lstatSync(file).isDirectory();
 		});
-	const destination = opts.destination || "";
+	const destination = opts.destination || '';
 	const bucket = opts.bucket;
 
 	const metrics = new Metrics;
@@ -38,7 +38,7 @@ function task (opts) {
 
 
 	if (files.length < 1) {
-		return Promise.reject("No files found for upload to s3.  (Directories are ignored)");
+		return Promise.reject('No files found for upload to s3.  (Directories are ignored)');
 	}
 	// Backwards compatibility, prefer to use the standard AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY used by AWS NodeJS SDK
 	if (process.env.AWS_ACCESS && process.env.AWS_SECRET) {
@@ -74,10 +74,10 @@ function task (opts) {
 			const localVersion = yield md5File(file);
 
 			if (s3Version === localVersion) {
-				console.log(`Unchanged, skipping: ${key}`);
+				console.log(`Unchanged, skipping: ${key}`); // eslint-disable-line no-console
 			} else {
-				console.log(`s3/local: ${s3Version} ${localVersion}`);
-				console.log(`Will upload ${file} to ${key}`);
+				console.log(`s3/local: ${s3Version} ${localVersion}`); // eslint-disable-line no-console
+				console.log(`Will upload ${file} to ${key}`); // eslint-disable-line no-console
 
 				const payload = {
 					Key: key,
@@ -90,7 +90,7 @@ function task (opts) {
 				if (opts.surrogateControl) {
 					payload.Metadata = {
 						'Surrogate-Control': opts.surrogateControl
-					}
+					};
 				}
 
 				if (payload.ContentType === 'text/javascript' || payload.ContentType === 'text/css') {
@@ -99,7 +99,7 @@ function task (opts) {
 				yield denodeify(s3bucket.upload.bind(s3bucket))(payload)
 					.then(() => {
 						if (opts.waitForOk) {
-							return waitForOk(`http://${opts.bucket}.s3-website-${opts.region}.amazonaws.com/${key}`)
+							return waitForOk(`http://${opts.bucket}.s3-website-${opts.region}.amazonaws.com/${key}`);
 						}
 					})
 					.then(() => isMonitoringAsset ? gzip(content) : Promise.resolve())
@@ -109,12 +109,12 @@ function task (opts) {
 						}
 						const contentSize = Buffer.byteLength(content);
 						const gzippedContentSize = Buffer.byteLength(gzipped);
-						console.log(`${key} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`);
+						console.log(`${key} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`); // eslint-disable-line no-console
 						let safeFile = opts.monitorStripDirectories ? key.split('/').pop() : key.replace(/\//g, '.');
 						metrics.count(`${safeFile}.size`, contentSize);
 						metrics.count(`${safeFile}.gzip_size`, gzippedContentSize);
-					})
-				console.log(`Successfully uploaded: ${key}`);
+					});
+				console.log(`Successfully uploaded: ${key}`); // eslint-disable-line no-console
 			}
 		});
 	}))

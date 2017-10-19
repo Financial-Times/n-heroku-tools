@@ -11,10 +11,10 @@ const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
 function task (opts) {
 
-	var source = opts.source || normalizeName(packageJson.name, { version: false });
-	var target = opts.target || packageJson.name;
-	var registry = opts.registry || DEFAULT_REGISTRY_URI;
-	var overrides = {};
+	let source = opts.source || normalizeName(packageJson.name, { version: false });
+	let target = opts.target || packageJson.name;
+	let registry = opts.registry || DEFAULT_REGISTRY_URI;
+	let overrides = {};
 
 	if(opts.scale){
 		return shellpromise('heroku ps:scale ' + opts.scale + ' --app ' + target, { verbose: true });
@@ -22,14 +22,14 @@ function task (opts) {
 
 	if (opts.overrides) {
 		opts.overrides.map(function (o) {
-			var t = o.split('=');
+			let t = o.split('=');
 			overrides[t[0]] = t[1];
 		});
 	}
 
-	console.log('Using registry: ', registry);
+	console.log('Using registry: ', registry); // eslint-disable-line no-console
 
-	console.log('Scaling ' + target + ' using service registry information for ' + source);
+	console.log('Scaling ' + target + ' using service registry information for ' + source); // eslint-disable-line no-console
 	return herokuAuthToken()
 		.then(() => fetch(registry))
 		.then(fetchres.json)
@@ -65,11 +65,11 @@ function task (opts) {
 
 		})
 		.then(function (processProfiles) {
-			console.log(target + ' config vars are set to', processProfiles);
+			console.log(target + ' config vars are set to', processProfiles); // eslint-disable-line no-console
 		})
 		.catch(function (err) {
-			console.log('Error scaling processes - ' + err);
-			console.log('Pro tip: Check that your process names haven\'t changed');
+			console.log('Error scaling processes - ' + err); // eslint-disable-line no-console
+			console.log('Pro tip: Check that your process names haven\'t changed'); // eslint-disable-line no-console
 			throw err;
 		});
 };

@@ -8,7 +8,7 @@ const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
 describe('tasks/ship', function (){
 
-	function stubbedPromise(value, property){
+	function stubbedPromise (value, property){
 		const stub = sinon.stub().returns(Promise.resolve(value));
 		if (property) {
 			const obj = {};
@@ -19,7 +19,7 @@ describe('tasks/ship', function (){
 		}
 	}
 
-	var mockApps = {
+	let mockApps = {
 		staging: 'ft-next-app-staging',
 		production: {
 			eu: 'ft-next-app-eu',
@@ -27,11 +27,11 @@ describe('tasks/ship', function (){
 		}
 	};
 
-	var ship;
-	var mockScale = stubbedPromise(null, 'task');
-	var mockConfigure = stubbedPromise(null, 'task');
-	var mockDeploy = stubbedPromise(null, 'task');
-	var mockPipelines = {getApps: stubbedPromise(mockApps), supported:stubbedPromise(true), promote:stubbedPromise(null)};
+	let ship;
+	let mockScale = stubbedPromise(null, 'task');
+	let mockConfigure = stubbedPromise(null, 'task');
+	let mockDeploy = stubbedPromise(null, 'task');
+	let mockPipelines = {getApps: stubbedPromise(mockApps), supported:stubbedPromise(true), promote:stubbedPromise(null)};
 
 	before(function (){
 		mockery.registerMock('./configure', mockConfigure);

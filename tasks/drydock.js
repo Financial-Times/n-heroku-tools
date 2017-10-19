@@ -7,7 +7,7 @@ const pipelines = require('../lib/pipelines');
 const destroy = require('./destroy').task;
 
 function task (pipelineName, opts){
-	var apps = [];
+	let apps = [];
 
 	return co(function* (){
 
@@ -16,7 +16,7 @@ function task (pipelineName, opts){
 		let euApp = pipelineName + '-eu';
 		apps.push(euApp);
 		if(opts.multiregion){
-			var usApp = pipelineName + '-us';
+			let usApp = pipelineName + '-us';
 			apps.push(usApp);
 		}
 		log.info('Creating apps for pipeline...');
@@ -25,7 +25,7 @@ function task (pipelineName, opts){
 			provision(euApp, 'eu')
 		];
 		if(opts.multiregion){
-			provisionPromises.push(provision(usApp, 'us'));
+			provisionPromises.push(provision(usApp, 'us')); // eslint-disable-line no-undef
 		}
 		yield Promise.all(provisionPromises);
 		log.success('Created apps: %s', apps.join(', '));
@@ -39,7 +39,7 @@ function task (pipelineName, opts){
 			pipelines.addAppToPipeline(pipelineName, euApp, 'production')
 		];
 		if(opts.multiregion){
-			promises.push(pipelines.addAppToPipeline(pipelineName, usApp, 'production'));
+			promises.push(pipelines.addAppToPipeline(pipelineName, usApp, 'production')); // eslint-disable-line no-undef
 		}
 
 		yield Promise.all(promises);

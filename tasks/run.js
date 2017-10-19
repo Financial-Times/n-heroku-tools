@@ -1,22 +1,22 @@
 'use strict';
 
-var exec = require('../lib/exec');
-var spawn = require('child_process').spawn;
-var packageJson = require(process.cwd() + '/package.json');
-var normalizeName = require('../lib/normalize-name');
-var keys = require('../lib/keys');
-var path = require('path');
+let exec = require('../lib/exec');
+let spawn = require('child_process').spawn;
+let packageJson = require(process.cwd() + '/package.json');
+let normalizeName = require('../lib/normalize-name');
+let keys = require('../lib/keys');
+let path = require('path');
 const shell = require('shellpromise');
 
-function toStdOut(data) {
+function toStdOut (data) {
 	process.stdout.write(data.toString());
 }
 
-function toStdErr(data) {
+function toStdErr (data) {
 	process.stderr.write(data.toString());
 }
 
-function extractLocalApps(localApps) {
+function extractLocalApps (localApps) {
 	return localApps.split(',')
 		.reduce(function (currentLocalApps, localApp) {
 			const localAppParts = localApp.split('=');
@@ -25,7 +25,7 @@ function extractLocalApps(localApps) {
 		}, []);
 }
 
-function configureAndSpawn(opts, func) {
+function configureAndSpawn (opts, func) {
 	return keys()
 		.then(function (env) {
 			// Overwrite any key specified locally
@@ -37,10 +37,10 @@ function configureAndSpawn(opts, func) {
 				env[key] = opts[key];
 			});
 
-			var processToRun = func(env);
+			let processToRun = func(env);
 
 			return new Promise(function (resolve, reject) {
-				var local = spawn.apply(null, processToRun);
+				let local = spawn.apply(null, processToRun);
 
 				local.stdout.on('data', toStdOut);
 				local.stderr.on('data', toStdErr);
@@ -50,9 +50,9 @@ function configureAndSpawn(opts, func) {
 		});
 }
 
-function runLocal(opts) {
+function runLocal (opts) {
 	return configureAndSpawn(opts, function (env) {
-		var args = [];
+		let args = [];
 
 		if(opts.script) {
 			args.push(opts.script);
@@ -87,10 +87,10 @@ function runLocal(opts) {
 	});
 }
 
-function runScript(opts) {
+function runScript (opts) {
 
 	return configureAndSpawn({}, function (env) {
-		var args = [path.join(process.cwd(), opts.script)];
+		let args = [path.join(process.cwd(), opts.script)];
 		if (opts.debug) {
 			args.push('--debug');
 		}
@@ -105,14 +105,14 @@ function runScript(opts) {
 }
 
 
-function runProcfile() {
+function runProcfile () {
 	return configureAndSpawn({}, function (env) {
 		return ['foreman', ['start'], { cwd: process.cwd(), env: env }];
 	});
 }
 
-function runRouter(opts) {
-	var envVars = {
+function runRouter (opts) {
+	let envVars = {
 		DEBUG: 'proxy',
 		REGION: 'us',
 		PORT: opts.PORT
@@ -132,19 +132,19 @@ function runRouter(opts) {
 		});
 
 	return configureAndSpawn(envVars, function (env) {
-		var bin = opts.https ? `${opts.router}-https` : opts.router;
+		let bin = opts.https ? `${opts.router}-https` : opts.router;
 		return [bin, { env: env }];
 	});
 }
 
-function ensureRouterInstall(router) {
+function ensureRouterInstall (router) {
 	return exec(`which ${router}`)
 		.catch(function () { throw new Error(`You need to install the ${router} first!  See docs here: https://github.com/Financial-Times/${router}`); });
 }
 
 // Remind developers that if they want to use a local version of n-ui,
 // they need to `export NEXT_APP_SHELL=local`.
-function devNui() {
+function devNui () {
 	if (
 		(!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') // Not production
 		&& !process.env.CIRCLE_BRANCH // Not CircleCI
@@ -153,14 +153,14 @@ function devNui() {
 		// Check if the app is using n-ui
 		shell('grep -s -Fim 1 n-ui bower.json')
 			.then(res => {
-				if (res !== '') toStdOut('Developers: If you want your app to point to n-ui locally, then `export NEXT_APP_SHELL=local`. \r\n')
+				if (res !== '') toStdOut('Developers: If you want your app to point to n-ui locally, then `export NEXT_APP_SHELL=local`. \r\n');
 			})
 			.catch(() => null);
 	}
 }
 
 function task (opts) {
-	var localPort = process.env.PORT || 3002;
+	let localPort = process.env.PORT || 3002;
 
 	devNui();
 

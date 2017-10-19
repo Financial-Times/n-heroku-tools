@@ -1,11 +1,11 @@
 
 'use strict';
 
-var spawn = require('shellpromise');
+let spawn = require('shellpromise');
 
 function task (name, region) {
 	if (typeof region === 'undefined'){
-		region = 'us'
+		region = 'us';
 	}
 	return spawn('heroku create -a ' + name + ' --region ' + region + ' --org financial-times --no-remote', { verbose: true });
 };
@@ -18,7 +18,7 @@ module.exports = function (program, utils) {
 			if (app) {
 				task(app).catch(utils.exit);
 			} else {
-				utils.exit("Please provide an app name");
+				utils.exit('Please provide an app name');
 			}
 		});
 };

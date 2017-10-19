@@ -74,7 +74,7 @@ function task (opts) {
 			minimal: true,
 			registry: REGISTRY_URI
 		}).catch(function (){
-			log.info('Failed to scale up staging app - is this the first run?')
+			log.info('Failed to scale up staging app - is this the first run?');
 		});
 
 		log.info('Deploy to staging app and run gtg checks');
