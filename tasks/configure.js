@@ -86,7 +86,7 @@ function task (opts) {
 
 					desired['SYSTEM_CODE'] = serviceData.code;
 
-					desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault or make a PR to next-config-vars';
+					desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault UI.';
 					let patch = {};
 
 					Object.keys(current).forEach(function (key) {

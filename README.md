@@ -10,7 +10,7 @@ For patches to NBT 5 please make PRs to the ‘nbt-five’ branch and release fr
 	Commands:
 
 	deploy [options] [app]                              runs haikro deployment scripts with sensible defaults for Next projects
-	configure [options] [source] [target]               downloads environment variables from next-config-vars and uploads them to the current app
+	configure [options] [source] [target]               downloads environment variables from Vault and uploads them to the current app
 	scale [options] [source] [target]                   downloads process information from next-service-registry and scales/sizes the application servers
 	provision [app]                                     provisions a new instance of an application server
 	destroy [options] [app]                             deletes the app from heroku
