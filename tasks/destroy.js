@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
-var spawn = require('shellpromise');
+let spawn = require('shellpromise');
 
 function task (options) {
-	var app = options.app;
-	var verbose = options.verbose;
-	var promise = Promise.resolve();
+	let app = options.app;
+	let verbose = options.verbose;
+	let promise = Promise.resolve();
 	if (verbose) {
 		promise = promise.then(function () {
 
@@ -31,7 +31,7 @@ module.exports = function (program, utils) {
 					verbose: !options.skipLogs
 				}).catch(utils.exit);
 			} else {
-				utils.exit("Please provide an app name");
+				utils.exit('Please provide an app name');
 			}
 		});
 };

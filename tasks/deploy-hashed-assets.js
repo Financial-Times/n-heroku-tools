@@ -29,14 +29,14 @@ function task (opts) {
 
 	const s3bucket = new aws.S3({ params: { Bucket: bucket } });
 
-	function upload(params) {
+	function upload (params) {
 		return new Promise((resolve, reject) => {
 			return s3bucket.upload(params, (err, data) => {
 						if (err) {
-							console.error('Upload failed', err);
+							console.error('Upload failed', err); // eslint-disable-line no-console
 							reject(err);
 						} else {
-							console.log('Upload success', data);
+							console.log('Upload success', data); // eslint-disable-line no-console
 							resolve();
 						}
 					});
@@ -47,7 +47,7 @@ function task (opts) {
 	const directory = opts.directory || 'public';
 	let assetHashes;
 	try {
-		console.log(process.cwd() + `/${directory}/assets-hashes.json`);
+		console.log(process.cwd() + `/${directory}/assets-hashes.json`); // eslint-disable-line no-console
 		assetHashes = require(process.cwd() + `/${directory}/asset-hashes.json`);
 	} catch(err) {
 		return Promise.reject('Must run `make build-production` before running `nbt deploy-hashed-assets`');
@@ -69,7 +69,7 @@ function task (opts) {
 		forceGraphiteLogging: true
 	});
 
-	console.log('Deploying hashed assets to S3...');
+	console.log('Deploying hashed assets to S3...'); // eslint-disable-line no-console
 
 	return Promise.all(Object.keys(assetHashes)
 			.map(file => {
@@ -78,7 +78,7 @@ function task (opts) {
 				// get the extension, ignoring brotli
 				const extension = (/\.(js|css)(\.br)?$/.exec(file) || [])[1];
 
-				console.log(`sending ${key} to S3`);
+				console.log(`sending ${key} to S3`); // eslint-disable-line no-console
 
 				return readFile(path.join(process.cwd(), directory, file), { encoding: 'utf-8' })
 					.then(content => {
@@ -94,7 +94,7 @@ function task (opts) {
 						if (opts.surrogateControl) {
 							params.Metadata = {
 								'Surrogate-Control': opts.surrogateControl
-							}
+							};
 						}
 
 						switch(extension) {
@@ -117,7 +117,7 @@ function task (opts) {
 								}
 								const contentSize = Buffer.byteLength(content);
 								const gzippedContentSize = Buffer.byteLength(values[2]);
-								console.log(`${file} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`);
+								console.log(`${file} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`); // eslint-disable-line no-console
 								metrics.count(`${file}.size`, contentSize);
 								metrics.count(`${file}.gzip_size`, gzippedContentSize);
 							});

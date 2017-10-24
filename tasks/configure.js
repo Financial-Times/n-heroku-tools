@@ -1,12 +1,11 @@
 'use strict';
 
-var packageJson = require(process.cwd() + '/package.json');
-var findService = require('../lib/find-service');
-var herokuAuthToken = require('../lib/heroku-auth-token');
-var configVarsKey = require('../lib/config-vars-key');
-var normalizeName = require('../lib/normalize-name');
-var vault = require('../lib/vault');
-var fetchres = require('fetchres');
+let packageJson = require(process.cwd() + '/package.json');
+let findService = require('../lib/find-service');
+let herokuAuthToken = require('../lib/heroku-auth-token');
+let normalizeName = require('../lib/normalize-name');
+let vault = require('../lib/vault');
+let fetchres = require('fetchres');
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
@@ -22,22 +21,6 @@ const getServiceData = (source, registry) => fetch(registry)
 			return serviceData;
 		}
 	});
-
-function fetchFromNextConfigVars (source, target, key) {
-	console.log(`Fetching ${source} config from Next Config Vars for ${target}`);
-	return fetch(`https://ft-next-config-vars.herokuapp.com/production/${source}`, { headers: { Authorization: key } })
-		.then(fetchres.json)
-		.catch(function (err) {
-			if (err instanceof fetchres.BadServerResponseError) {
-				if (err.message === 404) {
-					throw new Error('Could not download config vars for ' + source + ', check it\'s set up in ft-next-config-vars');
-				}
-				throw new Error('Could not download config vars for ' + source + ', check you have already joined it on Heroku');
-			} else {
-				throw err;
-			}
-		});
-}
 
 function fetchFromVault (source, target, serviceData) {
 	const path = serviceData.config.replace('https://vault.in.ft.com/v1/','');
@@ -65,31 +48,28 @@ function fetchFromVault (source, target, serviceData) {
 }
 
 function task (opts) {
-	var source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
-	var target = opts.target || source;
-	var overrides = {};
+	let source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
+	let target = opts.target || source;
+	let overrides = {};
 
 	if (opts.overrides) {
 		opts.overrides.map(function (o) {
-			var t = o.split('=');
+			let t = o.split('=');
 			overrides[t[0]] = t[1];
 		});
 	}
 
-	var authorizedPostHeaders = {
+	let authorizedPostHeaders = {
 		'Accept': 'application/vnd.heroku+json; version=3',
 		'Content-Type': 'application/json'
 	};
 
-	return Promise.all([
-			herokuAuthToken(),
-			configVarsKey()
-		])
-		.then(function (keys) {
-			authorizedPostHeaders.Authorization = 'Bearer ' + keys[0];
+	return herokuAuthToken()
+		.then(function (key) {
+			authorizedPostHeaders.Authorization = 'Bearer ' + key;
 
 			return getServiceData(source, opts.registry).then(serviceData => Promise.all([
-				opts.vault ? fetchFromVault(source, target, serviceData) : fetchFromNextConfigVars(source, target, keys[1]),
+				fetchFromVault(source, target, serviceData),
 				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
 					.then(fetchres.json)
 					.catch(function (err) {
@@ -101,13 +81,13 @@ function task (opts) {
 					})
 				])
 				.then(function (data) {
-					var desired = data[0];
-					var current = data[1];
+					let desired = data[0];
+					let current = data[1];
 
 					desired['SYSTEM_CODE'] = serviceData.code;
 
 					desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault or make a PR to next-config-vars';
-					var patch = {};
+					let patch = {};
 
 					Object.keys(current).forEach(function (key) {
 						patch[key] = null;
@@ -123,13 +103,13 @@ function task (opts) {
 
 					Object.keys(patch).forEach(function (key) {
 						if (patch[key] === null) {
-							console.log('Deleting config var: ' + key);
+							console.log('Deleting config var: ' + key); // eslint-disable-line no-console
 						} else if (patch[key] !== current[key]) {
-							console.log('Setting config var: ' + key);
+							console.log('Setting config var: ' + key); // eslint-disable-line no-console
 						}
 					});
 
-					console.log('Setting environment keys', Object.keys(patch));
+					console.log('Setting environment keys', Object.keys(patch)); // eslint-disable-line no-console
 
 					return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
 						headers: authorizedPostHeaders,
@@ -138,7 +118,7 @@ function task (opts) {
 					});
 				})
 				.then(function () {
-					console.log(target + ' config vars are set');
+					console.log(target + ' config vars are set'); // eslint-disable-line no-console
 				}));
 			});
 };
@@ -147,22 +127,20 @@ module.exports = function (program, utils) {
 
 	program
 		.command('configure [source] [target]')
-		.description('gets environment variables from next-config-vars or the vault and uploads them to the current app')
+		.description('gets environment variables from Vault and uploads them to the current app')
 		.option('-o, --overrides <abc>', 'override these values', utils.list)
 		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
 		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
-		.option('-t, --vault', 'use the vault instead of next-config-vars')
 		.action(function (source, target, options) {
 			if (!options.splunk) {
-				console.log('WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT');
+				console.log('WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT'); // eslint-disable-line no-console
 			}
 			task({
 				source: source,
 				target: target,
 				overrides: options.overrides,
 				splunk: options.splunk,
-				registry: options.registry,
-				vault: !!options.vault
+				registry: options.registry
 			}).catch(utils.exit);
 		});
 };

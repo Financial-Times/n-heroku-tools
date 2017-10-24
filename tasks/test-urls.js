@@ -5,9 +5,9 @@ module.exports = function (program) {
 		.option('-t, --throttle <n>', 'The maximum number of tests to run concurrently. default: 5')
 		.option('-c, --config', 'Path to config file, relative to cwd [default test/smoke]')
 		.action(function (app, options) {
-			console.warn('test-urls is deprecated. Smoke tests are now carried out as part of the deploy, ship and float tasks. \n To run smoke tests against a local app use e.g. `nht smoke local.ft.com:5050`');
+			console.warn('test-urls is deprecated. Smoke tests are now carried out as part of the deploy, ship and float tasks. \n To run smoke tests against a local app use e.g. `nht smoke local.ft.com:5050`'); // eslint-disable-line no-console
 			if (options.configPath) {
-				console.warn('Custom config path for test-urls is deprecated. Config must now be held in ./test/smoke.js');
+				console.warn('Custom config path for test-urls is deprecated. Config must now be held in ./test/smoke.js'); // eslint-disable-line no-console
 			}
 		});
 };

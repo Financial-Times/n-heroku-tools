@@ -3,11 +3,11 @@
 
 const fetchres = require('fetchres');
 const keys = require('../lib/keys');
-var circleToken;
+let circleToken;
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/services.json';
 
-function circleFetch(path, opts) {
+function circleFetch (path, opts) {
 	opts = opts || {};
 	path = 'https://circleci.com/api/v1' + path + '?circle-token=' + circleToken;
 	opts.timeout = opts.timeout || 3000;
@@ -16,15 +16,15 @@ function circleFetch(path, opts) {
 	opts.headers.Accept = opts.headers.Accept || 'application/json';
 	return fetch(path, opts)
 		.then(function (res) {
-			var ok = res.ok;
-			var status = res.status;
+			let ok = res.ok;
+			let status = res.status;
 			return res.json()
 				.then(function (data) {
 					if (ok) {
 						return data;
 					} else {
-						console.log("Response not OK for " + path + ", got: " + status);
-						console.log(data);
+						console.log('Response not OK for ' + path + ', got: ' + status); // eslint-disable-line no-console
+						console.log(data); // eslint-disable-line no-console
 						throw new Error(status);
 					}
 
@@ -32,24 +32,24 @@ function circleFetch(path, opts) {
 		});
 }
 
-function clearCache(project) {
+function clearCache (project) {
 	return circleFetch('/project/Financial-Times/' + project + '/build-cache', { method: 'DELETE' });
 }
 
-function rebuildMasterBuild(project) {
+function rebuildMasterBuild (project) {
 	return circleFetch('/project/Financial-Times/' + project + '/tree/master', { method: 'POST' });
 }
 
-function lastMasterBuild(project) {
+function lastMasterBuild (project) {
 	return circleFetch('/project/Financial-Times/' + project + '/tree/master');
 }
 
 function task (options) {
-	var apps = options.apps;
-	var registry = options.registry || DEFAULT_REGISTRY_URI;
-	var serves = options.serves;
-	var allApps = options.all;
-	const keyPromise = process.env.CIRCLECI_REBUILD_KEY ? Promise.resolve(process.env.CIRCLECI_REBUILD_KEY) : keys().then(env => env.CIRCLECI_REBUILD_KEY)
+	let apps = options.apps;
+	let registry = options.registry || DEFAULT_REGISTRY_URI;
+	let serves = options.serves;
+	let allApps = options.all;
+	const keyPromise = process.env.CIRCLECI_REBUILD_KEY ? Promise.resolve(process.env.CIRCLECI_REBUILD_KEY) : keys().then(env => env.CIRCLECI_REBUILD_KEY);
 	return keyPromise
 		.then(token => {
 			circleToken = token;
@@ -67,7 +67,7 @@ function task (options) {
 							})
 							.filter(function (app) { return app.versions['1'] || app.versions['2']; })
 							.map(function (app) {
-								var repo;
+								let repo;
 								Object.keys(app.versions).forEach(function (version) {
 									version = app.versions[version];
 									if (/https?:\/\/github\.com\/Financial-Times\//.test(version.repo)) {
@@ -80,28 +80,28 @@ function task (options) {
 							.filter(function (repo) { return repo; });
 					});
 			} else {
-				console.log('Use the --all flag to rebuild all apps or supply a specific app name.')
+				console.log('Use the --all flag to rebuild all apps or supply a specific app name.'); // eslint-disable-line no-console
 				process.exit(1);
 			}
 			return appNamesPromise;
 		})
 		.then(function () {
 			return Promise.all(apps.map(function (app) {
-				console.log("Considering whether to rebuild " + app);
+				console.log('Considering whether to rebuild ' + app); // eslint-disable-line no-console
 				return lastMasterBuild(app)
 					.then(function (data) {
-						var lastBuild = data[0];
+						let lastBuild = data[0];
 						if (lastBuild.status !== 'running' && lastBuild.status !== 'not_running') {
-							console.log(`Clearing cache and triggering rebuild of last master build of ${app} ( ${lastBuild.committer_name}: ${lastBuild.subject ? lastBuild.subject.replace(/\n/g, " ") : 'No subject'})`);
+							console.log(`Clearing cache and triggering rebuild of last master build of ${app} ( ${lastBuild.committer_name}: ${lastBuild.subject ? lastBuild.subject.replace(/\n/g, ' ') : 'No subject'})`); // eslint-disable-line no-console
 							return clearCache(app).then(function () {
 									rebuildMasterBuild(app);
 								});
 						} else {
-							console.log("Skipping rebuild of " + app + " because job already exists.");
+							console.log('Skipping rebuild of ' + app + ' because job already exists.'); // eslint-disable-line no-console
 						}
 					})
 					.catch(function () {
-						console.log("Skipped rebuild of " + app + " probably because Circle CI not set up for this repo");
+						console.log('Skipped rebuild of ' + app + ' probably because Circle CI not set up for this repo'); // eslint-disable-line no-console
 					});
 			}));
 		});

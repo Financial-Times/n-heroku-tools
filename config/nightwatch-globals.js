@@ -6,10 +6,10 @@ const notifySauceLabs = require('notify-saucelabs');
 const notify = (sessionId, passed, opts) =>
 	notifySauceLabs(Object.assign({ sessionId, passed }, opts))
 		.then(() => {
-			console.info('Finished updating Sauce Labs');
+			console.info('Finished updating Sauce Labs'); // eslint-disable-line no-console
 		})
 		.catch(err => {
-			console.error('An error has occurred notifying Sauce Labs');
+			console.error('An error has occurred notifying Sauce Labs'); // eslint-disable-line no-console
 			return err;
 		});
 
@@ -20,7 +20,7 @@ module.exports = {
 	buildUrl: (testApp, path) => `https://${testApp}.herokuapp.com${path}`,
 
 	gtgUrl: function (testApp) {
-		return this.buildUrl(testApp, '/__gtg')
+		return this.buildUrl(testApp, '/__gtg');
 	},
 
 	afterEach: (browser, done) => {
@@ -35,13 +35,13 @@ module.exports = {
 			tags.push(process.env.NODE_ENV);
 		}
 		const notifyOpts = { tags };
-		console.log(`Sauce Test Results at https://saucelabs.com/tests/${sessionId}`);
+		console.log(`Sauce Test Results at https://saucelabs.com/tests/${sessionId}`); // eslint-disable-line no-console
 		browser
 			.getLog('browser', logs => {
 				if (!passed) {
-					console.log('JS Console');
-					console.log('==========');
-					console.log(logs);
+					console.log('JS Console'); // eslint-disable-line no-console
+					console.log('=========='); // eslint-disable-line no-console
+					console.log(logs); // eslint-disable-line no-console
 				}
 			})
 			.perform((browser, done) => {
