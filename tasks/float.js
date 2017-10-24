@@ -84,6 +84,7 @@ module.exports = function (program, utils) {
 		.option('-d --no-destroy', 'Don\'t automatically destroy new apps')
 		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('-s --skip-gtg', 'skip the good-to-go HTTP check')
+		.option('--vault', 'no-op, please remove this option from your Makefile')
 		.action(function (options){
 			task(options).catch(utils.exit);
 		});

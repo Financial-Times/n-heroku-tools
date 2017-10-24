@@ -138,6 +138,7 @@ module.exports = function (program, utils) {
 		.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
 		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('-m --multiregion', 'Will expect a US app as well as an EU one')
+		.option('--vault', 'no-op, please remove this option from your Makefile')
 		.action(function (options){
 			task(options).catch(utils.exit);
 		});
