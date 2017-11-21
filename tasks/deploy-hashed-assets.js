@@ -27,16 +27,18 @@ function task (opts) {
 		region
 	});
 
-	const s3bucket = new aws.S3({ params: { Bucket: bucket } });
+	const s3EUBucket = new aws.S3({ params: { Bucket: bucket } });
+	const s3USBucket = new aws.S3({ params: { Bucket: usBucket } });
 
-	function upload (params) {
+
+	function upload (bucket, params) {
 		return new Promise((resolve, reject) => {
-			return s3bucket.upload(params, (err, data) => {
+			return bucket.upload(params, (err, data) => {
 						if (err) {
-							console.error('Upload failed', err); // eslint-disable-line no-console
+							console.error(`Upload failed to ${bucket}`, err); // eslint-disable-line no-console
 							reject(err);
 						} else {
-							console.log('Upload success', data); // eslint-disable-line no-console
+							console.log(`Upload success to ${bucket}`, data); // eslint-disable-line no-console
 							resolve();
 						}
 					});
@@ -105,7 +107,10 @@ function task (opts) {
 								params.ContentType = 'text/css; charset=utf-8';
 								break;
 						}
-						return upload(params)
+						return Promise.all([
+							upload(s3EUBucket, params),
+							upload(s3USBucket, params)
+						])
 							.then(() => Promise.all([
 								waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`),
 								waitForOk(`http://${usBucket}.s3-website-${usRegion}.amazonaws.com/${key}`),
