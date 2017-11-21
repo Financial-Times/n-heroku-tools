@@ -12,9 +12,9 @@ const Metrics = require('next-metrics').Metrics;
 const AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process.env.aws_access_hashed_assets;
 const AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.env.aws_secret_hashed_assets;
 
-const bucket = 'ft-next-hashed-assets-prod';
+const euBucket = 'ft-next-hashed-assets-prod';
 const usBucket = 'ft-next-hashed-assets-prod-us';
-const region = 'eu-west-1';
+const euRegion = 'eu-west-1';
 const usRegion = 'us-east-1';
 const gzip = denodeify(require('zlib').gzip);
 
@@ -24,7 +24,7 @@ function task (opts) {
 	aws.config.update({
 		accessKeyId: AWS_ACCESS_HASHED_ASSETS,
 		secretAccessKey: AWS_SECRET_HASHED_ASSETS,
-		region
+		euRegion
 	});
 
 	function upload (bucket, params) {
@@ -106,11 +106,11 @@ function task (opts) {
 								break;
 						}
 						return Promise.all([
-							upload(bucket, params),
+							upload(euBucket, params),
 							upload(usBucket, params)
 						])
 							.then(() => Promise.all([
-								waitForOk(`http://${bucket}.s3-website-${region}.amazonaws.com/${key}`),
+								waitForOk(`http://${euBucket}.s3-website-${euRegion}.amazonaws.com/${key}`),
 								waitForOk(`http://${usBucket}.s3-website-${usRegion}.amazonaws.com/${key}`),
 								isMonitoringAsset ? gzip(content) : Promise.resolve()
 							]))
