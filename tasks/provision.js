@@ -1,22 +1,21 @@
+const spawn = require('shellpromise');
 
-'use strict';
+const DEFAULT_REGION = 'us';
+const DEFAULT_ORG = 'ft-customer-products';
 
-let spawn = require('shellpromise');
-
-function task (name, region) {
-	if (typeof region === 'undefined'){
-		region = 'us';
-	}
-	return spawn('heroku create -a ' + name + ' --region ' + region + ' --org financial-times --no-remote', { verbose: true });
+function task (name, { region = DEFAULT_REGION, organisation = DEFAULT_ORG } = {}) {
+	return spawn(`heroku create -a ${name} --region ${region} --org ${organisation} --no-remote`, { verbose: true });
 };
 
 module.exports = function (program, utils) {
 	program
 		.command('provision [app]')
 		.description('provisions a new instance of an application server')
-		.action(function (app) {
-			if (app) {
-				task(app).catch(utils.exit);
+		.option('-r --region [region]', 'Region to create app in (default: us)', DEFAULT_REGION)
+		.option('-o --organisation [org]', 'Specify the organisation to own the created assets', DEFAULT_ORG)
+		.action(function (appName, options) {
+			if (appName) {
+				task(appName, options).catch(utils.exit);
 			} else {
 				utils.exit('Please provide an app name');
 			}
