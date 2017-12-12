@@ -1,12 +1,12 @@
 const log = require('../lib/logger');
 const pipelines = require('../lib/pipelines');
 
-const provision = require('./provision').task;
-const destroy = require('./destroy').task;
+const provision = require('./provision');
+const destroy = require('./destroy');
 
 const DEFAULT_ORG = 'ft-customer-products';
 
-async function task (pipelineName, { multiregion, organisation = DEFAULT_ORG }){
+async function task (pipelineName, { multiregion, organisation = DEFAULT_ORG } = {}){
 
 	let stagingApp = pipelineName + '-staging';
 	let euApp = pipelineName + '-eu';
@@ -21,12 +21,12 @@ async function task (pipelineName, { multiregion, organisation = DEFAULT_ORG }){
 
 		log.info(`Creating apps for pipeline (organisation: ${organisation})...`);
 		let provisionPromises = [
-			provision(stagingApp, { organisation }),
-			provision(euApp, { region: 'eu', organisation })
+			provision.task(stagingApp, { organisation }),
+			provision.task(euApp, { region: 'eu', organisation })
 		];
 
 		if(multiregion){
-			provisionPromises.push(provision(usApp, { region: 'us', organisation }));
+			provisionPromises.push(provision.task(usApp, { region: 'us', organisation }));
 		}
 
 		await Promise.all(provisionPromises);
@@ -50,7 +50,7 @@ async function task (pipelineName, { multiregion, organisation = DEFAULT_ORG }){
 
 	} catch (error) {
 		log.error('Man overboard!', error, error.stack);
-		await Promise.all(apps.map(a => destroy({app:a})));
+		await Promise.all(apps.map(a => destroy.task({app:a})));
 
 		// Log and rethrow
 		log.error(error.message);
