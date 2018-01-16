@@ -128,12 +128,14 @@ function runRouter (opts) {
 	(opts.localApps || [])
 		.concat({ name: normalizeName(packageJson.name, { version: false }), port: opts.localPort })
 		.forEach(function (localApp) {
+			const localAppEnvVar = localApp.name.toUpperCase().replace(/\-/, '_');
+			envVars[localAppEnvVar] = localApp.port;
 			envVars[localApp.name] = localApp.port;
 		});
 
 	return configureAndSpawn(envVars, function (env) {
 		let bin = opts.https ? `${opts.router}-https` : opts.router;
-		return [bin, { env: env }];
+		return [bin, { env }];
 	});
 }
 
