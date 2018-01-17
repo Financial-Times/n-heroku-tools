@@ -90,7 +90,9 @@ function task (opts) {
 					let patch = {};
 
 					Object.keys(current).forEach(function (key) {
-						patch[key] = null;
+						if (!key.startsWith('HEROKU_')) {
+							patch[key] = null;
+						}
 					});
 
 					Object.keys(desired).forEach(function (key) {
