@@ -128,7 +128,7 @@ function runRouter (opts) {
 	(opts.localApps || [])
 		.concat({ name: normalizeName(packageJson.name, { version: false }), port: opts.localPort })
 		.forEach(function (localApp) {
-			const localAppEnvVar = localApp.name.toUpperCase().replace(/\-/g, '_');
+			const localAppEnvVar = localApp.name.toUpperCase().replace(/\-/g, '_'); // see https://github.com/Financial-Times/n-heroku-tools/issues/489
 			envVars[localAppEnvVar] = localApp.port;
 			envVars[localApp.name] = localApp.port;
 		});
