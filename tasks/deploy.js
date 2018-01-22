@@ -9,7 +9,7 @@ const denodeify = require('denodeify');
 const fs = require('fs');
 const exists = denodeify(fs.exists, function (exists) { return [undefined, exists]; });
 const commit = require('../lib/commit');
-const smokeTest = require('../lib/smoke-test');
+const smokeTest = require('@financial-times/n-test').smoke;
 const shell = require('shellpromise');
 
 function task (opts) {
@@ -54,7 +54,7 @@ See https://github.com/Financial-Times/n-heroku-tools/blob/master/docs/smoke.md 
 If this app has no web process use the --skip-gtg option`);
 						}
 						return waitForOk(`http://${name}.herokuapp.com/__gtg`)
-							.then(() => smokeTest.run({app: name, authenticated: opts.authenticatedSmokeTests}))
+							.then(() => smokeTest.run({host: name, auth: opts.authenticatedSmokeTests}))
 							.catch(err => {
 								console.log('/**************** heroku app logs start ****************/'); // eslint-disable-line no-console
 								return shell('heroku logs -a ' + name, { verbose: true })
