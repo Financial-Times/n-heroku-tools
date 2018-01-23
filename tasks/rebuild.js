@@ -32,7 +32,7 @@ async function circleFetch (path, opts) {
 
 const clearCache = (project) => circleFetch(`/project/Financial-Times/${project}/build-cache`, { method: 'DELETE' });
 
-const rebuildMasterBuild = (project) => circleFetch(`/project/Financial-Times/${project}/tree/master`, { method: 'POST' });
+const rebuildMasterBuild = (project, body) => circleFetch(`/project/Financial-Times/${project}/tree/master`, { method: 'POST', body });
 
 const lastMasterBuild = (project) => circleFetch(`/project/Financial-Times/${project}/tree/master`);
 
@@ -49,10 +49,26 @@ const hasVersions = (app) => app.versions['1'] || app.versions['2'];
 
 const serves = type => app => type ? app.serves && app.serves.includes(type) : true;
 
+const parseParameters = params => {
+	if (!params) {
+		return;
+	}
+
+	const build_parameters = params.split(',')
+		.reduce((prev, curr) => {
+			const [key, value] = curr.split('=');
+			prev[key] = value;
+			return prev;
+		}, {});
+
+	return { build_parameters };
+};
+
 async function task (options) {
 	const apps = options.apps;
 	const allApps = options.all;
 	const registry = options.registry || DEFAULT_REGISTRY_URI;
+	const buildParameters = parseParameters(options.params);
 	let appsToRebuild = [];
 
 	const areAppsToRebuild = (apps.length) || allApps;
@@ -80,7 +96,7 @@ async function task (options) {
 			if (lastBuild.status !== 'running' && lastBuild.status !== 'not_running') {
 				console.log(`Clearing cache and triggering rebuild of last master build of ${app} ( ${lastBuild.committer_name}: ${lastBuild.subject ? lastBuild.subject.replace(/\n/g, ' ') : 'No subject'})`); // eslint-disable-line no-console
 				await clearCache(app);
-				await rebuildMasterBuild(app);
+				await rebuildMasterBuild(app, buildParameters);
 			} else {
 				console.log(`Skipping rebuild of ${app} because job already exists.`); // eslint-disable-line no-console
 			}
@@ -96,13 +112,15 @@ module.exports = function (program, utils) {
 		.option('--all', 'Trigger rebuilds of all apps.')
 		.option('--registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('--serves <type>', 'Trigger rebuilds of apps where type is served.')
+		.option('-p --params <key=value>', 'Adds build parameters to circle build. Comma separated k=v pairs')
 		.description('Trigger a rebuild of the latest master on Circle')
 		.action((apps, opts) => {
 			return task({
 				apps: apps,
 				serves: opts.serves,
 				registry: opts.registry,
-				all: opts.all
+				all: opts.all,
+				params: opts.params
 			}).catch(utils.exit);
 		});
 };

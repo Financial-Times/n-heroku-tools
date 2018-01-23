@@ -4,3 +4,5 @@ devs.json
 npm-debug.log
 .eslintrc.js
 .editorconfig
+*.env*
+.vscode
