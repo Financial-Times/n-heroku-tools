@@ -71,7 +71,7 @@ cd ../my-app-slug/app
 npm install @financial-times/n-heroku-tools
 nht run
 `);
-										throw err;
+										throw 'Smoke Tests failed ಠ_ಠ';
 									});
 							});
 					});
