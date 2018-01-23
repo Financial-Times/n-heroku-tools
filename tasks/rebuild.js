@@ -37,7 +37,8 @@ const rebuildMasterBuild = (project, body) => circleFetch(`/project/Financial-Ti
 const lastMasterBuild = (project) => circleFetch(`/project/Financial-Times/${project}/tree/master`);
 
 const getRepoName = (app) => {
-	const repoUrl = Object.values(app.versions).find(version => version.repo).repo;
+	const version = Object.values(app.versions).find(version => version.repo)
+	const repoUrl = version && version.repo;
 	if (/https?:\/\/github\.com\/Financial-Times\//.test(repoUrl)) {
 		return repoUrl
 			.replace(/https?:\/\/github\.com\/Financial-Times\//, '')
@@ -45,7 +46,7 @@ const getRepoName = (app) => {
 	}
 };
 
-const hasVersions = (app) => app.versions['1'] || app.versions['2'];
+const hasVersions = (app) => app.versions && (app.versions['1'] || app.versions['2']);
 
 const serves = type => app => type ? app.serves && app.serves.includes(type) : true;
 
