@@ -10,7 +10,7 @@ module.exports = function (program) {
 			task({
 				host: app,
 				authenticate: opts.auth
-			})
+			});
 		});
 };
 

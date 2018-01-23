@@ -71,7 +71,11 @@ cd ../my-app-slug/app
 npm install @financial-times/n-heroku-tools
 nht run
 `);
-										throw 'Smoke Tests failed ಠ_ಠ';
+										if(err.urlsTested) {
+											throw 'Smoke Tests failed ಠ_ಠ';
+										} else {
+											throw err;
+										}
 									});
 							});
 					});
@@ -87,7 +91,7 @@ module.exports = function (program, utils) {
 		.command('deploy [app]')
 		.description('runs haikro deployment scripts with sensible defaults for Next projects')
 		.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
-		.option('-a, --authenticated-smoke-tests', 'authenticate smoke tests with a backend authorization key')
+		.option('-a, --authenticated-moke-tests', 'authenticate smoke tests with a backend authorization key')
 		.action(function (app, options) {
 			task({
 				app: app,
