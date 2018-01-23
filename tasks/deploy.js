@@ -91,7 +91,7 @@ module.exports = function (program, utils) {
 		.command('deploy [app]')
 		.description('runs haikro deployment scripts with sensible defaults for Next projects')
 		.option('-s, --skip-gtg', 'skip the good-to-go HTTP check')
-		.option('-a, --authenticated-moke-tests', 'authenticate smoke tests with a backend authorization key')
+		.option('-a, --authenticated-smoke-tests', 'authenticate smoke tests with a backend authorization key')
 		.action(function (app, options) {
 			task({
 				app: app,
