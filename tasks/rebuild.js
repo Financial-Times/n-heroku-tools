@@ -53,13 +53,13 @@ async function task (options) {
 	const apps = options.apps;
 	const allApps = options.all;
 	const registry = options.registry || DEFAULT_REGISTRY_URI;
+	let appsToRebuild = [];
 
-	if (!(apps.length) && !allApps) {
+	const areAppsToRebuild = (apps.length) || allApps;
+	if (!areAppsToRebuild) {
 		console.log('Use the --all flag to rebuild all apps or supply a specific app name.'); // eslint-disable-line no-console
 		process.exit(1);
 	}
-
-	let appsToRebuild;
 
 	if (apps.length) {
 		appsToRebuild = apps;
@@ -96,7 +96,7 @@ module.exports = function (program, utils) {
 		.option('--all', 'Trigger rebuilds of all apps.')
 		.option('--registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('--serves <type>', 'Trigger rebuilds of apps where type is served.')
-		.description('DEPRECATED.  Will be moved a new home soon.  Trigger a rebuild of the latest master on Circle')
+		.description('Trigger a rebuild of the latest master on Circle')
 		.action((apps, opts) => {
 			return task({
 				apps: apps,
