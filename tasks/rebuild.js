@@ -20,7 +20,7 @@ async function circleFetch (path, opts) {
 	const circleToken = await getCircleToken();
 	const options = Object.assign(defaultOptions, opts);
 	const url = `https://circleci.com/api/v1${path}?circle-token=${circleToken}`;
-	const res = fetch(url, options);
+	const res = await fetch(url, options);
 
 	if (res.ok) {
 		return await res.json();
