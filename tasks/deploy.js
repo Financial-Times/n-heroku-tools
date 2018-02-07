@@ -4,6 +4,7 @@ const packageJson = require(process.cwd() + '/package.json');
 const herokuAuthToken = require('../lib/heroku-auth-token');
 const deploy = require('haikro/lib/deploy');
 const normalizeName = require('../lib/normalize-name');
+const host = require('../lib/host');
 const waitForOk = require('../lib/wait-for-ok');
 const denodeify = require('denodeify');
 const fs = require('fs');
@@ -54,7 +55,7 @@ See https://github.com/Financial-Times/n-heroku-tools/blob/master/docs/smoke.md 
 If this app has no web process use the --skip-gtg option`);
 						}
 						return waitForOk(`http://${name}.herokuapp.com/__gtg`)
-							.then(() => smokeTest.run({host: name, auth: opts.authenticatedSmokeTests}))
+							.then(() => smokeTest.run({host: host.url(name), auth: opts.authenticatedSmokeTests}))
 							.catch(err => {
 								console.log('/**************** heroku app logs start ****************/'); // eslint-disable-line no-console
 								return shell('heroku logs -a ' + name, { verbose: true })
