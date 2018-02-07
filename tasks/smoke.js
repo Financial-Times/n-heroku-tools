@@ -1,3 +1,4 @@
+const host = require('../lib/host');
 const nTest = require('@financial-times/n-test');
 const task = opts => nTest.smoke.run(opts);
 
@@ -8,7 +9,7 @@ module.exports = function (program) {
 		.description('[DEPRECATED - Use n-test directly]. Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist')
 		.action(function (app, opts) {
 			task({
-				host: app,
+				host: host.url(app),
 				authenticate: opts.auth
 			});
 		});
