@@ -1,6 +1,5 @@
 const host = require('../lib/host');
-const nTest = require('@financial-times/n-test');
-const task = opts => nTest.smoke.run(opts);
+const SmokeTest = require('@financial-times/n-test').SmokeTest;
 
 module.exports = function (program) {
 	program
@@ -8,11 +7,10 @@ module.exports = function (program) {
 		.option('--auth', 'Authenticate with FT_NEXT_BACKEND_KEY')
 		.description('[DEPRECATED - Use n-test directly]. Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist')
 		.action(function (app, opts) {
-			task({
+			const smoke = new SmokeTest({
 				host: host.url(app),
-				authenticate: opts.auth
+				headers: opts.auth ? { 'FT_NEXT_BACKEND_KEY': process.env.FT_NEXT_BACKEND_KEY } : null
 			});
+			smoke.run();
 		});
 };
-
-module.exports.task = task;
