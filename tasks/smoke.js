@@ -9,7 +9,7 @@ module.exports = function (program) {
 		.action(function (app, opts) {
 			const smoke = new SmokeTest({
 				host: host.url(app),
-				headers: opts.auth ? { 'FT_NEXT_BACKEND_KEY': process.env.FT_NEXT_BACKEND_KEY } : null
+				headers: opts.auth ? { 'FT-NEXT-BACKEND-KEY': process.env.FT_NEXT_BACKEND_KEY } : null
 			});
 			smoke.run();
 		});
