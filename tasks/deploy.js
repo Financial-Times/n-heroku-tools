@@ -56,7 +56,7 @@ If this app has no web process use the --skip-gtg option`);
 						}
 						const smokeTest = new SmokeTest({
 							host: host.url(name),
-							headers: opts.authenticatedSmokeTest ? { 'FT-NEXT-BACKEND-KEY': process.env.FT_NEXT_BACKEND_KEY } : null
+							headers: opts.authenticatedSmokeTests ? { 'FT-NEXT-BACKEND-KEY': process.env.FT_NEXT_BACKEND_KEY } : null
 						});
 
 						smokeTest.addCheck('cacheHeaders', require('../lib/verify-cache-headers'));
