@@ -54,10 +54,17 @@ function task (opts) {
 See https://github.com/Financial-Times/n-heroku-tools/blob/master/docs/smoke.md for docs.
 If this app has no web process use the --skip-gtg option`);
 						}
-						const smokeTest = new SmokeTest({
+						const smokeOpts = {
 							host: host.url(name),
 							headers: opts.authenticatedSmokeTests ? { 'FT-NEXT-BACKEND-KEY': process.env.FT_NEXT_BACKEND_KEY } : null
-						});
+						};
+
+						//don't run browser tests against authenticated URLs
+						if(opts.authenticatedSmokeTests) {
+							smokeOpts.browsers = ['chrome'];
+						}
+
+						const smokeTest = new SmokeTest(smokeOpts);
 
 						smokeTest.addCheck('cacheHeaders', require('../lib/verify-cache-headers'));
 
