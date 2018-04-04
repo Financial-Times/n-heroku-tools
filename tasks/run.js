@@ -79,6 +79,7 @@ function runLocal (opts) {
 
 		if(opts.nodemon) {
 			args.push('--ignore', 'public/');
+			args.push('--ignore', 'node-modules/');
 			return ['nodemon', args, { cwd: process.cwd(), env: env }];
 		} else {
 			return ['node', args, { cwd: process.cwd(), env: env }];
