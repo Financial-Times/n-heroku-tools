@@ -45,32 +45,39 @@ function fetchFromVault (source, target, serviceData) {
 
 			return Object.assign({}, shared, appVars.data);
 		})
-		.then((keys) => {
-			const { TEST_USER_TYPES, TEST_SESSIONS_URL, TEST_SESSIONS_API_KEY } = keys;
+		.then((vars) => {
+			const { TEST_USER_TYPES, TEST_SESSIONS_URL, TEST_SESSIONS_API_KEY } = vars;
 			if (!(TEST_USER_TYPES && TEST_SESSIONS_API_KEY && TEST_SESSIONS_URL)) {
-				return keys;
+				return vars;
 			}
 
 			const userTypes = TEST_USER_TYPES.split(',');
-			return Promise.all(userTypes.map((type) => appendSessionToken(keys, type.trim().toLowerCase(), TEST_SESSIONS_URL, TEST_SESSIONS_API_KEY)))
-				.then(() => keys)
+			return Promise.all(userTypes.map((type) => fetchSessionToken(type.trim().toLowerCase(), TEST_SESSIONS_URL, TEST_SESSIONS_API_KEY)))
+				.then(tokens => {
+					return tokens.reduce((accumulator, token) => {
+						return Object.assign({}, accumulator, token);
+					}, vars);
+				})
 				.catch((e) => {
 					console.log('Couldn\'t fetch the session tokens. Please check TEST_USER_TYPES, TEST_SESSIONS_URL and TEST_SESSIONS_API_KEY environment variables.'); // eslint-disable-line no-console
 					console.error(e); // eslint-disable-line no-console
+					throw e;
 				});
 		});
 }
 
-const appendSessionToken = (keys, userType, url, apiKey) => {
+const fetchSessionToken = (userType, url, apiKey) => {
 	return fetch(`${url}/${userType}?api_key=${apiKey}`)
 		.then(response => response.json())
-		.then((tokens) => {
-			if (tokens.FTSession) {
-				keys[`${userType.toUpperCase()}_FTSession`] = tokens.FTSession;
+		.then((result) => {
+			const tokens = {};
+			if (result.FTSession) {
+				tokens[`${userType.toUpperCase()}_FTSession`] = result.FTSession;
 			}
-			if (tokens.FTSession_s) {
-				keys[`${userType.toUpperCase()}_FTSession_s`] = tokens.FTSession_s;
+			if (result.FTSession_s) {
+				tokens[`${userType.toUpperCase()}_FTSession_s`] = result.FTSession_s;
 			}
+			return tokens;
 		});
 };
 
