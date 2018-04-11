@@ -5,18 +5,22 @@ let spawn = require('shellpromise');
 function task (options) {
 	let app = options.app;
 	let verbose = options.verbose;
-	let promise = Promise.resolve();
-	if (verbose) {
-		promise = promise.then(function () {
 
+	return spawn('heroku info ' + app).then(function () {
+		let promise = Promise.resolve();
+		if (verbose) {
+			promise = promise.then(function () {
 				// `|| echo` to stop this failing failing builds
 				return spawn('heroku logs -a ' + app + ' || echo', { verbose: true });
 			});
-	}
-	promise = promise.then(function () {
+		}
+		promise = promise.then(function () {
 			return spawn('heroku destroy -a ' + app + ' --confirm ' + app, { verbose: true });
 		});
-	return promise;
+		return promise;
+	}).catch(function () {
+		console.log(app + ' does not exist'); // eslint-disable-line no-console
+	});
 };
 
 module.exports = function (program, utils) {
