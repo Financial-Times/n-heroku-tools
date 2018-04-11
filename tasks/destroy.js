@@ -6,7 +6,7 @@ function task (options) {
 	let app = options.app;
 	let verbose = options.verbose;
 
-	return spawn('heroku info ' + app, {verbose: true }).then(function () {
+	return spawn('heroku info ' + app).then(function () {
 		let promise = Promise.resolve();
 		if (verbose) {
 			promise = promise.then(function () {
