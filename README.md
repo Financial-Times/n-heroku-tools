@@ -14,7 +14,6 @@ For patches to NBT 5 please make PRs to the ‘nbt-five’ branch and release fr
 	scale [options] [source] [target]                   downloads process information from next-service-registry and scales/sizes the application servers
 	provision [app]                                     provisions a new instance of an application server
 	destroy [options] [app]                             deletes the app from heroku
-	nightwatch [options] [test]                         runs nightwatch with some sensible defaults
 	deploy-hashed-assets                                deploys hashed asset files to S3 (if AWS keys set correctly)
 	deploy-static [options] <source> [otherSources...]  Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars
 	run [options]                                       Runs the local app through the router
