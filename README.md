@@ -1,34 +1,41 @@
 # n-heroku-tools
-**WARNING:** n-heroku-tools should **never** be globally installed.  Always install as a devDependency of your application.
+This library is a command line tool that orchestrates [Heroku](https://www.heroku.com/) and [Amazon S3](https://aws.amazon.com/s3/) deployments for [Next](https://github.com/Financial-Times/next/wiki), based on configuration in the [Next service registry](https://next-registry.ft.com/v2/) and [Vault](https://www.vaultproject.io/).
+### Installation
+In order to use this tool, run
+```
+npm install -g @financial-times/n-heroku-tools --save-dev
+```
 
-For patches to NBT 5 please make PRs to the ‘nbt-five’ branch and release from there.
+### Development
+ `n-heroku-tools` was previously called `n-build-tools`. If you still use `n-build-tools` and need to add features to that, please make PRS to the `nbt-five` branch and release from there.
 
+### Usage
+In order to use `n-heroku-tools` the following commands are available in your command line:
 
-	Usage: n-heroku-tools [options] [command]
+  Usage: n-heroku-tools [options] [command]
 
+  Options:
 
-	Commands:
+    -V, --version                                       output the version number
+    -h, --help                                          output usage information
 
-	deploy [options] [app]                              runs haikro deployment scripts with sensible defaults for Next projects
-	configure [options] [source] [target]               downloads environment variables from Vault and uploads them to the current app
-	scale [options] [source] [target]                   downloads process information from next-service-registry and scales/sizes the application servers
-	provision [app]                                     provisions a new instance of an application server
-	destroy [options] [app]                             deletes the app from heroku
-	deploy-hashed-assets                                deploys hashed asset files to S3 (if AWS keys set correctly)
-	deploy-static [options] <source> [otherSources...]  Deploys static <source> to [destination] on S3 (where [destination] is a full S3 URL).  Requires AWS_ACCESS and AWS_SECRET env vars
-	run [options]                                       Runs the local app through the router
-	rebuild [options] [apps...]                         DEPRECATED.  Will be moved a new home soon.  Trigger a rebuild of the latest master on Circle
-	test-urls [options] [app]                           Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
-	bottle [options] [increment]                        DEPRECATED.  Will be moved a new home soon.  Releases a major, minor, patch or prerelease of a next component (similar to npm version + npm publish)
-	ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
-	float [options]                                     Deploys code to a test app and checks it doesn't die
-	drydock [options] [name]                            Creates a new pipeline with a staging and EU production app
-	*
+  Commands:
 
-	Options:
+    deploy [options] [app]                              runs haikro deployment scripts with sensible defaults for Next projects
+    configure [options] [source] [target]               gets environment variables from Vault and uploads them to the current app
+    scale [options] [source] [target]                   downloads process information from next-service-registry and scales/sizes the application servers
+    provision [options] [app]                           provisions a new instance of an application server
+    destroy [options] [app]                             deletes the app from heroku
+    deploy-hashed-assets [options]                      deploys hashed asset files to S3 (if AWS keys set correctly)
+    deploy-static [options] <source> [otherSources...]  Deploys static <source> to S3.  Requires AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars
+    run [options]                                       Runs the local app through the router
+    rebuild [options] [apps...]                         Trigger a rebuild of the latest master on Circle
+    test-urls [options] [app]                           Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
+    bottle [options] [increment]                        DEPRECATED.  Will be moved a new home soon.  Releases a major, minor, patch or prerelease of a next component (similar to npm version + npm publish)
+    ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
+    float [options]                                     Deploys code to a test app and checks it doesn't die
+    drydock [options] [name]                            Creates a new pipeline with a staging and EU production app
+    smoke [options] [app]                               [DEPRECATED - Use n-test directly]. Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
+    *
 
-	-h, --help     output usage information
-	-V, --version  output the version number
-
-## Development
-Warning the README.md is automatically generated. Run `make docs` to update.
+*Note*: The README.md is automatically generated.  Run `make docs` to update it.
