@@ -165,13 +165,9 @@ module.exports = function (program, utils) {
 		.command('configure [source] [target]')
 		.description('gets environment variables from Vault and uploads them to the current app')
 		.option('-o, --overrides <abc>', 'override these values', utils.list)
-		.option('-n, --no-splunk', 'configure not to drain logs to splunk')
 		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('--vault', 'no-op, please remove this option from your Makefile')
 		.action(function (source, target, options) {
-			if (!options.splunk) {
-				console.log('WARNING: --no-splunk no longer does anything and will be removed in the next version of NBT'); // eslint-disable-line no-console
-			}
 			task({
 				source: source,
 				target: target,
