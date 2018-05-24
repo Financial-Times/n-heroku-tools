@@ -3,7 +3,7 @@ This library is a command line tool that orchestrates [Heroku](https://www.herok
 ### Installation
 In order to use this tool, run
 ```
-npm install -g @financial-times/n-heroku-tools --save-dev
+npm install @financial-times/n-heroku-tools --save-dev
 ```
 
 ### Development
