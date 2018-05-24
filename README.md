@@ -6,7 +6,6 @@ In order to use this tool, run
 npm install @financial-times/n-heroku-tools --save-dev
 ```
 
-### Development
  ### Usage
 In order to use `n-heroku-tools` the following commands are available in your command line:
 
