@@ -6,18 +6,11 @@ In order to use this tool, run
 npm install @financial-times/n-heroku-tools --save-dev
 ```
 
-### Development
- `n-heroku-tools` was previously called `n-build-tools`. If you still use `n-build-tools` and need to add features to that, please make PRS to the `nbt-five` branch and release from there.
-
-### Usage
+ ### Usage
 In order to use `n-heroku-tools` the following commands are available in your command line:
 
   Usage: n-heroku-tools [options] [command]
 
-  Options:
-
-    -V, --version                                       output the version number
-    -h, --help                                          output usage information
 
   Commands:
 
@@ -31,11 +24,15 @@ In order to use `n-heroku-tools` the following commands are available in your co
     run [options]                                       Runs the local app through the router
     rebuild [options] [apps...]                         Trigger a rebuild of the latest master on Circle
     test-urls [options] [app]                           Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
-    bottle [options] [increment]                        DEPRECATED.  Will be moved a new home soon.  Releases a major, minor, patch or prerelease of a next component (similar to npm version + npm publish)
     ship [options]                                      Ships code.  Deploys using pipelines, also running the configure and scale steps automatically
     float [options]                                     Deploys code to a test app and checks it doesn't die
     drydock [options] [name]                            Creates a new pipeline with a staging and EU production app
     smoke [options] [app]                               [DEPRECATED - Use n-test directly]. Tests that a given set of urls for an app respond as expected. Expects the config file ./test/smoke.js to exist
-    *
+    *                                                 
+
+  Options:
+
+    -h, --help     output usage information
+    -V, --version  output the version number
 
 *Note*: The README.md is automatically generated.  Run `make docs` to update it.

@@ -32,7 +32,6 @@ require('../tasks/deploy-static')(program, utils);
 require('../tasks/run')(program, utils);
 require('../tasks/rebuild')(program, utils);
 require('../tasks/test-urls')(program, utils);
-require('../tasks/bottle')(program, utils);
 require('../tasks/ship')(program, utils);
 require('../tasks/float')(program, utils);
 require('../tasks/drydock')(program, utils);
