@@ -19,7 +19,7 @@
     "denodeify": "^1.2.0",
     "dotenv": "^1.2.0",
     "fetchres": "^1.0.4",
-    "foreman": "^1.4.1",
+    "foreman": "^3.0.0",
     "haikro": "^2.2.0",
     "is-image": "^1.0.1",
     "isomorphic-fetch": "^2.0.0",
@@ -39,7 +39,7 @@
     "express": "^4.13.3",
     "fetch-mock": "^3.0.0",
     "lintspaces-cli": "^0.1.1",
-    "mocha": "^2.2.4",
+    "mocha": "^5.0.0",
     "mockery": "^1.4.0",
     "npm-prepublish": "^1.2.1",
     "sinon": "^4.1.3"
