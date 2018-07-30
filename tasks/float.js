@@ -20,8 +20,7 @@ function task (opts) {
 		}
 
 		if(isMaster && !opts.master){
-			log.info('On master branch - don\'t run float.  Use --master option if you want to do this');
-			return;
+			throw new Error('On master branch - don\'t run float.  Use --master option if you want to do this');
 		}
 
 
