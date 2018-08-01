@@ -1,12 +1,20 @@
 # n-heroku-tools
+
+<a href="https://docs.google.com/forms/d/e/1FAIpQLSf5InA7UJK9yNBCzidFKI_WNkfbl6of1eRlIACRspGXUcBx8A/viewform?usp=pp_url&entry.78759464=n-heroku-tools" target="_blank"><img src="https://i.imgur.com/UmScdZ4.png" alt="Yak button" border="0" align="right" width="150" title="Report a yak shaving incident for this repository"></a>
+
 This library is a command line tool that orchestrates [Heroku](https://www.heroku.com/) and [Amazon S3](https://aws.amazon.com/s3/) deployments for [Next](https://github.com/Financial-Times/next/wiki), based on configuration in the [Next service registry](https://next-registry.ft.com/v2/) and [Vault](https://www.vaultproject.io/).
+
+<br clear="right">
+
 ### Installation
+
 In order to use this tool, run
 ```
 npm install @financial-times/n-heroku-tools --save-dev
 ```
 
- ### Usage
+### Usage
+
 In order to use `n-heroku-tools` the following commands are available in your command line:
 
   Usage: n-heroku-tools [options] [command]
