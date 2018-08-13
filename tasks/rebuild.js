@@ -76,13 +76,25 @@ async function task (options) {
 		try {
 			const [lastBuild] = await lastMasterBuild(app);
 
-			if (lastBuild.status !== 'running' && lastBuild.status !== 'not_running') {
-				console.log(`Clearing cache and triggering rebuild of last master build of ${app} ( ${lastBuild.committer_name}: ${lastBuild.subject ? lastBuild.subject.replace(/\n/g, ' ') : 'No subject'})`); // eslint-disable-line no-console
-				await clearCache(app);
-				await rebuildMasterBuild(app);
-			} else {
-				console.log(`Skipping rebuild of ${app} because job already exists.`); // eslint-disable-line no-console
+			switch (lastBuild.platform) {
+				case '1.0':
+					if (lastBuild.status !== 'running' && lastBuild.status !== 'not_running') {
+						console.log(`Clearing cache and triggering rebuild of last master build of ${app} (${lastBuild.committer_name}: ${lastBuild.subject ? lastBuild.subject.replace(/\n/g, ' ') : 'No subject'})`); // eslint-disable-line no-console
+						await clearCache(app);
+						await rebuildMasterBuild(app);
+					} else {
+						console.log(`Skipping rebuild of ${app} because job already exists.`); // eslint-disable-line no-console
+					}
+					break;
+				case '2.0':
+					console.log(`Triggering master build for ${app} (git commit: ${lastBuild.vcs_revision})`); // eslint-disable-line no-console
+					await triggerMasterBuild(app);
+					break;
+				default:
+					throw new Error(`CircleCI platform version ${lastBuild.platform} is not supported by this command`);
+					break;
 			}
+
 		} catch (error) {
 			console.log(`Skipped rebuild of ${app} probably because Circle CI not set up for this repo`); // eslint-disable-line no-console
 		}
