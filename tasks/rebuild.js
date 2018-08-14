@@ -1,7 +1,7 @@
 const fetchres = require('fetchres');
 const keys = require('../lib/keys');
 
-const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/services.json';
+const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/services.json';
 
 const getCircleToken = () =>
 	process.env.CIRCLECI_REBUILD_KEY
@@ -19,7 +19,8 @@ async function circleFetch (path, opts) {
 
 	const circleToken = await getCircleToken();
 	const options = Object.assign(defaultOptions, opts);
-	const url = `https://circleci.com/api/v1${path}?circle-token=${circleToken}`;
+	const url = `https://circleci.com/api/v1.1/project/github/Financial-Times${path}?circle-token=${circleToken}`;
+
 	const res = await fetch(url, options);
 
 	if (res.ok) {
@@ -30,24 +31,23 @@ async function circleFetch (path, opts) {
 	}
 }
 
-const clearCache = (project) => circleFetch(`/project/Financial-Times/${project}/build-cache`, { method: 'DELETE' });
+const clearCache = (project) => circleFetch(`/${project}/build-cache`, { method: 'DELETE' });
 
-const rebuildMasterBuild = (project) => circleFetch(`/project/Financial-Times/${project}/tree/master`, { method: 'POST' });
+const rebuildMasterBuild = (project) => circleFetch(`/${project}/tree/master`, { method: 'POST' });
 
-const lastMasterBuild = (project) => circleFetch(`/project/Financial-Times/${project}/tree/master`);
+const triggerMasterBuild = (project) => circleFetch(`/${project}/build`, { method: 'POST', body: JSON.stringify({ branch: 'master' }) });
 
-const getRepoName = (app) => {
-	const repoUrl = Object.values(app.versions).find(version => version.repo).repo;
-	if (/https?:\/\/github\.com\/Financial-Times\//.test(repoUrl)) {
-		return repoUrl
+const lastMasterBuild = (project) => circleFetch(`/${project}/tree/master`);
+
+const getRepoName = ({ repository }) => {
+	if (/https?:\/\/github\.com\/Financial-Times\//.test(repository)) {
+		return repository
 			.replace(/https?:\/\/github\.com\/Financial-Times\//, '')
 			.replace(/\/$/, ''); // trim trailing "/"
 	}
 };
 
-const hasVersions = (app) => app.versions['1'] || app.versions['2'];
-
-const serves = type => app => type ? app.serves && app.serves.includes(type) : true;
+const serves = type => app => type ? app.types && app.types.includes(type) : true;
 
 async function task (options) {
 	const apps = options.apps;
@@ -67,7 +67,6 @@ async function task (options) {
 		const registryData = await fetch(registry).then(fetchres.json);
 		appsToRebuild = registryData
 			.filter(serves(options.serves))
-			.filter(hasVersions)
 			.map(getRepoName)
 			.filter(repo => repo);
 	}
@@ -77,13 +76,25 @@ async function task (options) {
 		try {
 			const [lastBuild] = await lastMasterBuild(app);
 
-			if (lastBuild.status !== 'running' && lastBuild.status !== 'not_running') {
-				console.log(`Clearing cache and triggering rebuild of last master build of ${app} ( ${lastBuild.committer_name}: ${lastBuild.subject ? lastBuild.subject.replace(/\n/g, ' ') : 'No subject'})`); // eslint-disable-line no-console
-				await clearCache(app);
-				await rebuildMasterBuild(app);
-			} else {
-				console.log(`Skipping rebuild of ${app} because job already exists.`); // eslint-disable-line no-console
+			switch (lastBuild.platform) {
+				case '1.0':
+					if (lastBuild.status !== 'running' && lastBuild.status !== 'not_running') {
+						console.log(`Clearing cache and triggering rebuild of last master build of ${app} (${lastBuild.committer_name}: ${lastBuild.subject ? lastBuild.subject.replace(/\n/g, ' ') : 'No subject'})`); // eslint-disable-line no-console
+						await clearCache(app);
+						await rebuildMasterBuild(app);
+					} else {
+						console.log(`Skipping rebuild of ${app} because job already exists.`); // eslint-disable-line no-console
+					}
+					break;
+				case '2.0':
+					console.log(`Triggering master build for ${app} (git commit: ${lastBuild.vcs_revision})`); // eslint-disable-line no-console
+					await triggerMasterBuild(app);
+					break;
+				default:
+					throw new Error(`CircleCI platform version ${lastBuild.platform} is not supported by this command`);
+					break;
 			}
+
 		} catch (error) {
 			console.log(`Skipped rebuild of ${app} probably because Circle CI not set up for this repo`); // eslint-disable-line no-console
 		}
