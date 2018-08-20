@@ -153,7 +153,10 @@ function task (opts) {
 						body: JSON.stringify(patch)
 					});
 				})
-				.then(function () {
+				.then(function (response) {
+					if( !response.ok ) {
+						console.warn('Heroku responded with ' + response.status); // eslint-disable-line no-console
+					}
 					console.log(target + ' config vars are set'); // eslint-disable-line no-console
 				}));
 			});
