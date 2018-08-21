@@ -68,7 +68,7 @@ If this app has no web process use the --skip-gtg option`);
 
 						smokeTest.addCheck('cacheHeaders', require('../lib/verify-cache-headers'));
 
-						return waitForOk(`http://${name}.herokuapp.com/__gtg`)
+						return waitForOk(`https://${name}.herokuapp.com/__gtg`)
 							.then(() => smokeTest.run())
 							.catch(err => {
 								console.log('/**************** heroku app logs start ****************/'); // eslint-disable-line no-console
