@@ -7,6 +7,10 @@ let normalizeName = require('../lib/normalize-name');
 let vault = require('../lib/vault');
 let fetchres = require('fetchres');
 
+const FORBIDDEN_ATTACHMENT_VARIABLES = [
+	'DATABASE_URL'
+];
+
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
 const getServiceData = (source, registry) => fetch(registry)
@@ -124,13 +128,18 @@ function task (opts) {
 					let patch = {};
 
 					Object.keys(current).forEach(function (key) {
-						if (!key.startsWith('HEROKU_')) {
+						if (!key.startsWith('HEROKU_') && !FORBIDDEN_ATTACHMENT_VARIABLES.includes(key)) {
 							patch[key] = null;
 						}
 					});
 
-					Object.keys(desired).forEach(function (key) {
-						patch[key] = desired[key];
+					Object.keys(desired).forEach(key => {
+						if (FORBIDDEN_ATTACHMENT_VARIABLES.includes(key)) {
+							throw new Error(`\nCannot set environment variable '${key}' as this variable name is used for an attachment variable by Heroku, `
+								+ 'if this is for an external service, please use a different environment variable name in your app\n');
+						} else {
+							patch[key] = desired[key];
+						}
 					});
 
 					Object.keys(overrides).forEach(function (key) {
@@ -153,7 +162,8 @@ function task (opts) {
 						body: JSON.stringify(patch)
 					});
 				})
-				.then(function () {
+				.then(response => {
+					if (response.status !== 200) return response.json().then(({id, message}) => Promise.reject(new Error(`Heroku Error - id: ${id}, message: ${message}`)));
 					console.log(target + ' config vars are set'); // eslint-disable-line no-console
 				}));
 			});
