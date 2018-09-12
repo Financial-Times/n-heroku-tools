@@ -32,7 +32,7 @@
     "shellpromise": "^1.0.0"
   },
   "devDependencies": {
-    "@financial-times/n-gage": "^1.14.0",
+    "@financial-times/n-gage": "^2.0.4",
     "body-parser": "^1.14.1",
     "chai": "^3.3.0",
     "eslint": "^2.8.0",
