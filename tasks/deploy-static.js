@@ -10,7 +10,6 @@ const path = require('path');
 const co = require('co');
 const md5File = denodeify(require('md5-file'));
 const gzip = denodeify(require('zlib').gzip);
-const Metrics = require('next-metrics').Metrics;
 const isImage = require('is-image');
 const waitForOk = require('../lib/wait-for-ok');
 
@@ -25,17 +24,6 @@ function task (opts) {
 		});
 	const destination = opts.destination || '';
 	const bucket = opts.bucket;
-
-	const metrics = new Metrics;
-	metrics.init({
-		platform: 's3',
-		app: opts.bucket,
-		instance: false,
-		useDefaultAggregators: false,
-		flushEvery: false,
-		forceGraphiteLogging: true
-	});
-
 
 	if (files.length < 1) {
 		return Promise.reject('No files found for upload to s3.  (Directories are ignored)');
@@ -110,17 +98,11 @@ function task (opts) {
 						const contentSize = Buffer.byteLength(content);
 						const gzippedContentSize = Buffer.byteLength(gzipped);
 						console.log(`${key} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`); // eslint-disable-line no-console
-						let safeFile = opts.monitorStripDirectories ? key.split('/').pop() : key.replace(/\//g, '.');
-						metrics.count(`${safeFile}.size`, contentSize);
-						metrics.count(`${safeFile}.gzip_size`, gzippedContentSize);
 					});
 				console.log(`Successfully uploaded: ${key}`); // eslint-disable-line no-console
 			}
 		});
-	}))
-		.then(() => {
-			metrics.flush();
-		});
+	}));
 };
 
 module.exports = function (program, utils) {

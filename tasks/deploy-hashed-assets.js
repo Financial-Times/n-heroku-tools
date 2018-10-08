@@ -7,7 +7,6 @@ const readFile = denodeify(require('fs').readFile);
 const waitForOk = require('../lib/wait-for-ok');
 const path = require('path');
 const aws = require('aws-sdk');
-const Metrics = require('next-metrics').Metrics;
 
 const AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process.env.aws_access_hashed_assets;
 const AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.env.aws_secret_hashed_assets;
@@ -58,16 +57,6 @@ function task (opts) {
 	}
 
 	const app = normalizeName(packageJson.name, { version: false });
-
-	const metrics = new Metrics;
-	metrics.init({
-		platform: 's3',
-		app: app,
-		instance: false,
-		useDefaultAggregators: false,
-		flushEvery: false,
-		forceGraphiteLogging: true
-	});
 
 	console.log('Deploying hashed assets to S3...'); // eslint-disable-line no-console
 
@@ -121,15 +110,10 @@ function task (opts) {
 								const contentSize = Buffer.byteLength(content);
 								const gzippedContentSize = Buffer.byteLength(values[2]);
 								console.log(`${file} is ${contentSize} bytes (${gzippedContentSize} bytes gzipped)`); // eslint-disable-line no-console
-								metrics.count(`${file}.size`, contentSize);
-								metrics.count(`${file}.gzip_size`, gzippedContentSize);
 							});
 					});
 			})
-		)
-		.then(() => {
-			metrics.flush();
-		});
+		);
 }
 
 module.exports = function (program, utils) {
