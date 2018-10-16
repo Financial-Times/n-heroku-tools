@@ -26,6 +26,7 @@ In order to use `n-heroku-tools` the following commands are available in your co
     configure [options] [source] [target]               gets environment variables from Vault and uploads them to the current app
     scale [options] [source] [target]                   downloads process information from next-service-registry and scales/sizes the application servers
     provision [options] [app]                           provisions a new instance of an application server
+    review-app [options] [app]                          create a heroku review app and print out the app name created
     destroy [options] [app]                             deletes the app from heroku
     deploy-hashed-assets [options]                      deploys hashed asset files to S3 (if AWS keys set correctly)
     deploy-static [options] <source> [otherSources...]  Deploys static <source> to S3.  Requires AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars
