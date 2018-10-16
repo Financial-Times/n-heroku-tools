@@ -57,6 +57,14 @@ async function task (app, options) {
 		method: 'post',
 		body: JSON.stringify(body)
 	})
+		.then(async res => {
+			const { status } = res;
+			if (status !== 200) {
+				const errorBody = await res.json();
+				throw errorBody;
+			}
+			return res;
+		})
 		.then(res => res.json())
 		.then(data => {
 			console.log(data); // eslint-disable-line no-console
@@ -79,7 +87,8 @@ module.exports = function (program) {
 			try {
 				await task(app, options);
 			} catch (error) {
-				console.log(error); // eslint-disable-line no-console
+				console.error(error); // eslint-disable-line no-console
+				process.exit(1);
 				return;
 			}
 		});
