@@ -1,25 +1,56 @@
+const pRetry = require('p-retry');
+
 const herokuAuthToken = require('../lib/heroku-auth-token');
 const { info: pipelineInfo } = require('../lib/pipelines');
 const REVIEW_APPS_URL = 'https://api.heroku.com/review-apps';
+
 const DEFAULT_HEADERS = {
-	'Accept': 'application/vnd.heroku+json; version=3.review-apps',
+	'Accept': 'application/vnd.heroku+json; version=3',
 	'Content-Type': 'application/json'
 };
 
-const githubArchiveUrl = ({ repoName, branch }) => `https://api.github.com/repos/Financial-Times/${repoName}/tarball/${branch}`;
+const NUM_RETRIES = 30;
+const RETRY_EXP_BACK_OFF_FACTOR = 1;
+const RETRY_INTERVAL = 10 * 1000;
+const REVIEW_APP_STATUSES = {
+	pending: 'pending',
+	deleted: 'deleted',
+	creating: 'creating',
+	created: 'created'
+};
 
-function herokuHeaders () {
+const getReviewAppUrl = reviewAppId => `https://api.heroku.com/review-apps/${reviewAppId}`;
+const getAppUrl = appId => `https://api.heroku.com/apps/${appId}`;
+const getGithubArchiveUrl = ({ repoName, branch }) => `https://api.github.com/repos/Financial-Times/${repoName}/tarball/${branch}`;
+
+function herokuHeaders ({ useReviewAppApi } = {}) {
+	const defaultHeaders = useReviewAppApi
+		? Object.assign({}, DEFAULT_HEADERS, {
+			Accept: 'application/vnd.heroku+json; version=3.review-apps',
+		})
+		: DEFAULT_HEADERS;
 	return herokuAuthToken()
 		.then(key => {
 			return {
-				...DEFAULT_HEADERS,
+				...defaultHeaders,
 				Authorization: `Bearer ${key}`
 			};
 		});
 }
 
+const throwIfNon2xx = async res => {
+	const { status, url } = res;
+	if (!status || !status.toString().match(/^2.*/)) {
+		const errorBody = await res.json();
+
+		console.error('Fetch error:', status, url, errorBody); // eslint-disable-line no-console
+		throw errorBody;
+	}
+	return res;
+};
+
 const getGithubArchiveRedirectUrl = ({ repoName, branch, githubToken }) => {
-	const url = githubArchiveUrl({ repoName, branch });
+	const url = getGithubArchiveUrl({ repoName, branch });
 
 	return fetch(url, {
 		headers: {
@@ -38,11 +69,63 @@ const getGithubArchiveRedirectUrl = ({ repoName, branch, githubToken }) => {
 	});
 };
 
+const waitTillReviewAppCreated = (data) => {
+	const { id } = data;
+	const checkForCreatedStatus = async () => {
+		const headers = await herokuHeaders({ useReviewAppApi: true });
+		const result = await fetch(getReviewAppUrl(id), {
+			headers
+		})
+			.then(throwIfNon2xx)
+			.then(res => res.json())
+			.then(data => {
+				const { status, message, app } = data;
+
+				if (status === REVIEW_APP_STATUSES.deleted) {
+					throw new pRetry.AbortError(`Review app was deleted: ${message}`);
+				}
+
+				if (status !== REVIEW_APP_STATUSES.created) {
+					const appIdOutput = (status === REVIEW_APP_STATUSES.creating)
+						? `, appId: ${app.id}`
+						: '';
+					throw new Error(`Review app not created yet. Current status: ${status}${appIdOutput}`);
+				};
+
+				return app.id;
+			});
+		return result;
+	};
+
+	return pRetry(checkForCreatedStatus, {
+		factor: RETRY_EXP_BACK_OFF_FACTOR,
+		retries: NUM_RETRIES,
+		minTimeout: RETRY_INTERVAL,
+		onFailedAttempt: (err) => {
+			const { attemptNumber, message } = err;
+			console.error(`${attemptNumber}/${NUM_RETRIES}: ${message}`); // eslint-disable-line no-console
+		}
+	});
+};
+
+const getAppWebUrl = async (appId) => {
+	const headers = await herokuHeaders();
+	return fetch(getAppUrl(appId), {
+		headers
+	})
+		.then(throwIfNon2xx)
+		.then(res => res.json())
+		.then((result) => {
+			const { web_url } = result;
+			return web_url;
+		});
+};
+
 async function task (app, options) {
 	const { repoName, branch, commit, githubToken } = options;
 
 	const { id: pipelineId } = await pipelineInfo(app);
-	const headers = await herokuHeaders();
+	const headers = await herokuHeaders({ useReviewAppApi: true });
 	const body = {
 		pipeline: pipelineId,
 		branch,
@@ -57,17 +140,12 @@ async function task (app, options) {
 		method: 'post',
 		body: JSON.stringify(body)
 	})
-		.then(async res => {
-			const { status } = res;
-			if (status !== 200) {
-				const errorBody = await res.json();
-				throw errorBody;
-			}
-			return res;
-		})
+		.then(throwIfNon2xx)
 		.then(res => res.json())
-		.then(data => {
-			console.log(data); // eslint-disable-line no-console
+		.then(waitTillReviewAppCreated)
+		.then(getAppWebUrl)
+		.then(appWebUrl => {
+			console.log(appWebUrl); // eslint-disable-line no-console
 		});
 }
 
