@@ -108,7 +108,7 @@ const waitTillReviewAppCreated = (data) => {
 	});
 };
 
-const getAppWebUrl = async (appId) => {
+const getAppName = async (appId) => {
 	const headers = await herokuHeaders();
 	return fetch(getAppUrl(appId), {
 		headers
@@ -116,8 +116,8 @@ const getAppWebUrl = async (appId) => {
 		.then(throwIfNon2xx)
 		.then(res => res.json())
 		.then((result) => {
-			const { web_url } = result;
-			return web_url;
+			const { name } = result;
+			return name;
 		});
 };
 
@@ -143,9 +143,9 @@ async function task (app, options) {
 		.then(throwIfNon2xx)
 		.then(res => res.json())
 		.then(waitTillReviewAppCreated)
-		.then(getAppWebUrl)
-		.then(appWebUrl => {
-			console.log(appWebUrl); // eslint-disable-line no-console
+		.then(getAppName)
+		.then(appName => {
+			console.log(appName); // eslint-disable-line no-console
 		});
 }
 
