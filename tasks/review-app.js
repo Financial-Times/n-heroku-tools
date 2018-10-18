@@ -39,8 +39,8 @@ function herokuHeaders ({ useReviewAppApi } = {}) {
 }
 
 const throwIfNon2xx = async res => {
-	const { status, url } = res;
-	if (!status || !status.toString().match(/^2.*/)) {
+	const { ok, status, url } = res;
+	if (!ok) {
 		const errorBody = await res.json();
 
 		console.error('Fetch error:', status, url, errorBody); // eslint-disable-line no-console
