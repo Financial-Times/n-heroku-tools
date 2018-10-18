@@ -20,6 +20,7 @@ const REVIEW_APP_STATUSES = {
 };
 
 const getReviewAppUrl = reviewAppId => `https://api.heroku.com/review-apps/${reviewAppId}`;
+const getPipelineReviewAppsUrl = pipelineId => `https://api.heroku.com/pipelines/${pipelineId}/review-apps`;
 const getAppUrl = appId => `https://api.heroku.com/apps/${appId}`;
 const getGithubArchiveUrl = ({ repoName, branch }) => `https://api.github.com/repos/Financial-Times/${repoName}/tarball/${branch}`;
 
@@ -121,6 +122,25 @@ const getAppName = async (appId) => {
 		});
 };
 
+const deleteGitBranchReviewApp = ({ pipelineId, branch, headers }) => {
+	const getReviewAppId = (pipelineId) => fetch(getPipelineReviewAppsUrl(pipelineId), {
+		headers
+	})
+		.then(throwIfNotOk)
+		.then(res => res.json())
+		.then((reviewApps = []) =>
+			reviewApps.find(
+				({ branch: reviewAppBranch }) => branch === reviewAppBranch)
+			)
+		.then(({ id }) => id);
+	const deleteReviewApp = (reviewAppId) => fetch(getReviewAppUrl(reviewAppId), {
+		headers,
+		method: 'delete'
+	}).then(throwIfNotOk);
+
+	return getReviewAppId(pipelineId).then(deleteReviewApp);
+};
+
 async function task (app, options) {
 	const { repoName, branch, commit, githubToken } = options;
 
@@ -134,12 +154,22 @@ async function task (app, options) {
 			version: commit
 		}
 	};
-
-	return fetch(REVIEW_APPS_URL, {
+	const createReviewApp = () => fetch(REVIEW_APPS_URL, {
 		headers,
 		method: 'post',
 		body: JSON.stringify(body)
-	})
+	});
+
+	return createReviewApp()
+		.then(res => {
+			const { status } = res;
+			if (status === 409) {
+				console.error(`Review app already created for ${branch} branch. Deleting existing review app first.`); // eslint-disable-line no-console
+				return deleteGitBranchReviewApp({ pipelineId, branch, headers })
+					.then(createReviewApp);
+			}
+			return res;
+		})
 		.then(throwIfNotOk)
 		.then(res => res.json())
 		.then(waitTillReviewAppCreated)
