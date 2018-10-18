@@ -111,23 +111,24 @@ describe('tasks/ship', function (){
 		});
 	});
 
-	it('Should be able to run the scale task on the production apps', function (){
+	it('Should not scale the production apps', function (){
 		let pipelineName = 'test';
 		let appName = 'sample-app';
 		return co(function* (){
 			yield ship({pipeline:pipelineName,scale:true,multiregion:true});
 
 			sinon.assert.calledWith(mockScale.task, {
+				minimal: true,
 				source:appName,
 				target:mockApps.staging,
 				registry: DEFAULT_REGISTRY_URI
 			});
-			sinon.assert.calledWith(mockScale.task, {
+			sinon.assert.neverCalledWith(mockScale.task, {
 				source:appName,
 				target:mockApps.production.eu,
 				registry: DEFAULT_REGISTRY_URI
 			});
-			sinon.assert.calledWith(mockScale.task, {
+			sinon.assert.neverCalledWith(mockScale.task, {
 				source:appName,
 				target:mockApps.production.us,
 				registry: DEFAULT_REGISTRY_URI

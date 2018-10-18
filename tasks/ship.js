@@ -86,33 +86,6 @@ function task (opts) {
 		log.info('Promote slug to production');
 		yield pipelines.promote(apps.staging);
 		log.success('Slug promoted');
-		if(opts.scale){
-			log.log('scale enabled');
-			let source = appName;
-			let scaleTasks = [
-				scale({
-					source:source,
-					target:apps.staging,
-					registry: REGISTRY_URI
-				}),
-				scale({
-					source:source,
-					target:apps.production.eu,
-					registry: REGISTRY_URI
-				})
-			];
-			if(opts.multiregion){
-				scaleTasks.push(scale({
-					source:source,
-					target:apps.production.us,
-					registry: REGISTRY_URI
-				}));
-			}
-
-			log.info('scale production apps');
-			yield Promise.all(scaleTasks);
-			log.success('scale complete');
-		}
 
 		log.info('scale staging app back to 0');
 		yield scale({
@@ -132,9 +105,8 @@ function task (opts) {
 module.exports = function (program, utils) {
 	program
 		.command('ship')
-		.description('Ships code.  Deploys using pipelines, also running the configure and scale steps automatically')
+		.description('Ships code.  Deploys using pipelines, also running the configure step automatically')
 		.option('-c --no-configure', 'Skip the configure step')
-		.option('-s --no-scale', 'Skip the scale step')
 		.option('-p --pipeline [name]', 'The name of the pipeline to deploy to.  Defaults to the app name')
 		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('-m --multiregion', 'Will expect a US app as well as an EU one')
