@@ -38,7 +38,7 @@ function herokuHeaders ({ useReviewAppApi } = {}) {
 		});
 }
 
-const throwIfNon2xx = async res => {
+const throwIfNotOk = async res => {
 	const { ok, status, url } = res;
 	if (!ok) {
 		const errorBody = await res.json();
@@ -76,7 +76,7 @@ const waitTillReviewAppCreated = (data) => {
 		const result = await fetch(getReviewAppUrl(id), {
 			headers
 		})
-			.then(throwIfNon2xx)
+			.then(throwIfNotOk)
 			.then(res => res.json())
 			.then(data => {
 				const { status, message, app } = data;
@@ -113,7 +113,7 @@ const getAppName = async (appId) => {
 	return fetch(getAppUrl(appId), {
 		headers
 	})
-		.then(throwIfNon2xx)
+		.then(throwIfNotOk)
 		.then(res => res.json())
 		.then((result) => {
 			const { name } = result;
@@ -140,7 +140,7 @@ async function task (app, options) {
 		method: 'post',
 		body: JSON.stringify(body)
 	})
-		.then(throwIfNon2xx)
+		.then(throwIfNotOk)
 		.then(res => res.json())
 		.then(waitTillReviewAppCreated)
 		.then(getAppName)
