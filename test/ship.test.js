@@ -123,17 +123,6 @@ describe('tasks/ship', function (){
 				target:mockApps.staging,
 				registry: DEFAULT_REGISTRY_URI
 			});
-			sinon.assert.neverCalledWith(mockScale.task, {
-				source:appName,
-				target:mockApps.production.eu,
-				registry: DEFAULT_REGISTRY_URI
-			});
-			sinon.assert.neverCalledWith(mockScale.task, {
-				source:appName,
-				target:mockApps.production.us,
-				registry: DEFAULT_REGISTRY_URI
-			});
-
 		});
 	});
 

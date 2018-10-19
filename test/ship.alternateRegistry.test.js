@@ -140,17 +140,6 @@ describe('tasks/ship (using alternate registry)', function (){
 				registry: OVERRIDE_REGISTRY_URI,
 				minimal: true
 			});
-			sinon.assert.neverCalledWith(mockScale.task, {
-				source:'kat-app',
-				target:mockApps.production.eu,
-				registry: OVERRIDE_REGISTRY_URI
-			});
-			sinon.assert.neverCalledWith(mockScale.task, {
-				source:'kat-app',
-				target:mockApps.production.us,
-				registry: OVERRIDE_REGISTRY_URI
-			});
-
 		});
 	});
 
