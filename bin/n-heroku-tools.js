@@ -33,7 +33,6 @@ require('../tasks/run')(program, utils);
 require('../tasks/rebuild')(program, utils);
 require('../tasks/ship')(program, utils);
 require('../tasks/float')(program, utils);
-require('../tasks/drydock')(program, utils);
 require('../tasks/gtg')(program, utils);
 require('../tasks/review-app')(program, utils);
 
