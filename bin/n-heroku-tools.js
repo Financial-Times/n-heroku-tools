@@ -4,7 +4,6 @@
 require('isomorphic-fetch');
 
 let program = require('commander');
-let logger = require('../lib/logger');
 
 const utils = {
 	list: val => {
@@ -12,10 +11,7 @@ const utils = {
 	},
 
 	exit: err => {
-		logger.error(err);
-		if (err.stack) {
-			logger.error(err.stack);
-		}
+		console.error(err); // eslint-disable-line no-console
 		process.exit(1);
 	}
 };
