@@ -22,13 +22,11 @@ const utils = {
 
 program.version(require('../package.json').version);
 
-require('../tasks/deploy')(program, utils);
 require('../tasks/configure')(program, utils);
 require('../tasks/deploy-hashed-assets')(program, utils);
 require('../tasks/deploy-static')(program, utils);
 require('../tasks/run')(program, utils);
 require('../tasks/rebuild')(program, utils);
-require('../tasks/float')(program, utils);
 require('../tasks/gtg')(program, utils);
 require('../tasks/review-app')(program, utils);
 
