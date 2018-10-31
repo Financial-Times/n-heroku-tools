@@ -122,7 +122,7 @@ const getAppName = async (appId) => {
 		});
 };
 
-const deleteGitBranchReviewApp = ({ pipelineId, branch, headers }) => {
+const deleteGitBranchApp = ({ pipelineId, branch, headers }) => {
 	const getReviewAppId = (pipelineId) => fetch(getPipelineReviewAppsUrl(pipelineId), {
 		headers
 	})
@@ -132,13 +132,22 @@ const deleteGitBranchReviewApp = ({ pipelineId, branch, headers }) => {
 			reviewApps.find(
 				({ branch: reviewAppBranch }) => branch === reviewAppBranch)
 			)
-		.then(({ id }) => id);
-	const deleteReviewApp = (reviewAppId) => fetch(getReviewAppUrl(reviewAppId), {
+		.then((reviewApp) => {
+			const { id, app } = reviewApp;
+			if (!app) { throw new Error(`No app found in review app ${id}: ${JSON.stringify(reviewApp)}`); }
+
+			return app.id;
+		});
+	const deleteReviewApp = (appId) => fetch(getAppUrl(appId), {
 		headers,
 		method: 'delete'
 	}).then(throwIfNotOk);
 
-	return getReviewAppId(pipelineId).then(deleteReviewApp);
+	return getReviewAppId(pipelineId)
+		.then(deleteReviewApp)
+		.catch(error => {
+			console.error(`Error in deleting review app: ${error}\nCarry on.`);  // eslint-disable-line no-console
+		});
 };
 
 async function task (app, options) {
@@ -165,7 +174,7 @@ async function task (app, options) {
 			const { status } = res;
 			if (status === 409) {
 				console.error(`Review app already created for ${branch} branch. Deleting existing review app first.`); // eslint-disable-line no-console
-				return deleteGitBranchReviewApp({ pipelineId, branch, headers })
+				return deleteGitBranchApp({ pipelineId, branch, headers })
 					.then(createReviewApp);
 			}
 			return res;
