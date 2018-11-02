@@ -6,6 +6,7 @@ let herokuAuthToken = require('../lib/heroku-auth-token');
 let normalizeName = require('../lib/normalize-name');
 let vault = require('../lib/vault');
 let fetchres = require('fetchres');
+let pipelines = require('../lib/pipelines');
 
 const FORBIDDEN_ATTACHMENT_VARIABLES = [
 	'DATABASE_URL'
@@ -85,6 +86,13 @@ const fetchSessionToken = (userType, url, apiKey) => {
 		});
 };
 
+const getPipelineId = (pipelineName) => {
+	return pipelines.info(pipelineName)
+	.then(pipeline => {
+		return pipeline.id;
+	})
+};
+
 function task (opts) {
 	let source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
 	let target = opts.target || source;
@@ -97,18 +105,23 @@ function task (opts) {
 		});
 	}
 
-	let authorizedPostHeaders = {
-		'Accept': 'application/vnd.heroku+json; version=3',
+	const acceptHeader = target === 'review-app' ? 'application/vnd.heroku+json; version=3.pipelines' : 'application/vnd.heroku+json; version=3';
+	const authorizedPostHeaders = {
+		'Accept': acceptHeader,
 		'Content-Type': 'application/json'
 	};
 
-	return herokuAuthToken()
-		.then(function (key) {
+	return Promise.all([
+		herokuAuthToken(),
+		getPipelineId(source)
+	])
+		.then(function ([key, pipelineId]) {
 			authorizedPostHeaders.Authorization = 'Bearer ' + key;
+			const fetchUrl = target === 'review-app' ? `https://api.heroku.com/pipelines/${pipelineId}/stage/review/config-vars` : `https://api.heroku.com/apps/${target}/config-vars`;
 
 			return getServiceData(source, opts.registry).then(serviceData => Promise.all([
 				fetchFromVault(source, target, serviceData),
-				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
+				fetch(fetchUrl, { headers: authorizedPostHeaders })
 					.then(fetchres.json)
 					.catch(function (err) {
 						if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
@@ -148,15 +161,15 @@ function task (opts) {
 
 					Object.keys(patch).forEach(function (key) {
 						if (patch[key] === null) {
-							console.log('Deleting config var: ' + key); // eslint-disable-line no-console
+							console.log(`Deleting config var: ${key}`); // eslint-disable-line no-console
 						} else if (patch[key] !== current[key]) {
-							console.log('Setting config var: ' + key); // eslint-disable-line no-console
+							console.log(`Setting config var: ${key}`); // eslint-disable-line no-console
 						}
 					});
 
 					console.log('Setting environment keys', Object.keys(patch)); // eslint-disable-line no-console
 
-					return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
+					return fetch(fetchUrl, {
 						headers: authorizedPostHeaders,
 						method: 'patch',
 						body: JSON.stringify(patch)
@@ -164,7 +177,7 @@ function task (opts) {
 				})
 				.then(response => {
 					if (response.status !== 200) return response.json().then(({id, message}) => Promise.reject(new Error(`Heroku Error - id: ${id}, message: ${message}`)));
-					console.log(target + ' config vars are set'); // eslint-disable-line no-console
+					console.log(`${target} config vars are set`); // eslint-disable-line no-console
 				}));
 			});
 };
