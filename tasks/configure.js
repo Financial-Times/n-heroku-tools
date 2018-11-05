@@ -90,7 +90,29 @@ const getPipelineId = (pipelineName) => {
 	return pipelines.info(pipelineName)
 	.then(pipeline => {
 		return pipeline.id;
-	})
+	});
+};
+
+const fetchConfigVars = ({ target, herokuToken, pipelineId, options = {} }) => {
+	let acceptHeader;
+	let url;
+
+	if (target === 'review-app') {
+		acceptHeader = 'application/vnd.heroku+json; version=3.pipelines';
+		url = `https://api.heroku.com/pipelines/${pipelineId}/stage/review/config-vars`;
+	} else {
+		acceptHeader = 'application/vnd.heroku+json; version=3';
+		url = 'application/vnd.heroku+json; version=3';
+	}
+
+	return fetch(url, {
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer ' + herokuToken,
+			'Accept': acceptHeader
+		},
+		...options
+	});
 };
 
 function task (opts) {
@@ -109,46 +131,11 @@ function task (opts) {
 		herokuAuthToken(),
 		getPipelineId(source)
 	])
-		.then(function ([key, pipelineId]) {
-			let fetchConfig;
-
-			const authorizedPostHeaders = {
-				'Content-Type': 'application/json',
-				'Authorization': 'Bearer ' + key
-			};
-
-			const reviewAppUrl = `https://api.heroku.com/pipelines/${pipelineId}/stage/review/config-vars`;
-			const standardUrl = `https://api.heroku.com/apps/${target}/config-vars`;
-
-			if (target === 'review-app') {
-
-				fetchConfig = (options = {}) => {
-					return fetch(reviewAppUrl, {
-						headers: {
-							...authorizedPostHeaders,
-							Accept: 'application/vnd.heroku+json; version=3.pipelines'
-						},
-						...options
-					});
-				};
-
-			} else {
-
-				fetchConfig = (options = {}) => {
-					return fetch(standardUrl, {
-						headers: {
-							...authorizedPostHeaders,
-							Accept: 'application/vnd.heroku+json; version=3'
-						},
-						...options
-					});
-				};
-
-			}
+		.then(function ([herokuToken, pipelineId]) {
 
 			return getServiceData(source, opts.registry).then(serviceData => Promise.all([
 				fetchFromVault(source, target, serviceData),
-				fetchConfig()
+				fetchConfigVars({ target, herokuToken, pipelineId })
 					.then(fetchres.json)
 					.catch(function (err) {
 						if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
@@ -196,10 +183,10 @@ function task (opts) {
 
 					console.log('Setting environment keys', Object.keys(patch)); // eslint-disable-line no-console
 
-					return fetchConfig({
+					return fetchConfigVars({ target, herokuToken, pipelineId, options: {
 						method: 'patch',
 						body: JSON.stringify(patch)
-					});
+					} });
 				})
 				.then(response => {
 					if (response.status !== 200) return response.json().then(({id, message}) => Promise.reject(new Error(`Heroku Error - id: ${id}, message: ${message}`)));
