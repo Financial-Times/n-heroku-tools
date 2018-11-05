@@ -105,23 +105,50 @@ function task (opts) {
 		});
 	}
 
-	const acceptHeader = target === 'review-app' ? 'application/vnd.heroku+json; version=3.pipelines' : 'application/vnd.heroku+json; version=3';
-	const authorizedPostHeaders = {
-		'Accept': acceptHeader,
-		'Content-Type': 'application/json'
-	};
-
 	return Promise.all([
 		herokuAuthToken(),
 		getPipelineId(source)
 	])
 		.then(function ([key, pipelineId]) {
-			authorizedPostHeaders.Authorization = 'Bearer ' + key;
-			const fetchUrl = target === 'review-app' ? `https://api.heroku.com/pipelines/${pipelineId}/stage/review/config-vars` : `https://api.heroku.com/apps/${target}/config-vars`;
+			let fetchConfig;
+
+			const authorizedPostHeaders = {
+				'Content-Type': 'application/json',
+				'Authorization': 'Bearer ' + key
+			};
+
+			const reviewAppUrl = `https://api.heroku.com/pipelines/${pipelineId}/stage/review/config-vars`;
+			const standardUrl = `https://api.heroku.com/apps/${target}/config-vars`;
+
+			if (target === 'review-app') {
+
+				fetchConfig = (options = {}) => {
+					return fetch(reviewAppUrl, {
+						headers: {
+							...authorizedPostHeaders,
+							Accept: 'application/vnd.heroku+json; version=3.pipelines'
+						},
+						...options
+					});
+				};
+
+			} else {
+
+				fetchConfig = (options = {}) => {
+					return fetch(standardUrl, {
+						headers: {
+							...authorizedPostHeaders,
+							Accept: 'application/vnd.heroku+json; version=3'
+						},
+						...options
+					});
+				};
+
+			}
 
 			return getServiceData(source, opts.registry).then(serviceData => Promise.all([
 				fetchFromVault(source, target, serviceData),
-				fetch(fetchUrl, { headers: authorizedPostHeaders })
+				fetchConfig()
 					.then(fetchres.json)
 					.catch(function (err) {
 						if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
@@ -169,8 +196,7 @@ function task (opts) {
 
 					console.log('Setting environment keys', Object.keys(patch)); // eslint-disable-line no-console
 
-					return fetch(fetchUrl, {
-						headers: authorizedPostHeaders,
+					return fetchConfig({
 						method: 'patch',
 						body: JSON.stringify(patch)
 					});
