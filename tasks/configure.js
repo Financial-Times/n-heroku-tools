@@ -93,7 +93,8 @@ const getPipelineId = (pipelineName) => {
 	});
 };
 
-const fetchConfigVars = ({ target, herokuToken, pipelineId, options = {} }) => {
+// TODO: Refactor to use heroku-api function
+const herokuConfigVars = ({ target, herokuToken, pipelineId, options = {} }) => {
 	let acceptHeader;
 	let url;
 
@@ -102,7 +103,7 @@ const fetchConfigVars = ({ target, herokuToken, pipelineId, options = {} }) => {
 		url = `https://api.heroku.com/pipelines/${pipelineId}/stage/review/config-vars`;
 	} else {
 		acceptHeader = 'application/vnd.heroku+json; version=3';
-		url = 'application/vnd.heroku+json; version=3';
+		url = `https://api.heroku.com/apps/${target}/config-vars`;
 	}
 
 	return fetch(url, {
@@ -115,7 +116,7 @@ const fetchConfigVars = ({ target, herokuToken, pipelineId, options = {} }) => {
 	});
 };
 
-function task (opts) {
+async function task (opts) {
 	let source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
 	let target = opts.target || source;
 	let overrides = {};
@@ -127,72 +128,75 @@ function task (opts) {
 		});
 	}
 
-	return Promise.all([
+	const [ herokuToken, pipelineId ] = await Promise.all([
 		herokuAuthToken(),
 		getPipelineId(source)
-	])
-		.then(function ([herokuToken, pipelineId]) {
+	]);
 
-			return getServiceData(source, opts.registry).then(serviceData => Promise.all([
-				fetchFromVault(source, target, serviceData),
-				fetchConfigVars({ target, herokuToken, pipelineId })
-					.then(fetchres.json)
-					.catch(function (err) {
-						if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
-							throw new Error(source + ' app needs to be manually added to heroku before it, or any branches, can be deployed');
-						} else {
-							throw err;
-						}
-					})
-				])
-				.then(function (data) {
-					let desired = data[0];
-					let current = data[1];
+	const serviceData = await getServiceData(source, opts.registry);
 
-					desired['SYSTEM_CODE'] = serviceData.code;
 
-					desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault UI.';
-					let patch = {};
+	//TODO: retrieve in parallel
+	const desired = await fetchFromVault(source, target, serviceData);
 
-					Object.keys(current).forEach(function (key) {
-						if (!key.startsWith('HEROKU_') && !FORBIDDEN_ATTACHMENT_VARIABLES.includes(key)) {
-							patch[key] = null;
-						}
-					});
+	// TODO: clean up then and catch
+	const current = await herokuConfigVars({ target, herokuToken, pipelineId })
+		.then(fetchres.json)
+		.catch(function (err) {
+			if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
+				throw new Error(source + ' app needs to be manually added to heroku before it, or any branches, can be deployed');
+			} else {
+				throw err;
+			}
+		});
 
-					Object.keys(desired).forEach(key => {
-						if (FORBIDDEN_ATTACHMENT_VARIABLES.includes(key)) {
-							throw new Error(`\nCannot set environment variable '${key}' as this variable name is used for an attachment variable by Heroku, `
-								+ 'if this is for an external service, please use a different environment variable name in your app\n');
-						} else {
-							patch[key] = desired[key];
-						}
-					});
 
-					Object.keys(overrides).forEach(function (key) {
-						patch[key] = overrides[key];
-					});
+	desired['SYSTEM_CODE'] = serviceData.code;
 
-					Object.keys(patch).forEach(function (key) {
-						if (patch[key] === null) {
-							console.log(`Deleting config var: ${key}`); // eslint-disable-line no-console
-						} else if (patch[key] !== current[key]) {
-							console.log(`Setting config var: ${key}`); // eslint-disable-line no-console
-						}
-					});
+	desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault UI.';
+	let patch = {};
 
-					console.log('Setting environment keys', Object.keys(patch)); // eslint-disable-line no-console
+	Object.keys(current).forEach(function (key) {
+		if (!key.startsWith('HEROKU_') && !FORBIDDEN_ATTACHMENT_VARIABLES.includes(key)) {
+			patch[key] = null;
+		}
+	});
 
-					return fetchConfigVars({ target, herokuToken, pipelineId, options: {
-						method: 'patch',
-						body: JSON.stringify(patch)
-					} });
-				})
-				.then(response => {
-					if (response.status !== 200) return response.json().then(({id, message}) => Promise.reject(new Error(`Heroku Error - id: ${id}, message: ${message}`)));
-					console.log(`${target} config vars are set`); // eslint-disable-line no-console
-				}));
+	Object.keys(desired).forEach(key => {
+		if (FORBIDDEN_ATTACHMENT_VARIABLES.includes(key)) {
+			throw new Error(`\nCannot set environment variable '${key}' as this variable name is used for an attachment variable by Heroku, `
+				+ 'if this is for an external service, please use a different environment variable name in your app\n');
+		} else {
+			patch[key] = desired[key];
+		}
+	});
+
+	Object.keys(overrides).forEach(function (key) {
+		patch[key] = overrides[key];
+	});
+
+	Object.keys(patch).forEach(function (key) {
+		if (patch[key] === null) {
+			console.log(`Deleting config var: ${key}`); // eslint-disable-line no-console
+		} else if (patch[key] !== current[key]) {
+			console.log(`Setting config var: ${key}`); // eslint-disable-line no-console
+		}
+	});
+
+	console.log('Setting environment keys', Object.keys(patch)); // eslint-disable-line no-console
+
+	const response = await herokuConfigVars({ target, herokuToken, pipelineId, options: {
+		method: 'patch',
+		body: JSON.stringify(patch)
+	} });
+
+	if (response.status !== 200) {
+		return response.json()
+			.then(({id, message}) => {
+				return Promise.reject(new Error(`Heroku Error - id: ${id}, message: ${message}`));
 			});
+	}
+	console.log(`${target} config vars are set`); // eslint-disable-line no-console
 };
 
 module.exports = function (program, utils) {
