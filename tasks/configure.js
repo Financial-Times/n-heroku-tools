@@ -89,11 +89,9 @@ const fetchSessionToken = (userType, url, apiKey) => {
 		});
 };
 
-const getPipelineId = (pipelineName) => {
-	return pipelines.info(pipelineName)
-		.then(pipeline => {
-			return pipeline.id;
-		});
+const getPipelineId = async (pipelineName) => {
+	const pipeline = await pipelines.info(pipelineName);
+	return pipeline.id;
 };
 
 async function task (opts) {
@@ -108,7 +106,7 @@ async function task (opts) {
 		});
 	}
 
-	console.log(`Retrieving pipeline details from Heroku...`); // eslint-disable-line no-console
+	console.log('Retrieving pipeline details from Heroku...'); // eslint-disable-line no-console
 
 	// TODO: Investigate what herokuAuthToken is doing
 	const [ authToken, pipelineId ] = await Promise.all([
@@ -120,7 +118,7 @@ async function task (opts) {
 
 	const serviceData = await getServiceData(source, opts.registry);
 
-	console.log(`Retrieving current and desired config vars...`); // eslint-disable-line no-console
+	console.log('Retrieving current and desired config vars...'); // eslint-disable-line no-console
 
 	const [ desired, current ] = await Promise.all([
 		fetchFromVault(serviceData),
