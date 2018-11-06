@@ -1,12 +1,12 @@
 'use strict';
 
-let packageJson = require(process.cwd() + '/package.json');
-let findService = require('../lib/find-service');
-let herokuAuthToken = require('../lib/heroku-auth-token');
-let normalizeName = require('../lib/normalize-name');
-let vault = require('../lib/vault');
-let fetchres = require('fetchres');
-let pipelines = require('../lib/pipelines');
+const packageJson = require(process.cwd() + '/package.json');
+const findService = require('../lib/find-service');
+const herokuAuthToken = require('../lib/heroku-auth-token');
+const normalizeName = require('../lib/normalize-name');
+const vault = require('../lib/vault');
+const pipelines = require('../lib/pipelines');
+const HerokuConfigVars = require('../lib/heroku-config-vars');
 
 const FORBIDDEN_ATTACHMENT_VARIABLES = [
 	'DATABASE_URL'
@@ -14,20 +14,23 @@ const FORBIDDEN_ATTACHMENT_VARIABLES = [
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
-const getServiceData = (source, registry) => fetch(registry)
-	.then(response => response.json())
-	.then(json => {
-		const serviceData = findService(json, normalizeName(source));
-		if (!serviceData) {
-			throw new Error('Could not find a service in the registry, with `name` or `systemCode`, matching ' + source + '. Please check the service registry.');
-			return false;
-		}
-		else {
-			return serviceData;
-		}
-	});
+const getServiceData = (source, registry) => {
 
-function fetchFromVault (source, target, serviceData) {
+	return fetch(registry)
+		.then(response => response.json())
+		.then(json => {
+			const serviceData = findService(json, normalizeName(source));
+			if (!serviceData) {
+				throw new Error('Could not find a service in the registry, with `name` or `systemCode`, matching ' + source + '. Please check the service registry.');
+				return false;
+			}
+			else {
+				return serviceData;
+			}
+		});
+};
+
+function fetchFromVault (serviceData) {
 	const path = serviceData.config.replace('https://vault.in.ft.com/v1/','');
 
 	return Promise.all([path, vault.get()])
@@ -88,32 +91,9 @@ const fetchSessionToken = (userType, url, apiKey) => {
 
 const getPipelineId = (pipelineName) => {
 	return pipelines.info(pipelineName)
-	.then(pipeline => {
-		return pipeline.id;
-	});
-};
-
-// TODO: Refactor to use heroku-api function
-const herokuConfigVars = ({ target, herokuToken, pipelineId, options = {} }) => {
-	let acceptHeader;
-	let url;
-
-	if (target === 'review-app') {
-		acceptHeader = 'application/vnd.heroku+json; version=3.pipelines';
-		url = `https://api.heroku.com/pipelines/${pipelineId}/stage/review/config-vars`;
-	} else {
-		acceptHeader = 'application/vnd.heroku+json; version=3';
-		url = `https://api.heroku.com/apps/${target}/config-vars`;
-	}
-
-	return fetch(url, {
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': 'Bearer ' + herokuToken,
-			'Accept': acceptHeader
-		},
-		...options
-	});
+		.then(pipeline => {
+			return pipeline.id;
+		});
 };
 
 async function task (opts) {
@@ -128,28 +108,24 @@ async function task (opts) {
 		});
 	}
 
-	const [ herokuToken, pipelineId ] = await Promise.all([
+	console.log(`Retrieving pipeline details from Heroku...`); // eslint-disable-line no-console
+
+	// TODO: Investigate what herokuAuthToken is doing
+	const [ authToken, pipelineId ] = await Promise.all([
 		herokuAuthToken(),
 		getPipelineId(source)
 	]);
 
+	const herokuConfigVars = new HerokuConfigVars({ target, pipelineId, authToken });
+
 	const serviceData = await getServiceData(source, opts.registry);
 
+	console.log(`Retrieving current and desired config vars...`); // eslint-disable-line no-console
 
-	//TODO: retrieve in parallel
-	const desired = await fetchFromVault(source, target, serviceData);
-
-	// TODO: clean up then and catch
-	const current = await herokuConfigVars({ target, herokuToken, pipelineId })
-		.then(fetchres.json)
-		.catch(function (err) {
-			if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
-				throw new Error(source + ' app needs to be manually added to heroku before it, or any branches, can be deployed');
-			} else {
-				throw err;
-			}
-		});
-
+	const [ desired, current ] = await Promise.all([
+		fetchFromVault(source, target, serviceData),
+		herokuConfigVars.get()
+	]);
 
 	desired['SYSTEM_CODE'] = serviceData.code;
 
@@ -183,19 +159,10 @@ async function task (opts) {
 		}
 	});
 
-	console.log('Setting environment keys', Object.keys(patch)); // eslint-disable-line no-console
+	console.log('Setting config vars', Object.keys(patch)); // eslint-disable-line no-console
 
-	const response = await herokuConfigVars({ target, herokuToken, pipelineId, options: {
-		method: 'patch',
-		body: JSON.stringify(patch)
-	} });
+	await herokuConfigVars.set(patch);
 
-	if (response.status !== 200) {
-		return response.json()
-			.then(({id, message}) => {
-				return Promise.reject(new Error(`Heroku Error - id: ${id}, message: ${message}`));
-			});
-	}
 	console.log(`${target} config vars are set`); // eslint-disable-line no-console
 };
 
