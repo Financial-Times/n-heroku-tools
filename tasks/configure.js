@@ -31,7 +31,7 @@ const getServiceData = (source, registry) => {
 };
 
 function fetchFromVault (serviceData) {
-	const path = serviceData.config.replace('https://vault.in.ft.com/v1/','');
+	const path = serviceData.config.replace('https://vault.in.ft.com/v1/', '');
 
 	return Promise.all([path, vault.get()])
 		.then(([path, vault]) => {
@@ -123,7 +123,7 @@ async function task (opts) {
 	console.log(`Retrieving current and desired config vars...`); // eslint-disable-line no-console
 
 	const [ desired, current ] = await Promise.all([
-		fetchFromVault(source, target, serviceData),
+		fetchFromVault(serviceData),
 		herokuConfigVars.get()
 	]);
 
