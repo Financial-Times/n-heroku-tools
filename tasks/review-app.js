@@ -18,6 +18,7 @@ const REVIEW_APP_STATUSES = {
 	creating: 'creating',
 	created: 'created'
 };
+const BUILD_STATUS_SUCCEEDED = 'succeeded';
 
 const getReviewAppUrl = reviewAppId => `https://api.heroku.com/review-apps/${reviewAppId}`;
 const getPipelineReviewAppsUrl = pipelineId => `https://api.heroku.com/pipelines/${pipelineId}/review-apps`;
@@ -144,10 +145,11 @@ const getBuilds = async (appId) => {
 };
 
 const waitForReviewAppBuild = (commit) => async (appId) => {
-	const checkForBuildAppId = getBuilds(appId)
+	const checkForBuildAppId = () => getBuilds(appId)
 		.then(builds => {
-			const build = builds.find(({ source_blob: { version } }) =>
-				version === commit);
+			const build = builds.find(({ source_blob: { version }, status }) =>
+				(version === commit) &&
+				(status === BUILD_STATUS_SUCCEEDED));
 
 			if (!build) {
 				throw new Error(`Review app does not have a build: app id ${appId}`);
