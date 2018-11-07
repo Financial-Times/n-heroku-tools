@@ -14,9 +14,7 @@ const FORBIDDEN_ATTACHMENT_VARIABLES = [
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
-const getServiceData = (source, registry) => {
-
-	return fetch(registry)
+const getServiceData = (source, registry) => fetch(registry)
 		.then(response => response.json())
 		.then(json => {
 			const serviceData = findService(json, normalizeName(source));
@@ -28,9 +26,8 @@ const getServiceData = (source, registry) => {
 				return serviceData;
 			}
 		});
-};
 
-function fetchFromVault (serviceData) {
+const fetchFromVault = (serviceData) => {
 	const path = serviceData.config.replace('https://vault.in.ft.com/v1/', '');
 
 	return Promise.all([path, vault.get()])
@@ -72,7 +69,7 @@ function fetchFromVault (serviceData) {
 					throw e;
 				});
 		});
-}
+};
 
 const fetchSessionToken = (userType, url, apiKey) => {
 	return fetch(`${url}/${userType}?api_key=${apiKey}`)
@@ -153,7 +150,7 @@ async function task (opts) {
 		if (patch[key] === null) {
 			console.log(`Deleting config var: ${key}`); // eslint-disable-line no-console
 		} else if (patch[key] !== current[key]) {
-			console.log(`Setting config var: ${key}`); // eslint-disable-line no-console
+			console.log(`Adding new config var: ${key}`); // eslint-disable-line no-console
 		}
 	});
 
