@@ -147,8 +147,14 @@ const getBuilds = async (data) => {
 const waitForReviewAppBuild = (commit) => async (reviewApp) => {
 	const checkForBuildAppId = getBuilds(reviewApp)
 		.then(builds => {
-			return builds.find(({ source_blob: { version } }) =>
+			const build = builds.find(({ source_blob: { version } }) =>
 				version === commit);
+
+			if (!build) {
+				throw new Error(`Review app does not have a build: ${JSON.stringify(reviewApp)}`);
+			}
+
+			return build;
 		})
 		.then(build => {
 			if (!build) {
