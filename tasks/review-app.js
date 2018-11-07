@@ -134,24 +134,23 @@ const findCreatedReviewApp = async ({ pipelineId, branch }) => {
 			reviewApps.find(({ branch: reviewAppBranch }) => reviewAppBranch === branch));
 };
 
-const getBuilds = async (data) => {
+const getBuilds = async (appId) => {
 	const headers = await herokuHeaders();
-	const { app: { id } } = data;
-	return fetch(getBuildsUrl(id), {
+	return fetch(getBuildsUrl(appId), {
 		headers
 	})
 		.then(throwIfNotOk)
 		.then(res => res.json());
 };
 
-const waitForReviewAppBuild = (commit) => async (reviewApp) => {
-	const checkForBuildAppId = getBuilds(reviewApp)
+const waitForReviewAppBuild = (commit) => async (appId) => {
+	const checkForBuildAppId = getBuilds(appId)
 		.then(builds => {
 			const build = builds.find(({ source_blob: { version } }) =>
 				version === commit);
 
 			if (!build) {
-				throw new Error(`Review app does not have a build: ${JSON.stringify(reviewApp)}`);
+				throw new Error(`Review app does not have a build: app id ${appId}`);
 			}
 
 			return build;
