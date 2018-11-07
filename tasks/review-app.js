@@ -147,12 +147,15 @@ const getBuilds = async (appId) => {
 const waitForReviewAppBuild = (commit) => async (appId) => {
 	const checkForBuildAppId = () => getBuilds(appId)
 		.then(builds => {
-			const build = builds.find(({ source_blob: { version }, status }) =>
-				(version === commit) &&
-				(status === BUILD_STATUS_SUCCEEDED));
+			const build = builds.find(({ source_blob: { version } }) => version === commit);
 
 			if (!build) {
-				throw new Error(`Review app does not have a build: app id ${appId}`);
+				throw new Error(`No review app build found for app id ${appId}, commit ${commit}`);
+			}
+
+			const { status } = build;
+			if (status !== BUILD_STATUS_SUCCEEDED) {
+				throw new Error(`Review app build for app id ${appId} (commit ${commit}) not done yet: ${status}`);
 			}
 
 			return build;
