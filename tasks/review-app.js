@@ -123,15 +123,25 @@ const getAppName = async (appId) => {
 		});
 };
 
-const findCreatedReviewApp = ({ pipelineId, branch }) => {
-	return fetch(getPipelineReviewAppsUrl(pipelineId))
+const findCreatedReviewApp = async ({ pipelineId, branch }) => {
+	const headers = await herokuHeaders({ useReviewAppApi: true });
+	return fetch(getPipelineReviewAppsUrl(pipelineId), {
+		headers
+	})
+		.then(throwIfNotOk)
+		.then(res => res.json())
 		.then((reviewApps = []) =>
 			reviewApps.find(({ branch: reviewAppBranch }) => reviewAppBranch === branch));
 };
 
-const getBuilds = (data) => {
+const getBuilds = async (data) => {
+	const headers = await herokuHeaders();
 	const { app: { id } } = data;
-	return fetch(getBuildsUrl(id));
+	return fetch(getBuildsUrl(id), {
+		headers
+	})
+		.then(throwIfNotOk)
+		.then(res => res.json());
 };
 
 const waitForReviewAppBuild = (commit) => async (reviewApp) => {
