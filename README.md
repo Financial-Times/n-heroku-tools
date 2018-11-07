@@ -21,7 +21,7 @@ Commands:
   run [options]                                       Runs the local app through the router
   rebuild [options] [apps...]                         Trigger a rebuild of the latest master on Circle
   gtg [app]                                           Runs gtg checks for an app
-  review-app [options] [app]                          Create a heroku review app and print out the app name created
+  review-app [options] [app]                          Create or find an existing heroku review app and print out the app name
   *
 
 *Note*: The README.md is automatically generated.  Run `make docs` to update it.

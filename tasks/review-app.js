@@ -235,7 +235,7 @@ async function task (app, options) {
 module.exports = function (program) {
 	program
 		.command('review-app [app]')
-		.description('Create a heroku review app and print out the app name created')
+		.description('Create or find an existing heroku review app and print out the app name')
 		.option('-r, --repo-name <name>', 'github repository name')
 		.option('-b, --branch <name>', 'branch of the review app')
 		.option('-c, --commit <commit>', 'commit SHA-1')
