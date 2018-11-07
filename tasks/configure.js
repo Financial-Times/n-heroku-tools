@@ -105,11 +105,8 @@ async function task (opts) {
 
 	console.log('Retrieving pipeline details from Heroku...'); // eslint-disable-line no-console
 
-	// TODO: Investigate what herokuAuthToken is doing
-	const [ authToken, pipelineId ] = await Promise.all([
-		herokuAuthToken(),
-		getPipelineId(source)
-	]);
+	const authToken = await herokuAuthToken();
+	const pipelineId = await getPipelineId(source);
 
 	const herokuConfigVars = new HerokuConfigVars({ target, pipelineId, authToken });
 
