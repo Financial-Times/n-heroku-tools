@@ -23,6 +23,7 @@ const getReviewAppUrl = reviewAppId => `https://api.heroku.com/review-apps/${rev
 const getPipelineReviewAppsUrl = pipelineId => `https://api.heroku.com/pipelines/${pipelineId}/review-apps`;
 const getAppUrl = appId => `https://api.heroku.com/apps/${appId}`;
 const getGithubArchiveUrl = ({ repoName, branch }) => `https://api.github.com/repos/Financial-Times/${repoName}/tarball/${branch}`;
+const getBuildsUrl = appId => `https://api.heroku.com/apps/${appId}/builds`;
 
 function herokuHeaders ({ useReviewAppApi } = {}) {
 	const defaultHeaders = useReviewAppApi
@@ -122,23 +123,40 @@ const getAppName = async (appId) => {
 		});
 };
 
-const deleteGitBranchReviewApp = ({ pipelineId, branch, headers }) => {
-	const getReviewAppId = (pipelineId) => fetch(getPipelineReviewAppsUrl(pipelineId), {
-		headers
-	})
-		.then(throwIfNotOk)
-		.then(res => res.json())
+const findCreatedReviewApp = ({ pipelineId, branch }) => {
+	return fetch(getPipelineReviewAppsUrl(pipelineId))
 		.then((reviewApps = []) =>
-			reviewApps.find(
-				({ branch: reviewAppBranch }) => branch === reviewAppBranch)
-			)
-		.then(({ id }) => id);
-	const deleteReviewApp = (reviewAppId) => fetch(getReviewAppUrl(reviewAppId), {
-		headers,
-		method: 'delete'
-	}).then(throwIfNotOk);
+			reviewApps.find(({ branch: reviewAppBranch }) => reviewAppBranch === branch));
+};
 
-	return getReviewAppId(pipelineId).then(deleteReviewApp);
+const getBuilds = (data) => {
+	const { app: { id } } = data;
+	return fetch(getBuildsUrl(id));
+};
+
+const waitForReviewAppBuild = (commit) => async (reviewApp) => {
+	const checkForBuildAppId = getBuilds(reviewApp)
+		.then(builds => {
+			return builds.find(({ source_blob: { version } }) =>
+				version === commit);
+		})
+		.then(build => {
+			if (!build) {
+				throw new Error (`Build for commit ${commit} not found`);
+			}
+			return build;
+		})
+		.then(({ app: { id } }) => id);
+
+	return pRetry(checkForBuildAppId, {
+		factor: RETRY_EXP_BACK_OFF_FACTOR,
+		retries: NUM_RETRIES,
+		minTimeout: RETRY_INTERVAL,
+		onFailedAttempt: (err) => {
+			const { attemptNumber, message } = err;
+			console.error(`${attemptNumber}/${NUM_RETRIES}: ${message}`); // eslint-disable-line no-console
+		}
+	});
 };
 
 async function task (app, options) {
@@ -164,16 +182,27 @@ async function task (app, options) {
 		.then(res => {
 			const { status } = res;
 			if (status === 409) {
-				console.error(`Review app already created for ${branch} branch. Deleting existing review app first.`); // eslint-disable-line no-console
-				return deleteGitBranchReviewApp({ pipelineId, branch, headers })
-					.then(createReviewApp);
+				return findCreatedReviewApp({
+					pipelineId,
+					branch
+				})
+					.then(reviewApp => {
+						if (!reviewApp) {
+							throw new Error(`No review app found for pipeline ${pipelineId}, branch ${branch}`);
+						}
+
+						return reviewApp;
+					})
+					.then(waitTillReviewAppCreated)
+					.then(waitForReviewAppBuild(commit))
+					.then(getAppName);
 			}
-			return res;
+			return Promise.resolve(res)
+				.then(throwIfNotOk)
+				.then(res => res.json())
+				.then(waitTillReviewAppCreated)
+				.then(getAppName);
 		})
-		.then(throwIfNotOk)
-		.then(res => res.json())
-		.then(waitTillReviewAppCreated)
-		.then(getAppName)
 		.then(appName => {
 			console.log(appName); // eslint-disable-line no-console
 		});
