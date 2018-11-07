@@ -147,7 +147,7 @@ async function task (opts) {
 		if (patch[key] === null) {
 			console.log(`Deleting config var: ${key}`); // eslint-disable-line no-console
 		} else if (patch[key] !== current[key]) {
-			console.log(`Adding new config var: ${key}`); // eslint-disable-line no-console
+			console.log(`Adding or updating config var: ${key}`); // eslint-disable-line no-console
 		}
 	});
 
