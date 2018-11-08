@@ -229,14 +229,12 @@ async function task (app, options) {
 		});
 }
 
-/**
-* Assume
-* 	* app is VAULT_SOURCE, and is package.json name (could assume it's the package.json name, like `nht configure`)
-*/
+const description = 'Create or find an existing heroku review app and print out the app name. [app] is the package.json name (which is also the value of VAULT_SOURCE). On the first build of a branch, Heroku will create a review app with a build. On subsequent builds, Heroku will automatically generate a new build, which this task looks for. See https://devcenter.heroku.com/articles/review-apps-beta for more details of the internals';
+
 module.exports = function (program) {
 	program
 		.command('review-app [app]')
-		.description('Create or find an existing heroku review app and print out the app name')
+		.description(description)
 		.option('-r, --repo-name <name>', 'github repository name')
 		.option('-b, --branch <name>', 'branch of the review app')
 		.option('-c, --commit <commit>', 'commit SHA-1')

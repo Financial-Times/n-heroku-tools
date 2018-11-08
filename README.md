@@ -1,13 +1,20 @@
 # n-heroku-tools
+
 This library is a command line tool that orchestrates [Heroku](https://www.heroku.com/) and [Amazon S3](https://aws.amazon.com/s3/) deployments for [Next](https://github.com/Financial-Times/next/wiki), based on configuration in the [Next service registry](https://next-registry.ft.com/v2/) and [Vault](https://www.vaultproject.io/).
+
 ### Installation
+
 In order to use this tool, run
+
 ```
 npm install @financial-times/n-heroku-tools --save-dev
 ```
 
- ### Usage
+### Usage
+
 In order to use `n-heroku-tools` the following commands are available in your command line:
+
+```
 Usage: n-heroku-tools [options] [command]
 
 Options:
@@ -21,7 +28,8 @@ Commands:
   run [options]                                       Runs the local app through the router
   rebuild [options] [apps...]                         Trigger a rebuild of the latest master on Circle
   gtg [app]                                           Runs gtg checks for an app
-  review-app [options] [app]                          Create or find an existing heroku review app and print out the app name
+  review-app [options] [app]                          Create or find an existing heroku review app and print out the app name. [app] is the package.json name (which is also the value of VAULT_SOURCE). On the first build of a branch, Heroku will create a review app with a build. On subsequent builds, Heroku will automatically generate a new build, which this task looks for. See https://devcenter.heroku.com/articles/review-apps-beta for more details of the internals
   *
+```
 
 *Note*: The README.md is automatically generated.  Run `make docs` to update it.
