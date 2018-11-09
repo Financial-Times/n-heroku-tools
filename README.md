@@ -28,7 +28,7 @@ Commands:
   run [options]                                       Runs the local app through the router
   rebuild [options] [apps...]                         Trigger a rebuild of the latest master on Circle
   gtg [app]                                           Runs gtg checks for an app
-  review-app [options] [app]                          Create or find an existing heroku review app and print out the app name. [app] is the package.json name (which is also the value of VAULT_SOURCE). On the first build of a branch, Heroku will create a review app with a build. On subsequent builds, Heroku will automatically generate a new build, which this task looks for. See https://devcenter.heroku.com/articles/review-apps-beta for more details of the internals
+  review-app [options] [appName]                      Create or find an existing heroku review app and print out the app name. [appName] is the package.json name (which is also the value of VAULT_SOURCE). On the first build of a branch, Heroku will create a review app with a build. On subsequent builds, Heroku will automatically generate a new build, which this task looks for. See https://devcenter.heroku.com/articles/review-apps-beta for more details of the internals
   *
 ```
 
