@@ -27,13 +27,13 @@ async function task (appName, options) {
 
 						return reviewApp;
 					})
-					.then(waitTillReviewAppCreated)
-					.then(waitForReviewAppBuild(commit))
+					.then(waitTillReviewAppCreated())
+					.then(waitForReviewAppBuild({ commit }))
 					.then(getAppName);
 			}
 			return Promise.resolve(res)
 				.then(res => res.json())
-				.then(waitTillReviewAppCreated)
+				.then(waitTillReviewAppCreated())
 				.then(getAppName);
 		})
 		.then(appName => {
