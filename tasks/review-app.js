@@ -15,7 +15,7 @@ async function task (appName, options) {
 		.then(res => {
 			const { status } = res;
 			if (status === 409) {
-				console.error(`Review app already created for ${branch} branch. Using existing review app for build.`); // eslint-disable-line no-console
+				console.error(`Review app already created for '${branch}' branch. Using existing review app for build.`); // eslint-disable-line no-console
 				return findCreatedReviewApp({
 					pipelineId,
 					branch
