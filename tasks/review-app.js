@@ -1,42 +1,17 @@
-const { info: pipelineInfo } = require('../lib/pipelines');
 const {
-	createReviewApp,
-	findCreatedReviewApp,
-	waitTillReviewAppCreated,
-	waitForReviewAppBuild,
-	getAppName
+	getReviewAppName
 } = require('../lib/review-apps');
 
 async function task (appName, options) {
 	const { repoName, branch, commit, githubToken } = options;
-	const { id: pipelineId } = await pipelineInfo(appName);
 
-	return createReviewApp({ pipelineId, repoName, commit, branch, githubToken })
-		.then(res => {
-			const { status } = res;
-			if (status === 409) {
-				console.error(`Review app already created for '${branch}' branch. Using existing review app for build.`); // eslint-disable-line no-console
-				return findCreatedReviewApp({
-					pipelineId,
-					branch
-				})
-					.then(reviewApp => {
-						if (!reviewApp) {
-							throw new Error(`No review app found for pipeline ${pipelineId}, branch ${branch}`);
-						}
-
-						return reviewApp;
-					})
-					.then(waitTillReviewAppCreated())
-					.then(waitForReviewAppBuild({ commit }))
-					.then(getAppName);
-			}
-			return Promise.resolve(res)
-				.then(res => res.json())
-				.then(waitTillReviewAppCreated())
-				.then(getAppName);
-		})
-		.then(appName => {
+	return getReviewAppName({
+			appName,
+			repoName,
+			branch,
+			commit,
+			githubToken
+		}).then(appName => {
 			console.log(appName); // eslint-disable-line no-console
 		});
 }
