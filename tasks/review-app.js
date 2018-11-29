@@ -31,7 +31,7 @@ module.exports = function (program) {
 				await task(appName, options);
 			} catch (error) {
 				const { message } = error || {};
-				console.error(message, error); // eslint-disable-line no-console
+				console.error(`${message}\n\n`, error); // eslint-disable-line no-console
 				process.exit(1);
 				return;
 			}
