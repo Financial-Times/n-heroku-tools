@@ -30,7 +30,8 @@ module.exports = function (program) {
 			try {
 				await task(appName, options);
 			} catch (error) {
-				console.error(error); // eslint-disable-line no-console
+				const { message } = error || {};
+				console.error(message, error); // eslint-disable-line no-console
 				process.exit(1);
 				return;
 			}
