@@ -17,7 +17,7 @@
     "colors": "^1.1.2",
     "commander": "^2.6.0",
     "denodeify": "^1.2.0",
-    "dotenv": "^1.2.0",
+    "dotenv": "^6.0.0",
     "fetchres": "^1.0.4",
     "foreman": "^3.0.0",
     "haikro": "^2.2.0",
