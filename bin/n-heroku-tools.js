@@ -4,7 +4,6 @@
 require('isomorphic-fetch');
 
 let program = require('commander');
-let logger = require('../lib/logger');
 
 const utils = {
 	list: val => {
@@ -12,30 +11,18 @@ const utils = {
 	},
 
 	exit: err => {
-		logger.error(err);
-		if (err.stack) {
-			logger.error(err.stack);
-		}
+		console.error(err); // eslint-disable-line no-console
 		process.exit(1);
 	}
 };
 
 program.version(require('../package.json').version);
 
-require('../tasks/deploy')(program, utils);
 require('../tasks/configure')(program, utils);
-require('../tasks/scale')(program, utils);
-require('../tasks/provision')(program, utils);
-require('../tasks/destroy')(program, utils);
 require('../tasks/deploy-hashed-assets')(program, utils);
 require('../tasks/deploy-static')(program, utils);
 require('../tasks/run')(program, utils);
 require('../tasks/rebuild')(program, utils);
-require('../tasks/test-urls')(program, utils);
-require('../tasks/ship')(program, utils);
-require('../tasks/float')(program, utils);
-require('../tasks/drydock')(program, utils);
-require('../tasks/smoke')(program, utils);
 require('../tasks/gtg')(program, utils);
 require('../tasks/review-app')(program, utils);
 

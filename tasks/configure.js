@@ -1,11 +1,12 @@
 'use strict';
 
-let packageJson = require(process.cwd() + '/package.json');
-let findService = require('../lib/find-service');
-let herokuAuthToken = require('../lib/heroku-auth-token');
-let normalizeName = require('../lib/normalize-name');
-let vault = require('../lib/vault');
-let fetchres = require('fetchres');
+const packageJson = require(process.cwd() + '/package.json');
+const findService = require('../lib/find-service');
+const herokuAuthToken = require('../lib/heroku-auth-token');
+const normalizeName = require('../lib/normalize-name');
+const vault = require('../lib/vault');
+const pipelines = require('../lib/pipelines');
+const HerokuConfigVars = require('../lib/heroku-config-vars');
 
 const FORBIDDEN_ATTACHMENT_VARIABLES = [
 	'DATABASE_URL'
@@ -14,20 +15,20 @@ const FORBIDDEN_ATTACHMENT_VARIABLES = [
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
 const getServiceData = (source, registry) => fetch(registry)
-	.then(response => response.json())
-	.then(json => {
-		const serviceData = findService(json, normalizeName(source));
-		if (!serviceData) {
-			throw new Error('Could not find a service in the registry, with `name` or `systemCode`, matching ' + source + '. Please check the service registry.');
-			return false;
-		}
-		else {
-			return serviceData;
-		}
-	});
+		.then(response => response.json())
+		.then(json => {
+			const serviceData = findService(json, normalizeName(source));
+			if (!serviceData) {
+				throw new Error('Could not find a service in the registry, with `name` or `systemCode`, matching ' + source + '. Please check the service registry.');
+				return false;
+			}
+			else {
+				return serviceData;
+			}
+		});
 
-function fetchFromVault (source, target, serviceData) {
-	const path = serviceData.config.replace('https://vault.in.ft.com/v1/','');
+const fetchFromVault = (serviceData) => {
+	const path = serviceData.config.replace('https://vault.in.ft.com/v1/', '');
 
 	return Promise.all([path, vault.get()])
 		.then(([path, vault]) => {
@@ -68,7 +69,7 @@ function fetchFromVault (source, target, serviceData) {
 					throw e;
 				});
 		});
-}
+};
 
 const fetchSessionToken = (userType, url, apiKey) => {
 	return fetch(`${url}/${userType}?api_key=${apiKey}`)
@@ -85,7 +86,12 @@ const fetchSessionToken = (userType, url, apiKey) => {
 		});
 };
 
-function task (opts) {
+const getPipelineId = async (pipelineName) => {
+	const pipeline = await pipelines.info(pipelineName);
+	return pipeline.id;
+};
+
+async function task (opts) {
 	let source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
 	let target = opts.target || source;
 	let overrides = {};
@@ -97,76 +103,59 @@ function task (opts) {
 		});
 	}
 
-	let authorizedPostHeaders = {
-		'Accept': 'application/vnd.heroku+json; version=3',
-		'Content-Type': 'application/json'
-	};
+	console.log('Retrieving pipeline details from Heroku...'); // eslint-disable-line no-console
 
-	return herokuAuthToken()
-		.then(function (key) {
-			authorizedPostHeaders.Authorization = 'Bearer ' + key;
+	const authToken = await herokuAuthToken();
+	const pipelineId = await getPipelineId(source);
 
-			return getServiceData(source, opts.registry).then(serviceData => Promise.all([
-				fetchFromVault(source, target, serviceData),
-				fetch('https://api.heroku.com/apps/' + target + '/config-vars', { headers: authorizedPostHeaders })
-					.then(fetchres.json)
-					.catch(function (err) {
-						if (err instanceof fetchres.BadServerResponseError && err.message === 404) {
-							throw new Error(source + ' app needs to be manually added to heroku before it, or any branches, can be deployed');
-						} else {
-							throw err;
-						}
-					})
-				])
-				.then(function (data) {
-					let desired = data[0];
-					let current = data[1];
+	const herokuConfigVars = new HerokuConfigVars({ target, pipelineId, authToken });
 
-					desired['SYSTEM_CODE'] = serviceData.code;
+	const serviceData = await getServiceData(source, opts.registry);
 
-					desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault UI.';
-					let patch = {};
+	console.log('Retrieving current and desired config vars...'); // eslint-disable-line no-console
 
-					Object.keys(current).forEach(function (key) {
-						if (!key.startsWith('HEROKU_') && !FORBIDDEN_ATTACHMENT_VARIABLES.includes(key)) {
-							patch[key] = null;
-						}
-					});
+	const [ desired, current ] = await Promise.all([
+		fetchFromVault(serviceData),
+		herokuConfigVars.get()
+	]);
 
-					Object.keys(desired).forEach(key => {
-						if (FORBIDDEN_ATTACHMENT_VARIABLES.includes(key)) {
-							throw new Error(`\nCannot set environment variable '${key}' as this variable name is used for an attachment variable by Heroku, `
-								+ 'if this is for an external service, please use a different environment variable name in your app\n');
-						} else {
-							patch[key] = desired[key];
-						}
-					});
+	desired['SYSTEM_CODE'] = serviceData.code;
 
-					Object.keys(overrides).forEach(function (key) {
-						patch[key] = overrides[key];
-					});
+	desired['___WARNING___'] = 'Don\'t edit config vars manually. Use the Vault UI.';
+	let patch = {};
 
-					Object.keys(patch).forEach(function (key) {
-						if (patch[key] === null) {
-							console.log('Deleting config var: ' + key); // eslint-disable-line no-console
-						} else if (patch[key] !== current[key]) {
-							console.log('Setting config var: ' + key); // eslint-disable-line no-console
-						}
-					});
+	Object.keys(current).forEach(function (key) {
+		if (!key.startsWith('HEROKU_') && !FORBIDDEN_ATTACHMENT_VARIABLES.includes(key)) {
+			patch[key] = null;
+		}
+	});
 
-					console.log('Setting environment keys', Object.keys(patch)); // eslint-disable-line no-console
+	Object.keys(desired).forEach(key => {
+		if (FORBIDDEN_ATTACHMENT_VARIABLES.includes(key)) {
+			throw new Error(`\nCannot set environment variable '${key}' as this variable name is used for an attachment variable by Heroku, `
+				+ 'if this is for an external service, please use a different environment variable name in your app\n');
+		} else {
+			patch[key] = desired[key];
+		}
+	});
 
-					return fetch('https://api.heroku.com/apps/' + target + '/config-vars', {
-						headers: authorizedPostHeaders,
-						method: 'patch',
-						body: JSON.stringify(patch)
-					});
-				})
-				.then(response => {
-					if (response.status !== 200) return response.json().then(({id, message}) => Promise.reject(new Error(`Heroku Error - id: ${id}, message: ${message}`)));
-					console.log(target + ' config vars are set'); // eslint-disable-line no-console
-				}));
-			});
+	Object.keys(overrides).forEach(function (key) {
+		patch[key] = overrides[key];
+	});
+
+	Object.keys(patch).forEach(function (key) {
+		if (patch[key] === null) {
+			console.log(`Deleting config var: ${key}`); // eslint-disable-line no-console
+		} else if (patch[key] !== current[key]) {
+			console.log(`Adding or updating config var: ${key}`); // eslint-disable-line no-console
+		}
+	});
+
+	console.log('Setting config vars', Object.keys(patch)); // eslint-disable-line no-console
+
+	await herokuConfigVars.set(patch);
+
+	console.log(`${target} config vars are set`); // eslint-disable-line no-console
 };
 
 module.exports = function (program, utils) {
