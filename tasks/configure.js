@@ -167,7 +167,7 @@ module.exports = function (program, utils) {
 		.option('-r, --registry [registry-uri]', `use this registry, instead of the default: ${DEFAULT_REGISTRY_URI}`, DEFAULT_REGISTRY_URI)
 		.option('--vault', 'no-op, please remove this option from your Makefile')
 		.action(function (source, target, options) {
-			task({
+			return task({
 				source: source,
 				target: target,
 				overrides: options.overrides,
