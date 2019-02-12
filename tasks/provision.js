@@ -4,7 +4,7 @@ const DEFAULT_REGION = 'us';
 const DEFAULT_ORG = 'ft-customer-products';
 
 function task (name, { region = DEFAULT_REGION, organisation = DEFAULT_ORG } = {}) {
-	return spawn(`heroku create -a ${name} --region ${region} --org ${organisation} --no-remote`, { verbose: true });
+	return spawn(`heroku create -a ${name} --region ${region} --team ${organisation} --no-remote`, { verbose: true });
 };
 
 module.exports = function (program, utils) {
