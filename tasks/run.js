@@ -101,6 +101,16 @@ function runScript (opts) {
 		if (opts.subargs) {
 			args = args.concat(opts.subargs.replace(/^\[/, '').replace(/]$/, '').split(','));
 		}
+
+		/**
+		 * The default maximum size of HTTP headers is 8KB.
+		 * To override the default, we must pass in the --max-http-header-size option
+		 * and specify a maximum size.
+		 *
+		 * @see https://nodejs.org/docs/latest-v8.x/api/cli.html#cli_max_http_header_size_size
+		 */
+		args.unshift('--max-http-header-size=80000');
+
 		return ['node', args, { cwd: process.cwd(), env: env }];
 	});
 }
