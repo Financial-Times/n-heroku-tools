@@ -1,12 +1,17 @@
 const host = require('../lib/host');
 const waitForOk = require('../lib/wait-for-ok');
 
-module.exports = function (program) {
+module.exports = function (program, utils) {
 	program
 		.command('gtg [app]')
 		.description('Runs gtg checks for an app')
-		.action(function (app) {
+		.action(async (app) => {
 			const url = `${host.url(app)}/__gtg`;
-			return waitForOk(url);
+		
+			try {
+				return await waitForOk(url);
+			} catch (err) {
+				utils.exit(err);
+			}
 		});
 };
