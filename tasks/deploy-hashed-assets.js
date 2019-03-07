@@ -7,7 +7,6 @@ const readFile = denodeify(require('fs').readFile);
 const waitForOk = require('../lib/wait-for-ok');
 const path = require('path');
 const aws = require('aws-sdk');
-const fs = require('fs');
 
 const AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process.env.aws_access_hashed_assets;
 const AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.env.aws_secret_hashed_assets;
