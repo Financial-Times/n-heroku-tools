@@ -17,7 +17,6 @@ const euRegion = 'eu-west-1';
 const usRegion = 'us-east-1';
 const gzip = denodeify(require('zlib').gzip);
 
-
 function task (opts) {
 
 	aws.config.update({
@@ -44,7 +43,12 @@ function task (opts) {
 
 	const shouldMonitorAssets = opts.monitorAssets;
 	const directory = opts.directory || 'public';
+	const appName = 
+		normalizeName(opts.app) || 
+		normalizeName(packageJson.name, { version: false });
+
 	let assetHashes;
+	
 	try {
 		console.log(process.cwd() + `/${directory}/assets-hashes.json`); // eslint-disable-line no-console
 		assetHashes = require(process.cwd() + `/${directory}/asset-hashes.json`);
@@ -56,14 +60,14 @@ function task (opts) {
 		return Promise.reject('Must set AWS_ACCESS_HASHED_ASSETS and AWS_SECRET_HASHED_ASSETS');
 	}
 
-	const app = normalizeName(packageJson.name, { version: false });
+	
 
 	console.log('Deploying hashed assets to S3...'); // eslint-disable-line no-console
 
 	return Promise.all(Object.keys(assetHashes)
 			.map(file => {
 				const hashedName = assetHashes[file];
-				const key = 'hashed-assets/' + app + '/' + hashedName;
+				const key = 'hashed-assets/' + appName + '/' + hashedName;
 				// get the extension, ignoring brotli
 				const extension = (/\.(js|css)(\.br)?$/.exec(file) || [])[1];
 
