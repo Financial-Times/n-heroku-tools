@@ -43,9 +43,9 @@ function task (opts) {
 
 	const shouldMonitorAssets = opts.monitorAssets;
 	const directory = opts.directory || 'public';
-	const appName = 
-		normalizeName(opts.app) || 
-		normalizeName(packageJson.name, { version: false });
+	const appName = opts.app
+		? normalizeName(opts.app) 
+		: normalizeName(packageJson.name, { version: false });
 
 	let assetHashes;
 	
