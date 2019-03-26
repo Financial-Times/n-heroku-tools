@@ -27,7 +27,7 @@
     "node-vault": "^0.5.6",
     "nodemon": "^1.11.0",
     "p-retry": "^2.0.0",
-    "semver": "^5.0.3",
+    "semver": "^6.0.0",
     "shellpromise": "^1.0.0"
   },
   "devDependencies": {
