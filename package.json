@@ -31,7 +31,7 @@
     "shellpromise": "^1.0.0"
   },
   "devDependencies": {
-    "@financial-times/n-gage": "^2.0.4",
+    "@financial-times/n-gage": "^3.6.0",
     "body-parser": "^1.14.1",
     "eslint": "^2.8.0",
     "lintspaces-cli": "^0.1.1",
