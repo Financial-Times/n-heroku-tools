@@ -44,11 +44,11 @@ function task (opts) {
 	const shouldMonitorAssets = opts.monitorAssets;
 	const directory = opts.directory || 'public';
 	const appName = opts.app
-		? normalizeName(opts.app) 
+		? normalizeName(opts.app)
 		: normalizeName(packageJson.name, { version: false });
 
 	let assetHashes;
-	
+
 	try {
 		console.log(process.cwd() + `/${directory}/assets-hashes.json`); // eslint-disable-line no-console
 		assetHashes = require(process.cwd() + `/${directory}/asset-hashes.json`);
@@ -60,7 +60,7 @@ function task (opts) {
 		return Promise.reject('Must set AWS_ACCESS_HASHED_ASSETS and AWS_SECRET_HASHED_ASSETS');
 	}
 
-	
+
 
 	console.log('Deploying hashed assets to S3...'); // eslint-disable-line no-console
 
