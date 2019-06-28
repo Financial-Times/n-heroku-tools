@@ -50,7 +50,7 @@ function task (opts) {
 	let assetHashes;
 
 	try {
-		console.log(process.cwd() + `/${directory}/assets-hashes.json`); // eslint-disable-line no-console
+		console.log(process.cwd() + `/${directory}/asset-hashes.json`); // eslint-disable-line no-console
 		assetHashes = require(process.cwd() + `/${directory}/asset-hashes.json`);
 	} catch(err) {
 		return Promise.reject('Must run `make build-production` before running `nbt deploy-hashed-assets`');
@@ -64,7 +64,9 @@ function task (opts) {
 
 	console.log('Deploying hashed assets to S3...'); // eslint-disable-line no-console
 
-	return Promise.all(Object.keys(assetHashes)
+	return Promise.all(
+		Object.keys(assetHashes)
+			.filter(file => typeof assetHashes[file] === 'string')
 			.map(file => {
 				const hashedName = assetHashes[file];
 				const key = 'hashed-assets/' + appName + '/' + hashedName;
