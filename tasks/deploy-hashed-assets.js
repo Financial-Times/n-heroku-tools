@@ -43,9 +43,7 @@ function task (opts) {
 
 	const shouldMonitorAssets = opts.monitorAssets;
 	const directory = opts.directory || 'public';
-	const appName = opts.app
-		? normalizeName(opts.app)
-		: normalizeName(packageJson.name, { version: false });
+	const namespace = opts.namespace || normalizeName(packageJson.name, { version: false });
 
 	let assetHashes;
 
@@ -69,7 +67,7 @@ function task (opts) {
 			.filter(file => typeof assetHashes[file] === 'string')
 			.map(file => {
 				const hashedName = assetHashes[file];
-				const key = 'hashed-assets/' + appName + '/' + hashedName;
+				const key = 'hashed-assets/' + namespace + '/' + hashedName;
 				// get the extension, ignoring brotli
 				const extension = (/\.(js|css)(\.br)?$/.exec(file) || [])[1];
 
@@ -126,8 +124,9 @@ module.exports = function (program, utils) {
 	program
 		.command('deploy-hashed-assets')
 		.description('deploys hashed asset files to S3 (if AWS keys set correctly)')
-		.option('--monitor-assets', 'Will send asset sizes to Graphite')
-		.option('--directory <directory>', 'Directory to deploy (defaults to public)')
+		.option('--directory <directory>', 'Directory of assets to deploy (defaults to public)')
+		.option('--namespace <namespace>', 'Name of the folder to upload into (defaults to the app name in package.json')
+		.option('--monitor-assets', 'Send asset sizes to Graphite')
 		.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
 		.option('--surrogate-control <cacheControl>', 'Optionally specify a surrogate control value')
 		.action(function (options) {
