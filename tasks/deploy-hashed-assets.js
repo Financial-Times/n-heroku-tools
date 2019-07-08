@@ -11,7 +11,7 @@ const aws = require('aws-sdk');
 const AWS_ACCESS_HASHED_ASSETS = process.env.AWS_ACCESS_HASHED_ASSETS || process.env.aws_access_hashed_assets;
 const AWS_SECRET_HASHED_ASSETS = process.env.AWS_SECRET_HASHED_ASSETS || process.env.aws_secret_hashed_assets;
 
-const defaultNamespace = normalizeName(packageJson.name, { version: false });
+const defaultDestinationDirectory = normalizeName(packageJson.name, { version: false });
 const defaultDirectory = 'public';
 const defaultManifestFile = 'asset-hashes.json';
 const euBucket = 'ft-next-hashed-assets-prod';
@@ -67,7 +67,7 @@ function task (opts) {
 			.filter(file => typeof assetHashes[file] === 'string')
 			.map(file => {
 				const hashedName = assetHashes[file];
-				const key = 'hashed-assets/' + opts.namespace + '/' + hashedName;
+				const key = 'hashed-assets/' + opts.destinationDirectory + '/' + hashedName;
 				// get the extension, ignoring brotli
 				const extension = (/\.(js|css)(\.br)?$/.exec(file) || [])[1];
 
@@ -126,7 +126,7 @@ module.exports = function (program, utils) {
 		.description('deploys hashed asset files to S3 (if AWS keys set correctly)')
 		.option('--manifest-file <filename>', 'Name of the manifest file to read', defaultManifestFile)
 		.option('--directory <directory>', 'Directory containing the assets to deploy', defaultDirectory)
-		.option('--namespace <namespace>', 'Name of the folder to upload into', defaultNamespace)
+		.option('--destination-directory <directory>', 'Name of the directory in the S3 bucket to upload into', defaultDestinationDirectory)
 		.option('--monitor-assets', 'Send asset sizes to Graphite')
 		.option('--cache-control <cacheControl>', 'Optionally specify a cache control value')
 		.option('--surrogate-control <cacheControl>', 'Optionally specify a surrogate control value')
