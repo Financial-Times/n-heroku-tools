@@ -66,17 +66,19 @@ function task (opts) {
 		Object.keys(assetHashes)
 			.filter(file => typeof assetHashes[file] === 'string')
 			.map(file => {
-				const hashedName = assetHashes[file];
-				const key = 'hashed-assets/' + opts.destinationDirectory + '/' + hashedName;
+				const hashedFileName = assetHashes[file];
+				const fileNameOnDisk = opts.assetsAreHashed ? hashedFileName : file;
+
+				const key = 'hashed-assets/' + opts.destinationDirectory + '/' + hashedFileName;
 				// get the extension, ignoring brotli
-				const extension = (/\.(js|css)(\.br)?$/.exec(file) || [])[1];
+				const extension = (/\.(js|css)(\.br)?$/.exec(fileNameOnDisk) || [])[1];
 
-				console.log(`sending ${key} to S3`); // eslint-disable-line no-console
+				console.log(`sending ${fileNameOnDisk} as ${key} to S3`); // eslint-disable-line no-console
 
-				return readFile(path.join(process.cwd(), opts.directory, file), { encoding: 'utf-8' })
+				return readFile(path.join(process.cwd(), opts.directory, fileNameOnDisk), { encoding: 'utf-8' })
 					.then(content => {
 						// ignore source maps
-						const isMonitoringAsset = shouldMonitorAssets && path.extname(file) !== '.map';
+						const isMonitoringAsset = shouldMonitorAssets && path.extname(fileNameOnDisk) !== '.map';
 						let params = {
 							Key: key,
 							Body: content,
@@ -125,6 +127,7 @@ module.exports = function (program, utils) {
 		.command('deploy-hashed-assets')
 		.description('deploys hashed asset files to S3 (if AWS keys set correctly)')
 		.option('--manifest-file <filename>', 'Name of the manifest file to read', defaultManifestFile)
+		.option('--assets-are-hashed', 'Assume assets already have hashed filenames')
 		.option('--directory <directory>', 'Directory containing the assets to deploy', defaultDirectory)
 		.option('--destination-directory <directory>', 'Name of the directory in the S3 bucket to upload into', defaultDestinationDirectory)
 		.option('--monitor-assets', 'Send asset sizes to Graphite')
