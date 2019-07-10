@@ -14,10 +14,10 @@
     "co": "^4.6.0",
     "commander": "^2.6.0",
     "denodeify": "^1.2.0",
-    "dotenv": "^1.2.0",
+    "dotenv": "^8.0.0",
     "fetchres": "^1.0.4",
     "foreman": "^3.0.0",
-    "is-image": "^1.0.1",
+    "is-image": "^3.0.0",
     "isomorphic-fetch": "^2.0.0",
     "lodash.merge": "^4.6.1",
     "md5-file": "^3.1.0",
@@ -30,17 +30,19 @@
     "shellpromise": "^1.0.0"
   },
   "devDependencies": {
-    "@financial-times/n-gage": "^2.0.4",
+    "@financial-times/n-gage": "^3.6.0",
     "body-parser": "^1.14.1",
-    "eslint": "^2.8.0",
-    "lintspaces-cli": "^0.1.1",
+    "eslint": "^6.0.0",
     "jest": "^23.6.0",
+    "lintspaces-cli": "^0.1.1",
     "mockery": "^1.4.0",
-    "sinon": "^4.1.3"
+    "sinon": "^4.1.3",
+    "snyk": "^1.167.2"
   },
   "scripts": {
     "precommit": "node_modules/.bin/secret-squirrel",
     "prepush": "make verify -j3",
-    "commitmsg": "node_modules/.bin/secret-squirrel-commitmsg"
+    "commitmsg": "node_modules/.bin/secret-squirrel-commitmsg",
+    "prepare": "npx snyk protect || npx snyk protect -d || true"
   }
 }

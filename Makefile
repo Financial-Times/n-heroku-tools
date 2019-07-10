@@ -10,9 +10,7 @@ unit-test:
 unit-test-watch:
 	jest --watch
 
-minus-eslint: ci-n-ui-check _verify_lintspaces _verify_pa11y_testable
-
-test: minus-eslint unit-test
+test: verify unit-test
 
 docs:
 	./scripts/generate-docs.sh > README.md
