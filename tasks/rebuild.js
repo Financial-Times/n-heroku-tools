@@ -24,7 +24,7 @@ async function circleFetch (path, opts) {
 	const res = await fetch(url, options);
 
 	if (res.ok) {
-		return await res.json();
+		return res.json();
 	} else {
 		console.log(`Response not OK for ${path}, got: ${res.status}`); // eslint-disable-line no-console
 		throw new Error(res.status);
