@@ -6,14 +6,14 @@ async function task (appName, options) {
 	const { repoName, branch, commit, githubToken } = options;
 
 	return getReviewAppName({
-			appName,
-			repoName,
-			branch,
-			commit,
-			githubToken
-		}).then(appName => {
-			console.log(appName); // eslint-disable-line no-console
-		});
+		appName,
+		repoName,
+		branch,
+		commit,
+		githubToken
+	}).then(appName => {
+		console.log(appName); // eslint-disable-line no-console
+	});
 }
 
 const description = 'Create or find an existing heroku review app and print out the app name. [appName] is the package.json name (which is also the value of VAULT_NAME). On the first build of a branch, Heroku will create a review app with a build. On subsequent builds, Heroku will automatically generate a new build, which this task looks for. See https://devcenter.heroku.com/articles/review-apps-beta for more details of the internals';
