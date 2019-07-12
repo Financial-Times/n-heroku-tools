@@ -15,17 +15,17 @@ const FORBIDDEN_ATTACHMENT_VARIABLES = [
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
 
 const getServiceData = (source, registry) => fetch(registry)
-		.then(response => response.json())
-		.then(json => {
-			const serviceData = findService(json, normalizeName(source));
-			if (!serviceData) {
-				throw new Error('Could not find a service in the registry, with `name` or `systemCode`, matching ' + source + '. Please check the service registry.');
-				return false;
-			}
-			else {
-				return serviceData;
-			}
-		});
+	.then(response => response.json())
+	.then(json => {
+		const serviceData = findService(json, normalizeName(source));
+		if (!serviceData) {
+			throw new Error('Could not find a service in the registry, with `name` or `systemCode`, matching ' + source + '. Please check the service registry.');
+			return false;
+		}
+		else {
+			return serviceData;
+		}
+	});
 
 const fetchFromVault = (serviceData) => {
 	const path = serviceData.config.replace('https://vault.in.ft.com/v1/', '');

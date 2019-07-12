@@ -161,7 +161,7 @@ function devNui () {
 	if (
 		(!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') // Not production
 		&& !process.env.CIRCLE_BRANCH // Not CircleCI
-		&& (!process.env.NEXT_APP_SHELL || process.env.NEXT_APP_SHELL !== 'local')  // NEXT_APP_SHELL is not set to local
+		&& (!process.env.NEXT_APP_SHELL || process.env.NEXT_APP_SHELL !== 'local') // NEXT_APP_SHELL is not set to local
 	) {
 		// Check if the app is using n-ui
 		shell('grep -s -Fim 1 n-ui bower.json')

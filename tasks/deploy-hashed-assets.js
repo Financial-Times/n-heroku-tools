@@ -33,15 +33,15 @@ function task (opts) {
 		const s3Bucket = new aws.S3({ params: { Bucket: bucket } });
 		return new Promise((resolve, reject) => {
 			return s3Bucket.upload(params, (err, data) => {
-						if (err) {
-							console.error(`Upload failed to ${bucket}`, err); // eslint-disable-line no-console
-							reject(err);
-						} else {
-							console.log(`Upload success to ${bucket}`, data); // eslint-disable-line no-console
-							resolve();
-						}
-					});
-				});
+				if (err) {
+					console.error(`Upload failed to ${bucket}`, err); // eslint-disable-line no-console
+					reject(err);
+				} else {
+					console.log(`Upload success to ${bucket}`, data); // eslint-disable-line no-console
+					resolve();
+				}
+			});
+		});
 	}
 
 	const shouldMonitorAssets = opts.monitorAssets;
@@ -119,7 +119,7 @@ function task (opts) {
 							});
 					});
 			})
-		);
+	);
 }
 
 module.exports = function (program, utils) {
