@@ -30,7 +30,7 @@
     "shellpromise": "^1.0.0"
   },
   "devDependencies": {
-    "@financial-times/n-gage": "^3.6.0",
+    "@financial-times/n-gage": "^3.10.1",
     "body-parser": "^1.14.1",
     "eslint": "^6.0.0",
     "jest": "^23.6.0",
