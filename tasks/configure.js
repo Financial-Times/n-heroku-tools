@@ -9,7 +9,8 @@ const pipelines = require('../lib/pipelines');
 const HerokuConfigVars = require('../lib/heroku-config-vars');
 
 const FORBIDDEN_ATTACHMENT_VARIABLES = [
-	'DATABASE_URL'
+	'DATABASE_URL',
+	'REDIS_URL'
 ];
 
 const DEFAULT_REGISTRY_URI = 'https://next-registry.ft.com/v2/';
