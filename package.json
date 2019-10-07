@@ -25,7 +25,7 @@
     "nock": "^11.0.0",
     "node-vault": "^0.9.0",
     "nodemon": "^1.11.0",
-    "p-retry": "^2.0.0",
+    "p-retry": "^4.0.0",
     "semver": "^6.0.0",
     "shellpromise": "^1.0.0"
   },
