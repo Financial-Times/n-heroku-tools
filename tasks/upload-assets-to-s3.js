@@ -37,7 +37,11 @@ function getFileEncoding (filename) {
 }
 
 async function uploadFile (file, opts) {
-	const s3 = new aws.S3({ params: { Bucket: opts.bucket } });
+	const s3 = new aws.S3({
+		accessKeyId: opts.accessKeyId,
+		secretAccessKey: opts.secretAccessKey,
+		params: { Bucket: opts.bucket }
+	});
 
 	const basename = path.basename(file);
 	const type = getFileType(basename);
@@ -75,6 +79,8 @@ module.exports = function (program, utils) {
 	program
 		.command('upload-assets-to-s3')
 		.description('Uploads a folder of assets to an S3 bucket')
+		.option('--accessKeyId <accessKeyId>', 'AWS access key ID')
+		.option('--secretAccessKey <secretAccessKey>', 'AWS secret access key')
 		.option('--directory <directory>', 'Directory containing the assets to upload', defaultDirectory)
 		.option('--bucket <bucket>', 'Name of the S3 bucket to upload into', defaultBucket)
 		.option('--destination <directory>', 'Name of the destination directory to upload into', defaultDestination)
