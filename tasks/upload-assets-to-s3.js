@@ -8,7 +8,7 @@ const defaultDirectory = 'public';
 const defaultBucket = 'ft-next-hashed-assets-prod';
 const defaultDestination = 'hashed-assets/uploaded';
 const defaultFileExtensions = ['js', 'css', 'map', 'gz', 'br'].join();
-const defaultCacheControl = 'public, max-age=31536000';
+const defaultCacheControl = 'public, max-age=31536000, stale-while-revalidate=60, stale-if-error=3600';
 
 function getFileType (filename) {
 	// We need to know the original file type so ignore the compression
