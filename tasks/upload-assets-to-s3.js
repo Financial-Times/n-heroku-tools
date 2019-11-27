@@ -31,13 +31,7 @@ function getFileEncoding (filename) {
 	}
 }
 
-async function uploadFile (file, opts) {
-	const s3 = new aws.S3({
-		accessKeyId: opts.accessKeyId,
-		secretAccessKey: opts.secretAccessKey,
-		params: { Bucket: opts.bucket }
-	});
-
+async function uploadFile (file, opts, s3) {
 	const basename = path.basename(file);
 	const type = getFileType(basename);
 	const encoding = getFileEncoding(basename);
@@ -67,7 +61,14 @@ async function uploadFile (file, opts) {
 
 async function uploadAssetsToS3 (opts) {
 	const files = glob.sync(`${opts.directory}/*{${opts.extensions}}`);
-	return await Promise.all(files.map((file) => uploadFile(file, opts)));
+
+	const s3 = new aws.S3({
+		accessKeyId: opts.accessKeyId,
+		secretAccessKey: opts.secretAccessKey,
+		params: { Bucket: opts.bucket }
+	});
+
+	return Promise.all(files.map((file) => uploadFile(file, opts, s3)));
 }
 
 module.exports = function (program, utils) {
