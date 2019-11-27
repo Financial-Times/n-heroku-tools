@@ -11,7 +11,7 @@ const defaultFileExtensions = ['js', 'css', 'map', 'gz', 'br'].join();
 const defaultCacheControl = 'public, max-age=31536000, stale-while-revalidate=60, stale-if-error=3600';
 
 function getFileType (filename) {
-	// We need to know the original file type so ignore the compression
+	// We need to know the original file type so ignore any compression
 	const originalFile = filename.replace(/\.(br|gz)$/, '');
 	const ext = path.extname(originalFile);
 
@@ -26,8 +26,6 @@ function getFileEncoding (filename) {
 			return 'gzip';
 		case '.br':
 			return 'br';
-		default:
-			return 'identity';
 	}
 }
 
@@ -35,7 +33,7 @@ async function uploadFile (file, opts, s3) {
 	const basename = path.basename(file);
 	const type = getFileType(basename);
 	const encoding = getFileEncoding(basename);
-	const key = `${opts.destination}/${basename}`;
+	const key = path.posix.join(opts.destination, basename);
 
 	const params = {
 		Key: key,
