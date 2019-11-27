@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
+const mime = require('mime');
 const aws = require('aws-sdk');
 
 const defaultDirectory = 'public';
@@ -10,17 +11,11 @@ const defaultFileExtensions = ['js', 'css', 'map', 'gz', 'br'].join();
 const defaultCacheControl = 'public, max-age=31536000';
 
 function getFileType (filename) {
-	// We want to know the original file type so ignore the compression
-	const ext = path.extname(filename.replace(/\.(br|gz)$/, ''));
+	// We need to know the original file type so ignore the compression
+	const originalFile = filename.replace(/\.(br|gz)$/, '');
+	const ext = path.extname(originalFile);
 
-	switch (ext) {
-		case '.js':
-			return 'application/javascript';
-		case '.css':
-			return 'text/css';
-		default:
-			return 'application/octet-stream';
-	}
+	return mime.getType(ext);
 }
 
 function getFileEncoding (filename) {
