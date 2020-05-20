@@ -6,7 +6,6 @@ let packageJson = require(process.cwd() + '/package.json');
 let normalizeName = require('../lib/normalize-name');
 let keys = require('../lib/keys');
 let path = require('path');
-const shell = require('shellpromise');
 
 function toStdOut (data) {
 	process.stdout.write(data.toString());
@@ -155,27 +154,8 @@ function ensureRouterInstall (router) {
 		.catch(function () { throw new Error(`You need to install the ${router} first!  See docs here: https://github.com/Financial-Times/${router}`); });
 }
 
-// Remind developers that if they want to use a local version of n-ui,
-// they need to `export NEXT_APP_SHELL=local`.
-function devNui () {
-	if (
-		(!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') // Not production
-		&& !process.env.CIRCLE_BRANCH // Not CircleCI
-		&& (!process.env.NEXT_APP_SHELL || process.env.NEXT_APP_SHELL !== 'local') // NEXT_APP_SHELL is not set to local
-	) {
-		// Check if the app is using n-ui
-		shell('grep -s -Fim 1 n-ui bower.json')
-			.then(res => {
-				if (res !== '') toStdOut('Developers: If you want your app to point to n-ui locally, then `export NEXT_APP_SHELL=local`. \r\n');
-			})
-			.catch(() => null);
-	}
-}
-
 function task (opts) {
 	let localPort = process.env.PORT || 3002;
-
-	devNui();
 
 	if (opts.local) {
 		return runLocal({ PORT: localPort, harmony: opts.harmony, debug: opts.debug, script: opts.script, nodemon: opts.nodemon, https: opts.https, inspect: opts.inspect, router: opts.router });
