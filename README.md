@@ -1,10 +1,10 @@
-# nht (n-heroku-tools)
+# n-heroku-tools (nht)
 
 This library is a command line tool that orchestrates [Heroku](https://www.heroku.com/) and [Amazon S3](https://aws.amazon.com/s3/) deployments for [Next](https://github.com/Financial-Times/next/wiki), based on configuration in the [Next service registry](https://next-registry.ft.com/v2/) and [Vault](https://www.vaultproject.io/).
 
 ### Installation
 
-To install `nht`, run:
+To install `n-heroku-tools`, run:
 
 ```
 npm install @financial-times/n-heroku-tools --save-dev
