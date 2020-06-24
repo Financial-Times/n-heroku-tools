@@ -2,7 +2,7 @@
   "name": "@financial-times/n-heroku-tools",
   "version": "0.0.0",
   "engines": {
-    "node": "^8.9.0"
+    "node": "10.x"
   },
   "bin": {
     "n-heroku-tools": "./bin/n-heroku-tools.js",
