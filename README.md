@@ -23,7 +23,6 @@ Options:
 
 Commands:
   configure [options] [source] [target]               gets environment variables from Vault and uploads them to the current app
-  deploy-hashed-assets [options]                      deploys hashed asset files to S3 (if AWS keys set correctly)
   deploy-static [options] <source> [otherSources...]  Deploys static <source> to S3.  Requires AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env vars
   run [options]                                       Runs the local app through the router
   rebuild [options] [apps...]                         Trigger a rebuild of the latest master on Circle
