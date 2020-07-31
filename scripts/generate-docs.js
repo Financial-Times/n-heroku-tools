@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
 
-const readme = fs.readFileSync(path.resolve(__dirname, './README.md'), 'utf8');
+const readme = fs.readFileSync(path.resolve(__dirname, './readme-template.md'), 'utf8');
 
 exec('./bin/n-heroku-tools.js', (error, stdout, stderr) => {
 	if (error) {
