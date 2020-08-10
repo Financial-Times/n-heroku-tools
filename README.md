@@ -2,7 +2,7 @@
 
 This library is a command line tool that orchestrates [Heroku](https://www.heroku.com/) and [Amazon S3](https://aws.amazon.com/s3/) deployments for [Next](https://github.com/Financial-Times/next/wiki), based on configurations in the [Next service registry](https://next-registry.ft.com/v2/) and [Vault](https://www.vaultproject.io/).
 
-🤖 **This file is generated automatically. If you need to make updates please modify `/scripts/README.md` and afterwards run `make docs`.**
+🤖 **This file is generated automatically. If you need to make updates please modify `/scripts/readme-template.md` and afterwards run `make docs`.**
 
 ## Requirements
 
