@@ -13,4 +13,4 @@ unit-test-watch:
 test: verify unit-test
 
 docs:
-	./scripts/generate-docs.sh > README.md
+	node ./scripts/generate-docs.js
