@@ -92,6 +92,19 @@ const getPipelineId = async (pipelineName) => {
 	return pipeline.id;
 };
 
+const validateVariables = (obj) => {
+	// removes empty strings and numbers
+	let filteredObj = {};
+	Object.keys(obj).forEach(prop => {
+		if (obj[prop] !== '' && typeof obj[prop] !== 'number') {
+			filteredObj[prop] = obj[prop]
+		} else {
+			console.log(`WARNING - Removing invalid variable '${prop}', variable values cannot be empty strings or numbers.`); // eslint-disable-line no-console
+		}
+	})
+	return filteredObj;
+}
+
 async function task (opts) {
 	let source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
 	let target = opts.target || source;
@@ -154,7 +167,7 @@ async function task (opts) {
 
 	console.log('Setting config vars', Object.keys(patch)); // eslint-disable-line no-console
 
-	await herokuConfigVars.set(patch);
+	await herokuConfigVars.set(validateVariables(patch));
 
 	console.log(`${target} config vars are set`); // eslint-disable-line no-console
 };
