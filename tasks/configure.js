@@ -92,14 +92,6 @@ const getPipelineId = async (pipelineName) => {
 	return pipeline.id;
 };
 
-const warnForInvalidVariables = (obj) => {
-	Object.keys(obj).forEach(prop => {
-		if (obj[prop] === '' || typeof obj[prop] === 'number') {
-			console.log(`WARNING - Invalid variable '${prop}'. Variable values cannot be empty strings or numbers, please fix this in the Vault UI.`); // eslint-disable-line no-console
-		}
-	});
-};
-
 async function task (opts) {
 	let source = opts.source || 'ft-next-' + normalizeName(packageJson.name);
 	let target = opts.target || source;
@@ -160,8 +152,13 @@ async function task (opts) {
 		}
 	});
 
+	const invalidVariables = Object.keys(patch).filter(prop => patch[prop] === '' || typeof patch[prop] === 'number');
+	if (invalidVariables.length > 0) {
+		throw new Error(`Variable values cannot be empty strings or numbers, please fix the following variables in the Vault UI: ${invalidVariables.join(', ')}`);
+	}
+
 	console.log('Setting config vars', Object.keys(patch)); // eslint-disable-line no-console
-	warnForInvalidVariables(patch);
+
 	await herokuConfigVars.set(patch);
 
 	console.log(`${target} config vars are set`); // eslint-disable-line no-console
