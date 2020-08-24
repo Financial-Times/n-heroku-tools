@@ -152,6 +152,11 @@ async function task (opts) {
 		}
 	});
 
+	const invalidVariables = Object.keys(patch).filter(prop => patch[prop] === '' || typeof patch[prop] === 'number');
+	if (invalidVariables.length > 0) {
+		throw new Error(`Variable values cannot be empty strings or numbers, please fix the following variables in the Vault UI: ${invalidVariables.join(', ')}`);
+	}
+
 	console.log('Setting config vars', Object.keys(patch)); // eslint-disable-line no-console
 
 	await herokuConfigVars.set(patch);
