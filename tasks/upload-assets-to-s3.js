@@ -7,7 +7,7 @@ const aws = require('aws-sdk');
 const defaultDirectory = 'public';
 const defaultBucket = 'ft-next-hashed-assets-prod';
 const defaultDestination = 'hashed-assets/uploaded';
-const defaultFileExtensions = ['js', 'css', 'map', 'gz', 'br', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].join();
+const defaultFileExtensions = ['js', 'css', 'map', 'gz', 'br', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'ico'].join();
 const defaultCacheControl = 'public, max-age=31536000, stale-while-revalidate=60, stale-if-error=3600';
 
 function getFileType (filename) {
