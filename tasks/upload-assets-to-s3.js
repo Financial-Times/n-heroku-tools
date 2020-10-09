@@ -58,7 +58,7 @@ async function uploadFile (file, opts, s3) {
 }
 
 async function uploadAssetsToS3 (opts) {
-	const files = glob.sync(`${opts.directory}/*{${opts.extensions}}`);
+	const files = glob.sync(`${opts.directory}/**/*{${opts.extensions}}`);
 
 	const s3 = new aws.S3({
 		accessKeyId: opts.accessKeyId,
