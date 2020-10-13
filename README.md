@@ -6,7 +6,7 @@ This library is a command line tool that orchestrates [Heroku](https://www.herok
 
 ## Requirements
 
-* Node 10.x
+- Node version defined by `engines.node` in `package.json`. Run command `nvm use` to switch your local Node version to the one specified in `.nvmrc`.
 
 
 ## Installation
@@ -48,7 +48,7 @@ make test
 ### Install from NPM
 
 ```sh
-npm install --save-dev @financial-times/n-heroku-tools 
+npm install --save-dev @financial-times/n-heroku-tools
 ```
 
 ### Usage
