@@ -30,7 +30,7 @@ function getFileEncoding (filename) {
 }
 
 async function uploadFile (file, opts, s3) {
-	const basename = path.basename(file);
+	const basename = file.split('/').splice(1).join('/'); // remove first directory only
 	const type = getFileType(basename);
 	const encoding = getFileEncoding(basename);
 	const key = path.posix.join(opts.destination, basename);
@@ -58,7 +58,7 @@ async function uploadFile (file, opts, s3) {
 }
 
 async function uploadAssetsToS3 (opts) {
-	const files = glob.sync(`${opts.directory}/*{${opts.extensions}}`);
+	const files = glob.sync(`${opts.directory}/**/*{${opts.extensions}}`);
 
 	const s3 = new aws.S3({
 		accessKeyId: opts.accessKeyId,

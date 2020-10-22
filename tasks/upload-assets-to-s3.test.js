@@ -8,7 +8,8 @@ const mockGlobSync = jest.fn().mockReturnValue([
 	'public/stylesheet.css.gz',
 	'public/scripts.js',
 	'public/scripts.js.br',
-	'public/scripts.js.gz'
+	'public/scripts.js.gz',
+	'public/subdir/hello.js',
 ]);
 
 jest.mock('aws-sdk', () => {
@@ -115,6 +116,17 @@ describe('upload-assets-to-s3', () => {
 			expect.objectContaining({
 				Key: 'bucket-folder/scripts.js.gz',
 				ContentEncoding: 'gzip'
+			}),
+			expect.any(Function)
+		);
+	});
+
+	it('uploads files in subdirectories', () => {
+		expect(mockS3Upload).nthCalledWith(
+			7,
+			expect.objectContaining({
+				Key: 'bucket-folder/subdir/hello.js',
+				ContentType: 'application/javascript; charset=utf-8'
 			}),
 			expect.any(Function)
 		);
