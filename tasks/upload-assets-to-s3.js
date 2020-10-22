@@ -30,7 +30,7 @@ function getFileEncoding (filename) {
 }
 
 async function uploadFile (file, opts, s3) {
-	const basename = file.replace(/^.+?[/]/, ''); // remove first directory only
+	const basename = file.split('/').splice(1).join('/'); // remove first directory only
 	const type = getFileType(basename);
 	const encoding = getFileEncoding(basename);
 	const key = path.posix.join(opts.destination, basename);
