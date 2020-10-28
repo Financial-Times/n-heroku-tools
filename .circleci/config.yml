@@ -50,6 +50,14 @@ references:
     branches:
       ignore: /.*/
 
+filters_only_renovate: &filters_only_renovate
+    branches:
+      only: /^renovate-.*/
+
+filters_only_nori: &filters_only_nori
+    branches:
+      only: /^nori/.*/
+
 version: 2
 
 jobs:
@@ -115,6 +123,32 @@ jobs:
 workflows:
 
   version: 2
+
+  renovate-build-test:
+    jobs:
+      - waiting-for-approval:
+          type: approval
+          filters:
+              <<: *filters_only_renovate
+      - build:
+          requires:
+              - waiting-for-approval
+      - test:
+          requires:
+              - build
+
+  nori-build-test:
+    jobs:
+    - waiting-for-approval:
+        type: approval
+        filters:
+            <<: *filters_only_nori
+    - build:
+        requires:
+            - waiting-for-approval
+    - test:
+        requires:
+            - build
 
   build-test:
     jobs:
