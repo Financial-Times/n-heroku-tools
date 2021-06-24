@@ -21,7 +21,6 @@ program.version(require('../package.json').version);
 require('../tasks/configure')(program, utils);
 require('../tasks/deploy-static')(program, utils);
 require('../tasks/run')(program, utils);
-require('../tasks/rebuild')(program, utils);
 require('../tasks/gtg')(program, utils);
 require('../tasks/review-app')(program, utils);
 require('../tasks/upload-assets-to-s3')(program, utils);
