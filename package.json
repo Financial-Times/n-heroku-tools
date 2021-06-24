@@ -15,7 +15,6 @@
     "commander": "^3.0.0",
     "denodeify": "^1.2.0",
     "dotenv": "^8.0.0",
-    "fetchres": "^1.0.4",
     "foreman": "^3.0.0",
     "glob": "^7.1.6",
     "is-image": "^3.0.0",
