@@ -30,7 +30,7 @@
     "shellpromise": "^1.0.0"
   },
   "devDependencies": {
-    "@financial-times/n-gage": "^3.10.1",
+    "@financial-times/n-gage": "^8.3.2",
     "body-parser": "^1.14.1",
     "eslint": "^6.0.0",
     "jest": "^23.6.0",
@@ -40,9 +40,13 @@
     "snyk": "^1.167.2"
   },
   "scripts": {
-    "precommit": "node_modules/.bin/secret-squirrel",
-    "prepush": "make verify -j3",
-    "commitmsg": "node_modules/.bin/secret-squirrel-commitmsg",
     "prepare": "npx snyk protect || npx snyk protect -d || true"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "node_modules/.bin/secret-squirrel-commitmsg",
+      "pre-commit": "node_modules/.bin/secret-squirrel",
+      "pre-push": "make verify -j3"
+    }
   }
 }
