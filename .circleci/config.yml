@@ -77,9 +77,6 @@ jobs:
           name: Install project dependencies
           command: make install
       - run:
-          name: shared-helper / npm-install-peer-deps
-          command: .circleci/shared-helpers/helper-npm-install-peer-deps
-      - run:
           name: shared-helper / npm-update
           command: .circleci/shared-helpers/helper-npm-update
       - run:
