@@ -77,9 +77,6 @@ jobs:
           name: Install project dependencies
           command: make install
       - run:
-          name: shared-helper / npm-update
-          command: .circleci/shared-helpers/helper-npm-update
-      - run:
           name: shared-helper / generate-build-state-artifacts
           command: .circleci/shared-helpers/helper-generate-build-state-artifacts
           when: always
