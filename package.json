@@ -2,7 +2,8 @@
   "name": "@financial-times/n-heroku-tools",
   "version": "0.0.0",
   "engines": {
-    "node": "12.x"
+    "node": "12.x",
+    "npm": "7.x"
   },
   "bin": {
     "n-heroku-tools": "./bin/n-heroku-tools.js",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@financial-times/n-gage": "^8.3.2",
     "body-parser": "^1.14.1",
+    "check-engines": "^1.5.0",
     "eslint": "^6.0.0",
     "jest": "^23.6.0",
     "lintspaces-cli": "^0.1.1",
@@ -40,7 +42,8 @@
     "snyk": "^1.167.2"
   },
   "scripts": {
-    "prepare": "npx snyk protect || npx snyk protect -d || true"
+    "prepare": "npx snyk protect || npx snyk protect -d || true",
+    "preinstall": "npm_config_yes=true npx check-engine"
   },
   "husky": {
     "hooks": {
@@ -48,5 +51,9 @@
       "pre-commit": "node_modules/.bin/secret-squirrel",
       "pre-push": "make verify -j3"
     }
+  },
+  "volta": {
+    "node": "12.22.5",
+    "npm": "7.20.2"
   }
 }
