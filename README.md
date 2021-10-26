@@ -1,6 +1,6 @@
 # n-heroku-tools (nht) [![CircleCI](https://circleci.com/gh/Financial-Times/n-heroku-tools.svg?style=svg&circle-token=33bcf2eb98fe2e875cc66de93d7e4a50369c952d)](https://circleci.com/gh/Financial-Times/n-heroku-tools)
 
-⚠️ **`n-heroku-tools` is unsupported. FT.com projects should migrate to [Tool Kit](https://github.com/financial-times/dotcom-tool-kit).
+⚠️ **`n-heroku-tools` is unsupported. FT.com projects should migrate to [Tool Kit](https://github.com/financial-times/dotcom-tool-kit).**
 
 This library is a command line tool that orchestrates [Heroku](https://www.heroku.com/) and [Amazon S3](https://aws.amazon.com/s3/) deployments for [Next](https://github.com/Financial-Times/next/wiki), based on configurations in the [Next service registry](https://next-registry.ft.com/v2/) and [Vault](https://www.vaultproject.io/).
 
