@@ -177,11 +177,8 @@ workflows:
           filters:
             <<: *filters_version_tag
           requires:
-            - test-v<< matrix.node-version >>
-          name: publish-v<< matrix.node-version >>
-          matrix:
-            parameters:
-              node-version: [ "16.14", "14.19" ]
+            - test-v16.14
+            - test-v14.19
 
   renovate-nori-build-test:
     jobs:
