@@ -178,7 +178,6 @@ workflows:
             <<: *filters_version_tag
           requires:
             - test-v16.14
-            - test-v14.19
 
   renovate-nori-build-test:
     jobs:
