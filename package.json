@@ -35,7 +35,7 @@
     "body-parser": "^1.14.1",
     "check-engine": "^1.10.1",
     "eslint": "^6.0.0",
-    "jest": "^23.6.0",
+    "jest": "^24.0.0",
     "lintspaces-cli": "^0.1.1",
     "mockery": "^1.4.0",
     "sinon": "^4.1.3",
