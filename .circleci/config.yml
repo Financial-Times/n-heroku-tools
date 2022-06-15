@@ -87,7 +87,7 @@ jobs:
             .circleci/shared-helpers
       - *restore_npm_cache
       - node/install-npm:
-          version: "7"
+          version: "7.20.2"
       - run:
           name: Install project dependencies
           command: make install
