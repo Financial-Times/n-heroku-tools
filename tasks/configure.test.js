@@ -30,7 +30,7 @@ const mockConfigureEndpoints = ({
 			{
 				name: registryName,
 				code: systemCode,
-				config: `https://vault.in.ft.com/v1/secret/teams/next/${systemCode}`
+				config: `https://vault.in.ft.com/v1/secret/data/teams/next/${systemCode}`
 			}
 		];
 	});
@@ -41,15 +41,15 @@ const mockConfigureEndpoints = ({
 		.reply(200, () => {
 			return {};
 		})
-		.get('/v1/secret/teams/next/shared/production')
+		.get('/v1/secret/data/teams/next/shared/production')
 		.reply(200, () => {
 			return {};
 		})
-		.get(`/v1/secret/teams/next/${systemCode}/production`)
+		.get(`/v1/secret/data/teams/next/${systemCode}/production`)
 		.reply(200, () => {
 			return {};
 		})
-		.get(`/v1/secret/teams/next/${systemCode}/shared`)
+		.get(`/v1/secret/data/teams/next/${systemCode}/shared`)
 		.reply(200, () => {
 			return {
 				data: {

@@ -35,7 +35,7 @@ const fetchFromVault = (serviceData) => {
 	return Promise.all([path, vault.get()])
 		.then(([path, vault]) => {
 			return Promise.all([
-				vault.read('secret/teams/next/shared/production'),
+				vault.read('secret/data/teams/next/shared/production'),
 				vault.read(`${path}/production`),
 				vault.read(`${path}/shared`)
 			]);
