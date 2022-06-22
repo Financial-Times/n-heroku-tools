@@ -42,15 +42,15 @@ const fetchFromVault = (serviceData) => {
 		})
 		.then(([sharedVars, appVars, appShared]) => {
 			// Only include globals the application needs.
-			const shared = appShared.data.env.reduce((shared, key) => {
-				if (key in sharedVars.data) {
-					shared[key] = sharedVars.data[key];
+			const shared = appShared.data.data.env.reduce((shared, key) => {
+				if (key in sharedVars.data.data) {
+					shared[key] = sharedVars.data.data[key];
 				}
 
 				return shared;
 			}, {});
 
-			return Object.assign({}, shared, appVars.data);
+			return Object.assign({}, shared, appVars.data.data);
 		})
 		.then((vars) => {
 			const { TEST_USER_TYPES, TEST_SESSIONS_URL, TEST_SESSIONS_API_KEY } = vars;
