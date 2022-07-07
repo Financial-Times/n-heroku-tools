@@ -17,7 +17,7 @@
     "denodeify": "^1.2.0",
     "dotenv": "^8.0.0",
     "foreman": "^3.0.0",
-    "glob": "^7.1.6",
+    "glob": "^7.2.3",
     "is-image": "^3.0.0",
     "isomorphic-fetch": "^2.0.0",
     "lodash.merge": "^4.6.1",
