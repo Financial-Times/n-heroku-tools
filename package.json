@@ -11,7 +11,7 @@
   },
   "main": "main.js",
   "dependencies": {
-    "aws-sdk": "^2.1.19",
+    "aws-sdk": "^2.1155.0",
     "co": "^4.6.0",
     "commander": "^3.0.0",
     "denodeify": "^1.2.0",
