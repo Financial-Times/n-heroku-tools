@@ -73,3 +73,4 @@ Commands:
   upload-assets-to-s3 [options]                       Uploads a folder of assets to an S3 bucket
   *
 ```
+test
